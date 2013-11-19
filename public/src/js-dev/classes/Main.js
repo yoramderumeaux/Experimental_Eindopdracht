@@ -16,6 +16,7 @@ var Main = (function(){
 	var currentBurst = 0;
 	var backgroundSpeed = 0.5;
 	var gameSpeedFactor = 1;
+	var meteoriteTimerValue = 1500;
 
 	var bullets = [];
 
@@ -46,7 +47,7 @@ var Main = (function(){
 
 		// Timer for new Meteorite
 		this.newMeteorite();
-		meteorTimer = setInterval(this.newMeteorite, 1000);
+		meteorTimer = setInterval(this.newMeteorite, meteoriteTimerValue);
 
 		// Start the timer for the game
 		timer = new Timer();
@@ -77,6 +78,8 @@ var Main = (function(){
 			self.restartGame();
 		});
 
+		bean.on(timer, 'speedUpMeteorites', this.speedUpMeteoriteTimer);
+
 		//disable timer bug on window blur
 		$(window).focus(function() {
 			//continue timer
@@ -93,7 +96,7 @@ var Main = (function(){
 		if (enablePowerUp) {
 			// clear timer and restart faster
 			clearInterval(meteorTimer);
-			meteorTimer = setInterval(this.newMeteorite, 100);
+			meteorTimer = setInterval(this.newMeteorite, meteoriteTimerValue/10);
 			spaceShip.warpSpeed = true;
 			spaceShip.shipImmune = true;
 
@@ -105,7 +108,7 @@ var Main = (function(){
 		}else{
 			// clear timer and restart at normal speed
 			clearInterval(meteorTimer);
-			meteorTimer = setInterval(this.newMeteorite, 1000);
+			meteorTimer = setInterval(this.newMeteorite, meteoriteTimerValue);
 			spaceShip.warpSpeed = false;
 		}
 	};
@@ -113,6 +116,20 @@ var Main = (function(){
 	Main.prototype.jumpHandler = function(){
 		// Jump detected
 		console.log('jump met bean');
+	};
+
+
+	Main.prototype.speedUpMeteoriteTimer = function(){
+		console.log('faster!');
+		meteoriteTimerValue -= 300;
+		clearInterval(meteorTimer);
+		meteorTimer = setInterval(this.newMeteorite, meteoriteTimerValue);
+	};
+
+	Main.prototype.resetMeteoriteTimer = function(){
+		clearInterval(meteorTimer);
+		meteoriteTimerValue = 1500;
+		meteorTimer = setInterval(this.newMeteorite, meteoriteTimerValue);
 	};
 
 	Main.prototype.update = function() {
@@ -160,7 +177,6 @@ var Main = (function(){
 		}else{
 			bulletFired = false;
 		}
-
 
 		// Update all meteorites
 		if( meteorites.length > 0 ) {
@@ -241,6 +257,7 @@ var Main = (function(){
 
 		meteorites = [];
 		gameSpeedFactor = 1;
+		this.resetMeteoriteTimer();
 		spaceShip.reset();
 
 		timer.start();

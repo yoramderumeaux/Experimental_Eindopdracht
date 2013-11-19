@@ -76,10 +76,6 @@ var Meteorite = (function(){
 		this.meteorite.x = this.x;
 		this.meteorite.y = this.y;
 
-		//this.meteorite.scaleX = this.meteorite.scaleY =0.5 + (Math.random()*0.3);
-		this.meteorite.width *= this.meteorite.scaleX;
-		this.meteorite.height *= this.meteorite.scaleY;
-
 		this.drawMeteorite();
 
 		//console.log(this.speedFactor);
