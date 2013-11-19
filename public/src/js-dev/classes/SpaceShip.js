@@ -155,7 +155,9 @@ var SpaceShip = (function(){
 		if(enableFill) {this.warpShield.graphics.beginFill('rgba(255, 114,0,0.2)');}
 		this.drawFromArray(this.warpShield, warpShieldBody, 0,-18);
 		if(enableFill) {this.warpShield.graphics.endFill();}
+
 		this.warpShield.graphics.endStroke();
+		this.warpShield.scaleX = this.warpShield.scaleY = 0;
 
 		this.warpShield.shadow = new createjs.Shadow('#6cf522', 0, 0, 3);
 

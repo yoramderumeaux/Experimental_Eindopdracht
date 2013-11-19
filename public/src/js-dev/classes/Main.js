@@ -15,6 +15,7 @@ var Main = (function(){
 	var bulletBurstNumber = 3;
 	var currentBurst = 0;
 	var backgroundSpeed = 0.5;
+	var gameSpeedFactor = 1;
 
 	var bullets = [];
 
@@ -64,14 +65,16 @@ var Main = (function(){
 		stage.addChild(spaceShip.ship);
 
 		bean.on(socketConnection, 'jump', this.jumpHandler);
+
 		bean.on(socketConnection, 'horizontalPosition', function(data){
 			if (spaceShip) {
 				spaceShip.destinationPosition = data;
-				//console.log(data);
 			}
 		});
+
 		bean.on(timer, 'endTimer', function(){
-			enableNewMeteorites = false;
+			//enableNewMeteorites = false;
+			self.restartGame();
 		});
 
 		//disable timer bug on window blur
@@ -84,74 +87,60 @@ var Main = (function(){
 			//pause timer
 			activeWindow = false;
 		});
-
-		setInterval(function(){
-			self.togglePowerUpWarp(true);
-		}, 10000);
-
-		setTimeout(function(){
-			setInterval(function(){
-				self.togglePowerUpWarp(false);
-			}, 10000);
-		}, 5000);		
 	};
 
 	Main.prototype.togglePowerUpWarp = function(enablePowerUp){
 		if (enablePowerUp) {
+			// clear timer and restart faster
 			clearInterval(meteorTimer);
 			meteorTimer = setInterval(this.newMeteorite, 100);
 			spaceShip.warpSpeed = true;
 			spaceShip.shipImmune = true;
 
+			// enable warp speed on all visible meteorites
 			for (var i = 0; i < meteorites.length; i++) {
 				meteorites[i].enableWarpSpeed = true;
 			}
 
 		}else{
+			// clear timer and restart at normal speed
 			clearInterval(meteorTimer);
 			meteorTimer = setInterval(this.newMeteorite, 1000);
-
 			spaceShip.warpSpeed = false;
-			//spaceShip.shipImmune = false;
-
-			for (var j = 0; j < meteorites.length; j++) {
-				//meteorites[j].enableWarpSpeed = false;
-				var a = a;
-			}
 		}
 	};
 
 	Main.prototype.jumpHandler = function(){
+		// Jump detected
 		console.log('jump met bean');
 	};
 
 	Main.prototype.update = function() {
-		// Uiteindelijk vervangen door waarden van sensor..
-		// if value < 50 naar rechts...
-		// ook Speed aanpassen als je meer dan 75 hebt bijvoorbeeld
-		
-		//backgroundPos += 0.5;
+		//set background speed
 		if (!spaceShip.warpSpeed) {
 			backgroundSpeed += (0.5 - backgroundSpeed) * 0.05;
 		}else{
 			backgroundSpeed += (5 - backgroundSpeed) * 0.05;
 		}
 
-		backgroundPos += backgroundSpeed;
+		backgroundPos += (backgroundSpeed*gameSpeedFactor);
 
 		$('body').css('background-position-y', (backgroundPos/2)+'px');
 		$('#container').css('background-position-y', (backgroundPos)+'px');
 
-		// Links
+
+		// Use arrows as debug controls
+		//	left
 		if(keys[37]) {
 			spaceShip.destinationPosition -= 2;
 		}
 
-		// Rechts
+		//	Right
 		if(keys[39]) {
 			spaceShip.destinationPosition += 2;
 		}
 
+		//	Space to shoot
 		if (keys[32]) {		
 			if (!bulletFired) {
 				bulletFired = true;
@@ -165,17 +154,13 @@ var Main = (function(){
 				bullets.push(bullet);
 
 				stage.addChild(bullet.bullet);
-
-				/*window.setTimeout(function(){
-					console.log('new bullet ready');
-					bulletFired = false;
-				}, 1000);*/
 			}
 		}else{
 			bulletFired = false;
 		}
 
-		// Update the meteorite
+
+		// Update all meteorites
 		if( meteorites.length > 0 ) {
 			for (var i = 0; i < meteorites.length; i++) {
 				meteorites[i].velY = 0.1;
@@ -189,6 +174,7 @@ var Main = (function(){
 			}
 		}
 
+		// Update all bullets
 		if( bullets.length > 0){
 			for (var j = 0; j < bullets.length; j++) {
 
@@ -196,22 +182,18 @@ var Main = (function(){
 					bullets[j] = null;					
 					bullets.splice(j, 1);			
 				}else{
-					//meteorites[i].update();
 					bullets[j].bullet.y -= 10;
 					var radians = ((-90 +bullets[j].directionAngle) * Math.PI)/180;	
-
 					bullets[j].bullet.x += (30 * Math.cos(radians));
 				}
-
-				//bullets[j].bullet.x -= 20 * Math.cos(bullets[j].directionAngle);
-				//console.log(20 * Math.cos(bullets[j].directionAngle));
 			}
 		}
 
-		//check for collision
+		// Check for collision between the ship and meteorites, and between bullets and meteorites
 		for (var k = 0; k < meteorites.length; k++) {
 			if (!spaceShip.shipImmune) {
 				if(CollisionDetection.checkCollisionCenterAnchor(spaceShip.ship, meteorites[k].meteorite) === 'hit'){
+					// Ship crashed into a meteorite
 					this.restartGame();
 				}
 			}
@@ -219,6 +201,7 @@ var Main = (function(){
 			for (var l = 0; l < bullets.length; l++) {
 
 				if(CollisionDetection.checkCollisionCenterAnchor(bullets[l].bullet, meteorites[k].meteorite) === 'hit'){
+					// A bullet hit a meteorite
 					$('#timer p').html('Bam');
 
 					stage.removeChild(meteorites[k].meteorite);
@@ -252,10 +235,12 @@ var Main = (function(){
 		}
 
 		meteorites = [];
-
-		timer.restart();
-
+		gameSpeedFactor = 1;
 		spaceShip.reset();
+
+		timer.start();
+
+		
 	};
 
 	Main.prototype.keyup = function(e) {
@@ -268,6 +253,9 @@ var Main = (function(){
 
 	Main.prototype.newMeteorite = function() {		
 		if (activeWindow && enableNewMeteorites) {
+
+
+
 			if (Math.round(Math.random()*3) > 0) {
 				var randomX = Math.random()*($('#cnvs').width());
 				// var randomXColumn = Math.round(Math.random()*(meteoriteColumns*2));
@@ -275,6 +263,9 @@ var Main = (function(){
 				// var randomX = (($('#cnvs').width() - 70)/(meteoriteColumns*2))*randomXColumn;
 
 				meteorite = new Meteorite(randomX, -100);
+
+				meteorite.speedFactor = gameSpeedFactor;
+
 				meteorite.init();
 
 				if (spaceShip.warpSpeed) {
@@ -288,6 +279,8 @@ var Main = (function(){
 				meteorites.push(meteorite);
 				stage.addChild(meteorite.meteorite);
 			}
+
+			gameSpeedFactor += 0.1;
 		}
 	};
 
