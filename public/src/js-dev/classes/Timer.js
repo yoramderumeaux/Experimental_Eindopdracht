@@ -19,7 +19,6 @@ var Timer = (function(){
 	};
 
 	Timer.prototype.stop = function() {
-		console.log('Clear timer');
 		$('#timer p').html('');
 		clearInterval(myTimer);
 	};
@@ -38,7 +37,6 @@ var Timer = (function(){
 			bean.fire(this, 'endTimer');
 		}else if(this.timer < (this.timerValue / numberOfEvents) * (numberOfEvents-eventTimer)){			
 			eventTimer ++;
-			console.log('speed up in timer');
 			bean.fire(this, 'speedUpMeteorites');
 		}
 

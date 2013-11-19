@@ -139,6 +139,17 @@ var Main = (function(){
 		socketConnection = new SocketConnection();
 		socketConnection.init();
 
+		bean.on(socketConnection, 'connectionOk', this.connectionOk);
+		bean.on(socketConnection, 'cancelConnection', this.cancelConnection);
+	};
+
+	Main.prototype.connectionOk = function(){
+
+		console.log('connection ok');
+		$('body').addClass('connected');
+
+		var self = this;
+
 		meteoriteColumns = Math.floor($('#cnvs').width() / 70);
 
 		// Usercontrolable SpaceShip
@@ -223,9 +234,7 @@ var Main = (function(){
 		console.log('jump met bean');
 	};
 
-
 	Main.prototype.speedUpMeteoriteTimer = function(){
-		console.log('faster!');
 		meteoriteTimerValue -= 300;
 		clearInterval(meteorTimer);
 		if (spaceShip.warpSpeed) {
@@ -438,6 +447,11 @@ var Main = (function(){
 
 		stage.canvas.height = $('body').height();
 		stage.canvas.width = $('body').height()/ratio;
+	};
+
+	Main.prototype.cancelConnection = function(){
+		console.log('Disconnected from server');
+		$('body').addClass('disconnected');
 	};
 
 	return Main;
@@ -668,6 +682,17 @@ var SocketConnection = (function(){
 			if (data) {
 				bean.fire(self, 'jump');
 			}
+		});
+
+		socket.on('otherUserConnected', function(data) {
+			console.log(data);
+			if (!data) {
+				bean.fire(self, 'connectionOk');
+			}else{
+				socket.disconnect();
+				bean.fire(self, 'cancelConnection');
+			}
+			/* Act on the event */
 		});
 	};
 
@@ -1055,7 +1080,6 @@ var Timer = (function(){
 	};
 
 	Timer.prototype.stop = function() {
-		console.log('Clear timer');
 		$('#timer p').html('');
 		clearInterval(myTimer);
 	};
@@ -1074,7 +1098,6 @@ var Timer = (function(){
 			bean.fire(this, 'endTimer');
 		}else if(this.timer < (this.timerValue / numberOfEvents) * (numberOfEvents-eventTimer)){			
 			eventTimer ++;
-			console.log('speed up in timer');
 			bean.fire(this, 'speedUpMeteorites');
 		}
 

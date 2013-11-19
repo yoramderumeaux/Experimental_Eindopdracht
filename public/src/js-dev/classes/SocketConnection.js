@@ -20,6 +20,17 @@ var SocketConnection = (function(){
 				bean.fire(self, 'jump');
 			}
 		});
+
+		socket.on('otherUserConnected', function(data) {
+			console.log(data);
+			if (!data) {
+				bean.fire(self, 'connectionOk');
+			}else{
+				socket.disconnect();
+				bean.fire(self, 'cancelConnection');
+			}
+			/* Act on the event */
+		});
 	};
 
 	return SocketConnection;

@@ -1,4 +1,4 @@
-/* line 17, ../../../../../../../../../../Library/Ruby/Gems/2.0.0/gems/compass-0.12.2/frameworks/compass/stylesheets/compass/reset/_utilities.scss */
+/* line 17, ../../../../../../../../../Library/Ruby/Gems/2.0.0/gems/compass-0.12.2/frameworks/compass/stylesheets/compass/reset/_utilities.scss */
 html, body, div, span, applet, object, iframe,
 h1, h2, h3, h4, h5, h6, p, blockquote, pre,
 a, abbr, acronym, address, big, cite, code,
@@ -20,45 +20,45 @@ time, mark, audio, video {
   vertical-align: baseline;
 }
 
-/* line 22, ../../../../../../../../../../Library/Ruby/Gems/2.0.0/gems/compass-0.12.2/frameworks/compass/stylesheets/compass/reset/_utilities.scss */
+/* line 22, ../../../../../../../../../Library/Ruby/Gems/2.0.0/gems/compass-0.12.2/frameworks/compass/stylesheets/compass/reset/_utilities.scss */
 html {
   line-height: 1;
 }
 
-/* line 24, ../../../../../../../../../../Library/Ruby/Gems/2.0.0/gems/compass-0.12.2/frameworks/compass/stylesheets/compass/reset/_utilities.scss */
+/* line 24, ../../../../../../../../../Library/Ruby/Gems/2.0.0/gems/compass-0.12.2/frameworks/compass/stylesheets/compass/reset/_utilities.scss */
 ol, ul {
   list-style: none;
 }
 
-/* line 26, ../../../../../../../../../../Library/Ruby/Gems/2.0.0/gems/compass-0.12.2/frameworks/compass/stylesheets/compass/reset/_utilities.scss */
+/* line 26, ../../../../../../../../../Library/Ruby/Gems/2.0.0/gems/compass-0.12.2/frameworks/compass/stylesheets/compass/reset/_utilities.scss */
 table {
   border-collapse: collapse;
   border-spacing: 0;
 }
 
-/* line 28, ../../../../../../../../../../Library/Ruby/Gems/2.0.0/gems/compass-0.12.2/frameworks/compass/stylesheets/compass/reset/_utilities.scss */
+/* line 28, ../../../../../../../../../Library/Ruby/Gems/2.0.0/gems/compass-0.12.2/frameworks/compass/stylesheets/compass/reset/_utilities.scss */
 caption, th, td {
   text-align: left;
   font-weight: normal;
   vertical-align: middle;
 }
 
-/* line 30, ../../../../../../../../../../Library/Ruby/Gems/2.0.0/gems/compass-0.12.2/frameworks/compass/stylesheets/compass/reset/_utilities.scss */
+/* line 30, ../../../../../../../../../Library/Ruby/Gems/2.0.0/gems/compass-0.12.2/frameworks/compass/stylesheets/compass/reset/_utilities.scss */
 q, blockquote {
   quotes: none;
 }
-/* line 103, ../../../../../../../../../../Library/Ruby/Gems/2.0.0/gems/compass-0.12.2/frameworks/compass/stylesheets/compass/reset/_utilities.scss */
+/* line 103, ../../../../../../../../../Library/Ruby/Gems/2.0.0/gems/compass-0.12.2/frameworks/compass/stylesheets/compass/reset/_utilities.scss */
 q:before, q:after, blockquote:before, blockquote:after {
   content: "";
   content: none;
 }
 
-/* line 32, ../../../../../../../../../../Library/Ruby/Gems/2.0.0/gems/compass-0.12.2/frameworks/compass/stylesheets/compass/reset/_utilities.scss */
+/* line 32, ../../../../../../../../../Library/Ruby/Gems/2.0.0/gems/compass-0.12.2/frameworks/compass/stylesheets/compass/reset/_utilities.scss */
 a img {
   border: none;
 }
 
-/* line 116, ../../../../../../../../../../Library/Ruby/Gems/2.0.0/gems/compass-0.12.2/frameworks/compass/stylesheets/compass/reset/_utilities.scss */
+/* line 116, ../../../../../../../../../Library/Ruby/Gems/2.0.0/gems/compass-0.12.2/frameworks/compass/stylesheets/compass/reset/_utilities.scss */
 article, aside, details, figcaption, figure, footer, header, hgroup, menu, nav, section, summary {
   display: block;
 }
@@ -74,28 +74,53 @@ article, aside, details, figcaption, figure, footer, header, hgroup, menu, nav, 
 /* line 10, ../sass/screen.scss */
 html, body {
   background-color: #000000;
-  background-image: url("../images/starryBackgroundBlur.png");
   height: 100%;
   font-size: 0.652em;
 }
 
 /* line 17, ../sass/screen.scss */
+#noConnection {
+  display: none;
+}
+
+/* line 21, ../sass/screen.scss */
 #container {
+  display: none;
+}
+
+/* line 25, ../sass/screen.scss */
+body.disconnected #noConnection {
+  display: block;
+  color: #fff;
+  font-size: 7em;
+  text-align: center;
+  padding-top: 20px;
+  font-family: monospace;
+}
+
+/* line 34, ../sass/screen.scss */
+body.connected {
+  background-image: url("../images/starryBackgroundBlur.png");
+}
+/* line 38, ../sass/screen.scss */
+body.connected #container {
+  display: block;
   width: 100%;
   height: 100%;
   background-image: url("../images/starryBackground.png");
   background-position-x: 40px;
   background-position-y: 20px;
 }
-/* line 25, ../sass/screen.scss */
-#container #timer {
+/* line 46, ../sass/screen.scss */
+body.connected #container #timer {
+  display: block;
   color: #fff;
   position: fixed;
   top: 25%;
   left: 50%;
 }
-/* line 31, ../sass/screen.scss */
-#container #timer p {
+/* line 53, ../sass/screen.scss */
+body.connected #container #timer p {
   display: block;
   position: relative;
   left: -50%;
@@ -109,8 +134,8 @@ html, body {
   -ms-user-select: none;
   cursor: default;
 }
-/* line 47, ../sass/screen.scss */
-#container #cnvs {
+/* line 69, ../sass/screen.scss */
+body.connected #container #cnvs {
   display: block;
   margin: 0 auto 0 auto;
   border: 2px solid #fff;

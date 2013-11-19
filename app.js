@@ -1,5 +1,3 @@
-var socketGlobal;
-
 // Express - start server and init socket.io
 // surf naar localhost:1337
 
@@ -10,14 +8,30 @@ app.get('/', function(req, res){
 	res.sendfile(__dirname + '/public/src/index.html'); 
 });
 
+var clientIDs = [];
+var gameClient;
+
 var server = require('http').createServer(app); 
-var io = io = require('socket.io').listen(server); 
+var io = require('socket.io').listen(server); 
 io.set('log level', 1); // reduce logging
 server.listen(1337);
 
 io.sockets.on('connection', function(socket){ 
-	console.log('client connected');
-	socketGlobal = socket;
+	
+	if (clientIDs.length === 0) {
+		gameClient = socket;
+		gameClient.emit('otherUserConnected', false);
+	}else{
+		socket.emit('otherUserConnected', true);
+	}
+
+	clientIDs.push(socket.id);
+	console.log(clientIDs.length + ' user(s) connected');
+
+	socket.on('disconnect', function () {
+		clientIDs.splice(clientIDs.indexOf(this.id), 1);
+		console.log(clientIDs.length + ' user(s) remaining');
+    });
 });
 
 // Require the firmata depenency
@@ -48,7 +62,7 @@ var board = new firmata.Board(path, function(err){
 		console.log(err); 	
 		return;
 	}
-	console.log('connected'); 
+	console.log('arduino connected'); 
 
 	board.pinMode(leftSensorPin, board.MODES.INPUT);
 	board.pinMode(rightSensorPin, board.MODES.INPUT);
@@ -123,7 +137,7 @@ function readRightButton(data){
 }
 
 function emitSocket(type, value){
-	if (socketGlobal) {
+	if (clientIDs.length > 0) {
 
 		board.digitalWrite(dataLed, board.HIGH);
 
@@ -131,19 +145,20 @@ function emitSocket(type, value){
 			board.digitalWrite(dataLed, board.LOW);
 		}, 50);
 
-
 		switch(type){
 			case 'horizontalPosition':
-				socketGlobal.emit('horizontalPosition', value);
+				//io.sockets.emit('horizontalPosition', value);
+				gameClient.emit('horizontalPosition', value);
 			break;
 
 			case 'jump':
-				socketGlobal.emit('jump', value);
+				//io.sockets.emit('jump', value);
+				gameClient.emit('jump', value);
 			break;
 		}
 		
 	}else{
-		console.log("Cound't emit socket, no client connected");
+		console.log("No sockets emmited, no client connected");
 	}
 }
 
