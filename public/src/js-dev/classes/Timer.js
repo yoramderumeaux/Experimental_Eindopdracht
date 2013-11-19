@@ -26,12 +26,9 @@ var Timer = (function(){
 		this.timer = this.timerValue;
 		this.stop();
 		this.start();
-		//this.update();
 	};
 
 	Timer.prototype.update = function() {
-		console.log('update'+Math.random());
-		
 		$('#timer p').html(this.timer);
 
 		if(this.timer <= 0) {

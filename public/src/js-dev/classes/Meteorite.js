@@ -62,6 +62,9 @@ var Meteorite = (function(){
 		this.warpSpeedTarget = 30;
 		this.currentWarpSpeed = 0;
 		this.rotationDirection = -1 + 2*(Math.random());
+		this.removeMe = false;
+		this.canDoDamage = true;
+		this.readyToRemove = false;
 		//this.gravity = 3.8;
 	}
 
@@ -80,6 +83,11 @@ var Meteorite = (function(){
 		this.drawMeteorite();
 
 		//console.log(this.speedFactor);
+	};
+
+	Meteorite.prototype.gotShot = function(){
+		this.removeMe = true;
+		this.canDoDamage = false;
 	};
 
 	Meteorite.prototype.drawMeteorite = function() {
@@ -120,13 +128,6 @@ var Meteorite = (function(){
 		
 		if(enableFill) {this.meteorite.graphics.endFill();}
 		this.meteorite.graphics.endStroke();
-		//this.meteorite.graphics.drawRect(-30,-30,60,60);
-		//this.meteorite.graphics.drawRect(-20,-20,40,40);
-
-		// this.meteorite.graphics.beginFill("#ff0000");
-		// this.meteorite.graphics.drawCircle(0,0,(this.meteorite.width + this.meteorite.height)/4);
-		// this.meteorite.graphics.endFill();
-		
 		this.meteorite.shadow = new createjs.Shadow('#ce4b1d', 0, 0, 5);
 	};
 
@@ -143,6 +144,14 @@ var Meteorite = (function(){
 		this.meteorite.rotation += (this.rotationDirection * (this.speed)/40);
 		//this.meteorite.rotation += 30;
 		this.velY *= this.gravity;
+
+		if (this.removeMe) {
+			this.meteorite.scaleX = this.meteorite.scaleY += (0 - this.meteorite.scaleX) * 0.1;
+
+			if (this.meteorite.scaleX < 0.05) {
+				this.readyToRemove = true;
+			}
+		}
 
 		//this.meteorite.y = this.y = 200;
 	};

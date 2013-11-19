@@ -212,6 +212,9 @@ var Main = (function(){
 	};
 
 	Main.prototype.update = function() {
+
+		this.cleanMeteorites();
+
 		//set background speed
 		if (!spaceShip.warpSpeed) {
 			backgroundSpeed += (0.5 - backgroundSpeed) * 0.05;
@@ -223,7 +226,6 @@ var Main = (function(){
 
 		$('body').css('background-position-y', (backgroundPos/2)+'px');
 		$('#container').css('background-position-y', (backgroundPos)+'px');
-
 
 		// Use arrows as debug controls
 		//	left
@@ -290,7 +292,9 @@ var Main = (function(){
 			if (!spaceShip.shipImmune) {
 				if(CollisionDetection.checkCollisionCenterAnchor(spaceShip.ship, meteorites[k].meteorite) === 'hit'){
 					// Ship crashed into a meteorite
-					this.restartGame();
+					if (meteorites[k].canDoDamage) {
+						this.restartGame();
+					}
 				}
 			}
 
@@ -298,17 +302,17 @@ var Main = (function(){
 
 				if(CollisionDetection.checkCollisionCenterAnchor(bullets[l].bullet, meteorites[k].meteorite) === 'hit'){
 					// A bullet hit a meteorite
-					$('#timer p').html('Bam');
+					//$('#timer p').html('Bam');
+					if (meteorites[k].canDoDamage) {
+						meteorites[k].gotShot();
 
-					stage.removeChild(meteorites[k].meteorite);
-					stage.removeChild(bullets[l].bullet);
+						stage.removeChild(bullets[l].bullet);
 
-					bullets[l] = null;
-					bullets.splice(l, 1);
-
-					meteorites[k] = null;					
-					meteorites.splice(k, 1);
-					return false;
+						bullets[l] = null;
+						bullets.splice(l, 1);						
+						
+						return false;
+					}
 				}
 			}
 		}
@@ -346,6 +350,20 @@ var Main = (function(){
 
 	Main.prototype.keydown = function(e) {
 		keys[e.keyCode] = true;
+	};
+
+	Main.prototype.cleanMeteorites = function(){
+
+		for (var i = 0; i < meteorites.length; i++) {
+			if(meteorites[i].readyToRemove){
+				stage.removeChild(meteorites[i].meteorite);
+				meteorites[i] = null;					
+				meteorites.splice(i, 1);
+
+				console.log(meteorites.length);
+			}
+		}
+		
 	};
 
 	Main.prototype.newMeteorite = function() {		
@@ -462,6 +480,9 @@ var Meteorite = (function(){
 		this.warpSpeedTarget = 30;
 		this.currentWarpSpeed = 0;
 		this.rotationDirection = -1 + 2*(Math.random());
+		this.removeMe = false;
+		this.canDoDamage = true;
+		this.readyToRemove = false;
 		//this.gravity = 3.8;
 	}
 
@@ -480,6 +501,11 @@ var Meteorite = (function(){
 		this.drawMeteorite();
 
 		//console.log(this.speedFactor);
+	};
+
+	Meteorite.prototype.gotShot = function(){
+		this.removeMe = true;
+		this.canDoDamage = false;
 	};
 
 	Meteorite.prototype.drawMeteorite = function() {
@@ -520,13 +546,6 @@ var Meteorite = (function(){
 		
 		if(enableFill) {this.meteorite.graphics.endFill();}
 		this.meteorite.graphics.endStroke();
-		//this.meteorite.graphics.drawRect(-30,-30,60,60);
-		//this.meteorite.graphics.drawRect(-20,-20,40,40);
-
-		// this.meteorite.graphics.beginFill("#ff0000");
-		// this.meteorite.graphics.drawCircle(0,0,(this.meteorite.width + this.meteorite.height)/4);
-		// this.meteorite.graphics.endFill();
-		
 		this.meteorite.shadow = new createjs.Shadow('#ce4b1d', 0, 0, 5);
 	};
 
@@ -543,6 +562,14 @@ var Meteorite = (function(){
 		this.meteorite.rotation += (this.rotationDirection * (this.speed)/40);
 		//this.meteorite.rotation += 30;
 		this.velY *= this.gravity;
+
+		if (this.removeMe) {
+			this.meteorite.scaleX = this.meteorite.scaleY += (0 - this.meteorite.scaleX) * 0.1;
+
+			if (this.meteorite.scaleX < 0.05) {
+				this.readyToRemove = true;
+			}
+		}
 
 		//this.meteorite.y = this.y = 200;
 	};
@@ -992,12 +1019,9 @@ var Timer = (function(){
 		this.timer = this.timerValue;
 		this.stop();
 		this.start();
-		//this.update();
 	};
 
 	Timer.prototype.update = function() {
-		console.log('update'+Math.random());
-		
 		$('#timer p').html(this.timer);
 
 		if(this.timer <= 0) {
