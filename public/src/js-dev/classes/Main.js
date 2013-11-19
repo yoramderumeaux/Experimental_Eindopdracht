@@ -90,6 +90,8 @@ var Main = (function(){
 			//pause timer
 			activeWindow = false;
 		});
+
+		//this.togglePowerUpWarp(true);
 	};
 
 	Main.prototype.togglePowerUpWarp = function(enablePowerUp){
@@ -123,7 +125,11 @@ var Main = (function(){
 		console.log('faster!');
 		meteoriteTimerValue -= 300;
 		clearInterval(meteorTimer);
-		meteorTimer = setInterval(this.newMeteorite, meteoriteTimerValue);
+		if (spaceShip.warpSpeed) {
+			meteorTimer = setInterval(this.newMeteorite, meteoriteTimerValue/10);
+		}else{
+			meteorTimer = setInterval(this.newMeteorite, meteoriteTimerValue);	
+		}
 	};
 
 	Main.prototype.resetMeteoriteTimer = function(){
@@ -280,8 +286,6 @@ var Main = (function(){
 				stage.removeChild(meteorites[i].meteorite);
 				meteorites[i] = null;					
 				meteorites.splice(i, 1);
-
-				console.log(meteorites.length);
 			}
 		}
 		

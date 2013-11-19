@@ -69,17 +69,24 @@ var CollisionDetection = (function(){
 	}
 
 	CollisionDetection.checkCollisionCenterAnchor = function(shapeA, shapeB) {
-		//console.log(shapeA.height);
 
 		var vX = shapeA.x - shapeB.x;
 		var vY = shapeA.y - shapeB.y;
+		var distance = Math.sqrt(Math.pow(vX, 2) + Math.pow(vY,2));
 
-		var hWidths = (shapeA.width/2) + (shapeB.width/2);	
-		var hHeight = (shapeA.height/2) + (shapeB.height/2);
+		var shapeAWidth = Math.min(shapeA.width/2, shapeA.height/2);
+		var shapeBWidth = Math.min(shapeB.width/2, shapeB.height/2);
+
+		// var hWidths = (shapeA.width/2) + (shapeB.width/2);	
+		// var hHeight = (shapeA.height/2) + (shapeB.height/2);
 
 		// Collision
-		if(Math.abs(vX) < hWidths && Math.abs(vY) < hHeight) {
-			return 'hit';	
+		// if(Math.abs(vX) < hWidths && Math.abs(vY) < hHeight) {
+		// return 'hit';	
+		// }
+
+		if (distance < (shapeAWidth+shapeBWidth)) {
+			return 'hit';
 		}
 
 		return 'noHit';
@@ -186,6 +193,8 @@ var Main = (function(){
 			//pause timer
 			activeWindow = false;
 		});
+
+		//this.togglePowerUpWarp(true);
 	};
 
 	Main.prototype.togglePowerUpWarp = function(enablePowerUp){
@@ -219,7 +228,11 @@ var Main = (function(){
 		console.log('faster!');
 		meteoriteTimerValue -= 300;
 		clearInterval(meteorTimer);
-		meteorTimer = setInterval(this.newMeteorite, meteoriteTimerValue);
+		if (spaceShip.warpSpeed) {
+			meteorTimer = setInterval(this.newMeteorite, meteoriteTimerValue/10);
+		}else{
+			meteorTimer = setInterval(this.newMeteorite, meteoriteTimerValue);	
+		}
 	};
 
 	Main.prototype.resetMeteoriteTimer = function(){
@@ -376,8 +389,6 @@ var Main = (function(){
 				stage.removeChild(meteorites[i].meteorite);
 				meteorites[i] = null;					
 				meteorites.splice(i, 1);
-
-				console.log(meteorites.length);
 			}
 		}
 		
@@ -559,6 +570,12 @@ var Meteorite = (function(){
 		
 		if(enableFill) {this.meteorite.graphics.endFill();}
 		this.meteorite.graphics.endStroke();
+
+		// debug circles
+		// this.meteorite.graphics.beginFill('rgba(255,0,0,0.5)');
+		// this.meteorite.graphics.drawCircle(0,0, 27.5);
+		// this.meteorite.graphics.endFill();
+
 		this.meteorite.shadow = new createjs.Shadow('#ce4b1d', 0, 0, 5);
 	};
 
@@ -664,10 +681,12 @@ var SpaceShip = (function(){
 	var bullets = [];
 	var bullet;
 	var flameFlickerTimer = 0;
-	var lowestX = 10000;
-	var highestX = 0;
-	var lowestY = 10000;
-	var highestY = 0;
+	// var lowestX = 10000;
+	// var highestX = 0;
+	// var lowestY = 10000;
+	// var highestY = 0;
+	var fullYOffset = 25;
+	
 	var enableFill = true;
 	var rocketBody = [
 		[85,11],
@@ -799,26 +818,26 @@ var SpaceShip = (function(){
 		this.drawFlames();
 		this.drawWindow();		
 		this.drawWings();
-		this.drawShield();
 		this.drawShip();		
+		this.drawShield();
 
-		this.ship.width = highestX - lowestX;
-		this.ship.height = highestY - lowestY;
+		this.ship.width = 60;
+		this.ship.height = 60;
 	};
 
 	SpaceShip.prototype.drawShield = function(){
 		this.warpShield = new createjs.Shape();
 
-		this.warpShield.graphics.beginStroke('#b8f597');
-		this.warpShield.graphics.setStrokeStyle(1);
-		if(enableFill) {this.warpShield.graphics.beginFill('rgba(255, 114,0,0.2)');}
-		this.drawFromArray(this.warpShield, warpShieldBody, 0,-18);
+		this.warpShield.graphics.beginStroke('#00d2ff');
+		this.warpShield.graphics.setStrokeStyle(2);
+		if(enableFill) {this.warpShield.graphics.beginFill('rgba(0, 92,112,0.2)');}
+		this.drawFromArray(this.warpShield, warpShieldBody, 0,-18+fullYOffset);
 		if(enableFill) {this.warpShield.graphics.endFill();}
 
 		this.warpShield.graphics.endStroke();
 		this.warpShield.scaleX = this.warpShield.scaleY = 0;
 
-		this.warpShield.shadow = new createjs.Shadow('#6cf522', 0, 0, 3);
+		this.warpShield.shadow = new createjs.Shadow('#005c70', 0, 0, 3);
 
 		//this.warpShield.scaleX = this.warpShield.scaleY = 1.5;
 
@@ -834,14 +853,14 @@ var SpaceShip = (function(){
 		this.smallFlame.graphics.beginStroke('#ffe400');
 		if(enableFill) {this.smallFlame.graphics.beginFill('rgba(255, 228,0,0.08)');}
 		this.smallFlame.graphics.setStrokeStyle(2);
-		this.drawFromArray(this.smallFlame, smallFlameBody, 0,85);
+		this.drawFromArray(this.smallFlame, smallFlameBody, 0,85+fullYOffset);
 		if(enableFill) {this.smallFlame.graphics.endFill();}
 		this.smallFlame.graphics.endStroke();
 
 		this.bigFlame.graphics.beginStroke('#ff7200');
 		this.bigFlame.graphics.setStrokeStyle(2);
 		if(enableFill) {this.bigFlame.graphics.beginFill('rgba(255, 114,0,0.2)');}
-		this.drawFromArray(this.bigFlame, bigFlameBody, 0,115);
+		this.drawFromArray(this.bigFlame, bigFlameBody, 0,115+fullYOffset);
 		if(enableFill) {this.bigFlame.graphics.endFill();}
 		this.bigFlame.graphics.endStroke();
 
@@ -859,7 +878,7 @@ var SpaceShip = (function(){
 		this.rightWing.graphics.beginStroke('#d17c7c');
 		if(enableFill) {this.rightWing.graphics.beginFill('rgba(255,0,0,0.2)');}
 		this.rightWing.graphics.setStrokeStyle(2);
-		this.drawFromArray(this.rightWing, rightWingBody, 50,14);
+		this.drawFromArray(this.rightWing, rightWingBody, 50,14+fullYOffset);
 		this.rightWing.graphics.endStroke();
 		if(enableFill) {this.rightWing.graphics.endFill();}
 
@@ -868,7 +887,7 @@ var SpaceShip = (function(){
 		this.leftWing.graphics.beginStroke('#d17c7c');
 		if(enableFill) {this.leftWing.graphics.beginFill('rgba(255,0,0,0.2)');}
 		this.leftWing.graphics.setStrokeStyle(2);
-		this.drawFromArray(this.leftWing, leftWingBody,-50,-5);
+		this.drawFromArray(this.leftWing, leftWingBody,-50,-5+fullYOffset);
 		this.leftWing.graphics.endStroke();
 		if(enableFill) {this.leftWing.graphics.endFill();}
 		this.leftWing.shadow = this.rightWing.shadow = new createjs.Shadow('#d83232', 0, 0, 10);
@@ -883,7 +902,7 @@ var SpaceShip = (function(){
 
 		this.shipWindow.graphics.beginStroke('#47a4da');
 		this.shipWindow.graphics.setStrokeStyle(2);
-		this.shipWindow.graphics.drawCircle(0,-58*this.scaleFactor,17*this.scaleFactor);
+		this.shipWindow.graphics.drawCircle(0,(fullYOffset-58)*this.scaleFactor,17*this.scaleFactor);
 		this.shipWindow.graphics.endStroke();
 
 		this.shipWindow.shadow = new createjs.Shadow('#47a4da', 0, 0, 3);
@@ -898,15 +917,20 @@ var SpaceShip = (function(){
 		this.shipBody.graphics.setStrokeStyle(2);
 		if(enableFill) {this.shipBody.graphics.beginFill('rgba(255,255,255,0.08)');}
 
-		this.drawFromArray(this.shipBody, rocketBody, 0,0);
+		this.drawFromArray(this.shipBody, rocketBody, 0,fullYOffset);
 
 		if(enableFill) {this.shipBody.graphics.endFill();}
 		this.shipBody.graphics.endStroke();
-	
-
-		// this.shipBody.graphics.beginFill('#ff0000');
-		// this.shipBody.graphics.drawCircle(0,0, 1);
+		
+		// debug circles	
+		// this.shipBody.graphics.beginFill('rgba(255,0,0,0.5)');
+		// this.shipBody.graphics.drawCircle(0,0, 30);
 		// this.shipBody.graphics.endFill();
+
+		// this.shipBody.graphics.beginFill('rgba(255,0,0,1)');
+		// this.shipBody.graphics.drawCircle(0,0, 3);
+		// this.shipBody.graphics.endFill();
+
 
 		this.shipBody.shadow = new createjs.Shadow('#00ADEE', 0, 0, 10);
 
@@ -938,13 +962,13 @@ var SpaceShip = (function(){
 		for (var j = 0; j < shapeArray.length; j++) {
 			var xPos = ((shapeArray[j][0] - horizontalOffset)*this.scaleFactor)+(xOffset*this.scaleFactor);
 
-			lowestX = Math.min(lowestX, xPos);
-			highestX = Math.max(highestX, xPos);
+			// lowestX = Math.min(lowestX, xPos);
+			// highestX = Math.max(highestX, xPos);
 
 			var yPos = ((shapeArray[j][1] - verticalOffset)*this.scaleFactor)+(yOffset*this.scaleFactor);
 
-			lowestY = Math.min(lowestY, yPos);
-			highestY = Math.max(highestY, yPos);
+			// lowestY = Math.min(lowestY, yPos);
+			// highestY = Math.max(highestY, yPos);
 
 			if (j === 0){
 				shape.graphics.moveTo(xPos, yPos);	

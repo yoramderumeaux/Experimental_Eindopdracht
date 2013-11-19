@@ -124,6 +124,12 @@ var Meteorite = (function(){
 		
 		if(enableFill) {this.meteorite.graphics.endFill();}
 		this.meteorite.graphics.endStroke();
+
+		// debug circles
+		// this.meteorite.graphics.beginFill('rgba(255,0,0,0.5)');
+		// this.meteorite.graphics.drawCircle(0,0, 27.5);
+		// this.meteorite.graphics.endFill();
+
 		this.meteorite.shadow = new createjs.Shadow('#ce4b1d', 0, 0, 5);
 	};
 
