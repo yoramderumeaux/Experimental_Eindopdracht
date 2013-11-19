@@ -1,0 +1,19 @@
+{
+  "name": "arduinoNodejs", "description": "arduino met nodejs test", "version": "0.0.1",
+  "private": true,
+  "dependencies": {
+    "express": "latest",
+    "socket.io": "latest",
+    "firmata": "latest",
+    "socket.io": "latest",
+    "grunt":"*",
+    "grunt-contrib-concat":"*",
+    "grunt-contrib-uglify":"*",
+    "grunt-contrib-watch":"*",
+    "grunt-contrib-compass":"*",
+    "grunt-contrib-jshint":"*",
+    "grunt-contrib-clean":"*",
+    "grunt-contrib-copy":"*",
+    "grunt-concurrent":"*"
+  }
+}

@@ -1,0 +1,14 @@
+{
+  "name": "Eindopdracht_EXD",
+  "devDependencies": {
+    "grunt":"*",
+    "grunt-contrib-concat":"*",
+    "grunt-contrib-uglify":"*",
+    "grunt-contrib-watch":"*",
+    "grunt-contrib-compass":"*",
+    "grunt-contrib-jshint":"*",
+    "grunt-contrib-clean":"*",
+    "grunt-contrib-copy":"*",
+    "grunt-concurrent":"*"
+    }
+}
