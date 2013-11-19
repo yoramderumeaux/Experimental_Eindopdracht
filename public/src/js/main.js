@@ -1000,7 +1000,13 @@ var SpaceShip = (function(){
 
 		this.ship.rotation = (this.x-this.ship.x)*0.1;
 
-		this.bigFlame.alpha = Math.abs(this.ship.rotation)/3;
+		//big flame on when ship angle bigger than 3
+		var rotationOffset = 3;
+		if (Math.abs(this.ship.rotation) > rotationOffset) {
+			this.bigFlame.alpha = (Math.abs(this.ship.rotation)-rotationOffset)/3;
+		}else{
+			this.bigFlame.alpha = 0;
+		}
 		
 		if (flameFlickerTimer === 5) {
 			flameFlickerTimer = 0;
