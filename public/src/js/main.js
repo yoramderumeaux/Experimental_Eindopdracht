@@ -110,6 +110,7 @@ var Main = (function(){
 	var bulletFired = false;
 	var bulletBurstNumber = 3;
 	var currentBurst = 0;
+	var backgroundSpeed = 0.5;
 
 	var bullets = [];
 
@@ -180,31 +181,38 @@ var Main = (function(){
 			activeWindow = false;
 		});
 
-		setTimeout(function(){
+		setInterval(function(){
 			self.togglePowerUpWarp(true);
-		}, 5000);
+		}, 10000);
 
 		setTimeout(function(){
-			self.togglePowerUpWarp(false);
-		}, 10000);
-		
+			setInterval(function(){
+				self.togglePowerUpWarp(false);
+			}, 10000);
+		}, 5000);		
 	};
 
 	Main.prototype.togglePowerUpWarp = function(enablePowerUp){
 		if (enablePowerUp) {
 			clearInterval(meteorTimer);
 			meteorTimer = setInterval(this.newMeteorite, 100);
+			spaceShip.warpSpeed = true;
+			spaceShip.shipImmune = true;
 
 			for (var i = 0; i < meteorites.length; i++) {
-				meteorites[i].speedFactor = 50;
+				meteorites[i].enableWarpSpeed = true;
 			}
 
 		}else{
 			clearInterval(meteorTimer);
 			meteorTimer = setInterval(this.newMeteorite, 1000);
 
+			spaceShip.warpSpeed = false;
+			//spaceShip.shipImmune = false;
+
 			for (var j = 0; j < meteorites.length; j++) {
-				meteorites[j].speedFactor = 1;
+				//meteorites[j].enableWarpSpeed = false;
+				var a = a;
 			}
 		}
 	};
@@ -217,8 +225,16 @@ var Main = (function(){
 		// Uiteindelijk vervangen door waarden van sensor..
 		// if value < 50 naar rechts...
 		// ook Speed aanpassen als je meer dan 75 hebt bijvoorbeeld
+		
+		//backgroundPos += 0.5;
+		if (!spaceShip.warpSpeed) {
+			backgroundSpeed += (0.5 - backgroundSpeed) * 0.05;
+		}else{
+			backgroundSpeed += (5 - backgroundSpeed) * 0.05;
+		}
 
-		backgroundPos += 0.5;
+		backgroundPos += backgroundSpeed;
+
 		$('body').css('background-position-y', (backgroundPos/2)+'px');
 		$('#container').css('background-position-y', (backgroundPos)+'px');
 
@@ -356,7 +372,14 @@ var Main = (function(){
 
 				meteorite = new Meteorite(randomX, -100);
 				meteorite.init();
-				meteorite.speedFactor = 1;
+
+				if (spaceShip.warpSpeed) {
+					meteorite.enableWarpSpeed = true;
+
+				}else{
+					meteorite.enableWarpSpeed = false;
+					spaceShip.shipImmune = false;
+				}
 
 				meteorites.push(meteorite);
 				stage.addChild(meteorite.meteorite);
@@ -441,6 +464,9 @@ var Meteorite = (function(){
 		this.velY = 0;
 		this.speed = 30;
 		this.speedFactor = 1;
+		this.enableWarpSpeed = false;
+		this.warpSpeedTarget = 30;
+		this.currentWarpSpeed = 0;
 		this.rotationDirection = -1 + 2*(Math.random());
 		//this.gravity = 3.8;
 	}
@@ -511,9 +537,14 @@ var Meteorite = (function(){
 	};
 
 	Meteorite.prototype.update = function() {
-		this.speed = (10+ Math.round(Math.random()*20)) * this.speedFactor;
 
-		this.y += this.velY * this.speed;
+		if (this.currentWarpSpeed < (this.warpSpeedTarget*this.enableWarpSpeed)) {
+			this.currentWarpSpeed += 0.01;
+		}else{
+				this.currentWarpSpeed = 0;
+		}
+		
+		this.y += this.velY * (this.speed * (1 + this.currentWarpSpeed *30));
 		this.meteorite.y = this.y;
 		this.meteorite.rotation += (this.rotationDirection * (this.speed)/40);
 		//this.meteorite.rotation += 30;
@@ -629,6 +660,31 @@ var SpaceShip = (function(){
 		[85,11]
 	];
 
+	var warpShieldBody = [
+		[51*1.5,140*1.5],
+		[21*1.5,145*1.5],
+		[25*1.5,105*1.5],
+		[35*1.5,82*1.5],
+		[43*1.5,72*1.5],
+		[46*1.5,62*1.5],
+		[51*1.5,48*1.5],
+		[57*1.5,34*1.5],
+		[67*1.5,24*1.5],
+		[80*1.5,13*1.5],
+		[85*1.5,11*1.5],
+		[85*1.5,11*1.5],
+		[90*1.5,13*1.5],
+		[101*1.5,24*1.5],
+		[111*1.5,34*1.5],
+		[118*1.5,48*1.5],
+		[123*1.5,62*1.5],
+		[126*1.5,72*1.5],
+		[134*1.5,82*1.5],
+		[144*1.5,105*1.5],
+		[148*1.5,145*1.5],
+		[118*1.5,140*1.5],
+	];
+
 	var rightWingBody = [
 		[122,102],
 		[130,109],
@@ -697,6 +753,7 @@ var SpaceShip = (function(){
 		this.destinationPosition = 50;
 		this.scaleFactor = 0.33;
 		this.shipImmune = false;
+		this.warpSpeed = false;
 	}
 
 	SpaceShip.prototype.init = function() {
@@ -708,10 +765,30 @@ var SpaceShip = (function(){
 		this.drawFlames();
 		this.drawWindow();		
 		this.drawWings();
+		this.drawShield();
 		this.drawShip();		
 
 		this.ship.width = highestX - lowestX;
 		this.ship.height = highestY - lowestY;
+	};
+
+	SpaceShip.prototype.drawShield = function(){
+		this.warpShield = new createjs.Shape();
+
+		this.warpShield.graphics.beginStroke('#b8f597');
+		this.warpShield.graphics.setStrokeStyle(1);
+		if(enableFill) {this.warpShield.graphics.beginFill('rgba(255, 114,0,0.2)');}
+		this.drawFromArray(this.warpShield, warpShieldBody, 0,-18);
+		if(enableFill) {this.warpShield.graphics.endFill();}
+		this.warpShield.graphics.endStroke();
+
+		this.warpShield.shadow = new createjs.Shadow('#6cf522', 0, 0, 3);
+
+		//this.warpShield.scaleX = this.warpShield.scaleY = 1.5;
+
+
+		this.ship.addChild(this.warpShield);
+
 	};
 
 	SpaceShip.prototype.drawFlames = function(){
@@ -871,30 +948,19 @@ var SpaceShip = (function(){
 			this.bigFlame.alpha *= 0.5 + Math.random()*0.5;
 		}
 
+		if (this.shipImmune) {
+			//this.warpShield.alpha = 1;
+			this.warpShield.scaleX = this.warpShield.scaleY += (1-this.warpShield.scaleX)*0.2;
+		}else{
+			this.warpShield.scaleX = this.warpShield.scaleY += (0-this.warpShield.scaleX)*0.2;
+			//this.warpShield.alpha = 0;
+		}
+
 		flameFlickerTimer++;
 		
 		$('body').css('background-position-x', (this.ship.x/26)+'px');
 		$('#container').css('background-position-x', (this.ship.x/13)+'px');
 
-		//ease in out
-		// this.x += this.velX;
-		// this.ship.x = this.x;
-		// this.velX *= this.friction;
-
-		// if (this.ship.x < this.shipWidth/2) {
-		// console.log('limit left');
-		// this.x = this.ship.x = this.shipWidth/2;
-		// }else if(this.ship.x > ($('#cnvs').width() - (this.shipWidth/2)))	{
-		// this.x = this.ship.x = $('#cnvs').width() - (this.shipWidth/2);
-		// console.log('limit right');
-		// }else{
-		// this.x += this.velX;
-		// this.ship.x = this.x;
-		// this.velX *= this.friction;
-		// }
-
-		//console.log(this.x);
-			
 	};
 
 

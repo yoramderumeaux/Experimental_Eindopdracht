@@ -58,6 +58,9 @@ var Meteorite = (function(){
 		this.velY = 0;
 		this.speed = 30;
 		this.speedFactor = 1;
+		this.enableWarpSpeed = false;
+		this.warpSpeedTarget = 30;
+		this.currentWarpSpeed = 0;
 		this.rotationDirection = -1 + 2*(Math.random());
 		//this.gravity = 3.8;
 	}
@@ -128,9 +131,14 @@ var Meteorite = (function(){
 	};
 
 	Meteorite.prototype.update = function() {
-		this.speed = (10+ Math.round(Math.random()*20)) * this.speedFactor;
 
-		this.y += this.velY * this.speed;
+		if (this.currentWarpSpeed < (this.warpSpeedTarget*this.enableWarpSpeed)) {
+			this.currentWarpSpeed += 0.01;
+		}else{
+				this.currentWarpSpeed = 0;
+		}
+		
+		this.y += this.velY * (this.speed * (1 + this.currentWarpSpeed *30));
 		this.meteorite.y = this.y;
 		this.meteorite.rotation += (this.rotationDirection * (this.speed)/40);
 		//this.meteorite.rotation += 30;

@@ -35,6 +35,31 @@ var SpaceShip = (function(){
 		[85,11]
 	];
 
+	var warpShieldBody = [
+		[51*1.5,140*1.5],
+		[21*1.5,145*1.5],
+		[25*1.5,105*1.5],
+		[35*1.5,82*1.5],
+		[43*1.5,72*1.5],
+		[46*1.5,62*1.5],
+		[51*1.5,48*1.5],
+		[57*1.5,34*1.5],
+		[67*1.5,24*1.5],
+		[80*1.5,13*1.5],
+		[85*1.5,11*1.5],
+		[85*1.5,11*1.5],
+		[90*1.5,13*1.5],
+		[101*1.5,24*1.5],
+		[111*1.5,34*1.5],
+		[118*1.5,48*1.5],
+		[123*1.5,62*1.5],
+		[126*1.5,72*1.5],
+		[134*1.5,82*1.5],
+		[144*1.5,105*1.5],
+		[148*1.5,145*1.5],
+		[118*1.5,140*1.5],
+	];
+
 	var rightWingBody = [
 		[122,102],
 		[130,109],
@@ -103,6 +128,7 @@ var SpaceShip = (function(){
 		this.destinationPosition = 50;
 		this.scaleFactor = 0.33;
 		this.shipImmune = false;
+		this.warpSpeed = false;
 	}
 
 	SpaceShip.prototype.init = function() {
@@ -114,10 +140,30 @@ var SpaceShip = (function(){
 		this.drawFlames();
 		this.drawWindow();		
 		this.drawWings();
+		this.drawShield();
 		this.drawShip();		
 
 		this.ship.width = highestX - lowestX;
 		this.ship.height = highestY - lowestY;
+	};
+
+	SpaceShip.prototype.drawShield = function(){
+		this.warpShield = new createjs.Shape();
+
+		this.warpShield.graphics.beginStroke('#b8f597');
+		this.warpShield.graphics.setStrokeStyle(1);
+		if(enableFill) {this.warpShield.graphics.beginFill('rgba(255, 114,0,0.2)');}
+		this.drawFromArray(this.warpShield, warpShieldBody, 0,-18);
+		if(enableFill) {this.warpShield.graphics.endFill();}
+		this.warpShield.graphics.endStroke();
+
+		this.warpShield.shadow = new createjs.Shadow('#6cf522', 0, 0, 3);
+
+		//this.warpShield.scaleX = this.warpShield.scaleY = 1.5;
+
+
+		this.ship.addChild(this.warpShield);
+
 	};
 
 	SpaceShip.prototype.drawFlames = function(){
@@ -277,30 +323,19 @@ var SpaceShip = (function(){
 			this.bigFlame.alpha *= 0.5 + Math.random()*0.5;
 		}
 
+		if (this.shipImmune) {
+			//this.warpShield.alpha = 1;
+			this.warpShield.scaleX = this.warpShield.scaleY += (1-this.warpShield.scaleX)*0.2;
+		}else{
+			this.warpShield.scaleX = this.warpShield.scaleY += (0-this.warpShield.scaleX)*0.2;
+			//this.warpShield.alpha = 0;
+		}
+
 		flameFlickerTimer++;
 		
 		$('body').css('background-position-x', (this.ship.x/26)+'px');
 		$('#container').css('background-position-x', (this.ship.x/13)+'px');
 
-		//ease in out
-		// this.x += this.velX;
-		// this.ship.x = this.x;
-		// this.velX *= this.friction;
-
-		// if (this.ship.x < this.shipWidth/2) {
-		// console.log('limit left');
-		// this.x = this.ship.x = this.shipWidth/2;
-		// }else if(this.ship.x > ($('#cnvs').width() - (this.shipWidth/2)))	{
-		// this.x = this.ship.x = $('#cnvs').width() - (this.shipWidth/2);
-		// console.log('limit right');
-		// }else{
-		// this.x += this.velX;
-		// this.ship.x = this.x;
-		// this.velX *= this.friction;
-		// }
-
-		//console.log(this.x);
-			
 	};
 
 

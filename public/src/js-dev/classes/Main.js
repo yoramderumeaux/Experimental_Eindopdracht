@@ -14,6 +14,7 @@ var Main = (function(){
 	var bulletFired = false;
 	var bulletBurstNumber = 3;
 	var currentBurst = 0;
+	var backgroundSpeed = 0.5;
 
 	var bullets = [];
 
@@ -84,31 +85,38 @@ var Main = (function(){
 			activeWindow = false;
 		});
 
-		setTimeout(function(){
+		setInterval(function(){
 			self.togglePowerUpWarp(true);
-		}, 5000);
+		}, 10000);
 
 		setTimeout(function(){
-			self.togglePowerUpWarp(false);
-		}, 10000);
-		
+			setInterval(function(){
+				self.togglePowerUpWarp(false);
+			}, 10000);
+		}, 5000);		
 	};
 
 	Main.prototype.togglePowerUpWarp = function(enablePowerUp){
 		if (enablePowerUp) {
 			clearInterval(meteorTimer);
 			meteorTimer = setInterval(this.newMeteorite, 100);
+			spaceShip.warpSpeed = true;
+			spaceShip.shipImmune = true;
 
 			for (var i = 0; i < meteorites.length; i++) {
-				meteorites[i].speedFactor = 50;
+				meteorites[i].enableWarpSpeed = true;
 			}
 
 		}else{
 			clearInterval(meteorTimer);
 			meteorTimer = setInterval(this.newMeteorite, 1000);
 
+			spaceShip.warpSpeed = false;
+			//spaceShip.shipImmune = false;
+
 			for (var j = 0; j < meteorites.length; j++) {
-				meteorites[j].speedFactor = 1;
+				//meteorites[j].enableWarpSpeed = false;
+				var a = a;
 			}
 		}
 	};
@@ -121,8 +129,16 @@ var Main = (function(){
 		// Uiteindelijk vervangen door waarden van sensor..
 		// if value < 50 naar rechts...
 		// ook Speed aanpassen als je meer dan 75 hebt bijvoorbeeld
+		
+		//backgroundPos += 0.5;
+		if (!spaceShip.warpSpeed) {
+			backgroundSpeed += (0.5 - backgroundSpeed) * 0.05;
+		}else{
+			backgroundSpeed += (5 - backgroundSpeed) * 0.05;
+		}
 
-		backgroundPos += 0.5;
+		backgroundPos += backgroundSpeed;
+
 		$('body').css('background-position-y', (backgroundPos/2)+'px');
 		$('#container').css('background-position-y', (backgroundPos)+'px');
 
@@ -260,7 +276,14 @@ var Main = (function(){
 
 				meteorite = new Meteorite(randomX, -100);
 				meteorite.init();
-				meteorite.speedFactor = 1;
+
+				if (spaceShip.warpSpeed) {
+					meteorite.enableWarpSpeed = true;
+
+				}else{
+					meteorite.enableWarpSpeed = false;
+					spaceShip.shipImmune = false;
+				}
 
 				meteorites.push(meteorite);
 				stage.addChild(meteorite.meteorite);
