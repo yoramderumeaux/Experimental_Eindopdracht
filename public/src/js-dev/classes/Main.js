@@ -222,6 +222,7 @@ var Main = (function(){
 	};
 
 	Main.prototype.restartGame = function(){
+		timer.stop();
 		for (var j = 0; j < bullets.length; j++) {
 			stage.removeChild(bullets[j].bullet);
 			bullets[j] = null;

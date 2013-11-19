@@ -17,6 +17,8 @@ var Timer = (function(){
 	};
 
 	Timer.prototype.stop = function() {
+		console.log('Clear timer');
+		$('#timer p').html('');
 		clearInterval(myTimer);
 	};
 
