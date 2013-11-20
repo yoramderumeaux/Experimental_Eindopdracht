@@ -112,7 +112,7 @@ var Main = (function(){
 
 		setTimeout(function(){
 			self.togglePowerUpWarp(false);	
-		}, 12000);
+		}, 9000);
 		
 	};
 
