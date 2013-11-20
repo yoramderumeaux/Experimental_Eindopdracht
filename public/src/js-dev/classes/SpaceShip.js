@@ -309,7 +309,7 @@ var SpaceShip = (function(){
 		this.x = (this.shipWidth/2) + destinationXpos;
 		this.ship.x = this.x;
 
-		this.ship.rotation = (this.x-this.ship.x)*0.1;
+		this.ship.rotation = 0;
 	};
 
 	SpaceShip.prototype.update = function() {

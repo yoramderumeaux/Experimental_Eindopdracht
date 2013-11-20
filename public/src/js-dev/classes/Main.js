@@ -1,4 +1,4 @@
-/* globals CanvasSetup:true, SpaceShip:true, Timer:true, Meteorite:true, SocketConnection:true, Bullet:true, CollisionDetection:true */
+/* globals CanvasSetup:true, SpaceShip:true, Timer:true, Meteorite:true, Score:true, SocketConnection:true, Bullet:true, CollisionDetection:true */
 
 var Main = (function(){
 
@@ -6,6 +6,7 @@ var Main = (function(){
 	var spaceShip, timer, meteorite, meteorites, bullet;
 	var meteorTimer;
 	var socketConnection;
+	var score;
 	var collisionDetection;
 	var activeWindow = true;
 	var enableNewMeteorites = true;
@@ -46,6 +47,9 @@ var Main = (function(){
 		$('body').addClass('connected');
 
 		var self = this;
+
+		score = new Score();
+		score.init();
 
 		meteoriteColumns = Math.floor($('#cnvs').width() / 70);
 
@@ -102,7 +106,14 @@ var Main = (function(){
 			activeWindow = false;
 		});
 
-		//this.togglePowerUpWarp(true);
+		setTimeout(function(){
+			self.togglePowerUpWarp(true);
+		}, 5000);
+
+		setTimeout(function(){
+			self.togglePowerUpWarp(false);	
+		}, 12000);
+		
 	};
 
 	Main.prototype.togglePowerUpWarp = function(enablePowerUp){
@@ -149,111 +160,117 @@ var Main = (function(){
 
 	Main.prototype.update = function() {
 
-		this.cleanMeteorites();
+		if (timer.isRunning) {
 
-		//set background speed
-		if (!spaceShip.warpSpeed) {
-			backgroundSpeed += (0.5 - backgroundSpeed) * 0.05;
-		}else{
-			backgroundSpeed += (5 - backgroundSpeed) * 0.05;
-		}
+			this.cleanMeteorites();
+			score.updateScore(1+gameSpeedFactor);
 
-		backgroundPos += (backgroundSpeed*gameSpeedFactor);
-
-		$('body').css('background-position-y', (backgroundPos/2)+'px');
-		$('#container').css('background-position-y', (backgroundPos)+'px');
-
-		// Use arrows as debug controls
-		//	left
-		if(keys[37]) {
-			spaceShip.destinationPosition -= 2;
-		}
-
-		//	Right
-		if(keys[39]) {
-			spaceShip.destinationPosition += 2;
-		}
-
-		//	Space to shoot
-		if (keys[32]) {		
-			if (!bulletFired) {
-				bulletFired = true;
-
-				var bullet = new Bullet();
-				bullet.init();
-				bullet.directionAngle = spaceShip.ship.rotation;
-				bullet.bullet.x = spaceShip.ship.x;
-				bullet.bullet.y = spaceShip.ship.y- 25;
-
-				bullets.push(bullet);
-
-				stage.addChild(bullet.bullet);
+			//set background speed
+			if (!spaceShip.warpSpeed) {
+				backgroundSpeed += (0.5 - backgroundSpeed) * 0.05;
+			}else{
+				backgroundSpeed += (5 - backgroundSpeed) * 0.05;
 			}
-		}else{
-			bulletFired = false;
-		}
 
-		// Update all meteorites
-		if( meteorites.length > 0 ) {
-			for (var i = 0; i < meteorites.length; i++) {
-				meteorites[i].velY = 0.1;
+			backgroundPos += (backgroundSpeed*gameSpeedFactor);
 
-				if ($('#cnvs').height() + 150 < meteorites[i].y) {
-					meteorites[i] = null;					
-					meteorites.splice(i, 1);		
-				}else{
-					meteorites[i].update();
+			$('body').css('background-position-y', (backgroundPos/2)+'px');
+			$('#container').css('background-position-y', (backgroundPos)+'px');
+
+			// Use arrows as debug controls
+			//	left
+			if(keys[37]) {
+				spaceShip.destinationPosition -= 2;
+			}
+
+			//	Right
+			if(keys[39]) {
+				spaceShip.destinationPosition += 2;
+			}
+
+			//	Space to shoot
+			if (keys[32]) {		
+				if (!bulletFired) {
+					bulletFired = true;
+
+					var bullet = new Bullet();
+					bullet.init();
+					bullet.directionAngle = spaceShip.ship.rotation;
+					bullet.bullet.x = spaceShip.ship.x;
+					bullet.bullet.y = spaceShip.ship.y- 25;
+
+					bullets.push(bullet);
+
+					stage.addChild(bullet.bullet);
 				}
+			}else{
+				bulletFired = false;
 			}
-		}
 
-		// Update all bullets
-		if( bullets.length > 0){
-			for (var j = 0; j < bullets.length; j++) {
+			// Update all meteorites
+			if( meteorites.length > 0 ) {
+				for (var i = 0; i < meteorites.length; i++) {
+					meteorites[i].velY = 0.1;
 
-				if (bullets[j].bullet.x < -30 || bullets[j].bullet.x > $('#cnvs').width()+30 || bullets[j].bullet.y < -30) {
-					bullets[j] = null;					
-					bullets.splice(j, 1);			
-				}else{
-					bullets[j].bullet.y -= 10;
-					var radians = ((-90 +bullets[j].directionAngle) * Math.PI)/180;	
-					bullets[j].bullet.x += (30 * Math.cos(radians));
-				}
-			}
-		}
+					if ($('#cnvs').height() + 150 < meteorites[i].y) {
+						meteorites[i] = null;					
+						meteorites.splice(i, 1);	
 
-		// Check for collision between the ship and meteorites, and between bullets and meteorites
-		for (var k = 0; k < meteorites.length; k++) {
-			if (!spaceShip.shipImmune) {
-				if(CollisionDetection.checkCollisionCenterAnchor(spaceShip.ship, meteorites[k].meteorite) === 'hit'){
-					// Ship crashed into a meteorite
-					if (meteorites[k].canDoDamage) {
-						this.restartGame();
+						console.log('extra points');
+						score.updateScore(500);	
+					}else{
+						meteorites[i].update();
 					}
 				}
 			}
 
-			for (var l = 0; l < bullets.length; l++) {
+			// Update all bullets
+			if( bullets.length > 0){
+				for (var j = 0; j < bullets.length; j++) {
 
-				if(CollisionDetection.checkCollisionCenterAnchor(bullets[l].bullet, meteorites[k].meteorite) === 'hit'){
-					// A bullet hit a meteorite
-					//$('#timer p').html('Bam');
-					if (meteorites[k].canDoDamage) {
-						meteorites[k].gotShot();
-
-						stage.removeChild(bullets[l].bullet);
-
-						bullets[l] = null;
-						bullets.splice(l, 1);						
-						
-						return false;
+					if (bullets[j].bullet.x < -30 || bullets[j].bullet.x > $('#cnvs').width()+30 || bullets[j].bullet.y < -30) {
+						bullets[j] = null;					
+						bullets.splice(j, 1);			
+					}else{
+						bullets[j].bullet.y -= 10;
+						var radians = ((-90 +bullets[j].directionAngle) * Math.PI)/180;	
+						bullets[j].bullet.x += (30 * Math.cos(radians));
 					}
 				}
 			}
-		}
 
-		spaceShip.update();
-		stage.update();
+			// Check for collision between the ship and meteorites, and between bullets and meteorites
+			for (var k = 0; k < meteorites.length; k++) {
+				if (!spaceShip.shipImmune) {
+					if(CollisionDetection.checkCollisionCenterAnchor(spaceShip.ship, meteorites[k].meteorite) === 'hit'){
+						// Ship crashed into a meteorite
+						if (meteorites[k].canDoDamage) {
+							this.restartGame();
+						}
+					}
+				}
+
+				for (var l = 0; l < bullets.length; l++) {
+
+					if(CollisionDetection.checkCollisionCenterAnchor(bullets[l].bullet, meteorites[k].meteorite) === 'hit'){
+						// A bullet hit a meteorite
+						if (meteorites[k].canDoDamage) {
+							meteorites[k].gotShot();
+
+							stage.removeChild(bullets[l].bullet);
+
+							bullets[l] = null;
+							bullets.splice(l, 1);						
+							
+							return false;
+						}
+					}
+				}
+			}
+
+			spaceShip.update();
+			stage.update();
+		}
 	};
 
 	Main.prototype.restartGame = function(){
@@ -273,10 +290,15 @@ var Main = (function(){
 		meteorites = [];
 		gameSpeedFactor = 1;
 		this.resetMeteoriteTimer();
+
+		score.showScore();
+		score.reset();
 		spaceShip.reset();
 
-		timer.start();
-
+		setTimeout(function(){
+			timer.start();
+		}, 3000);
+		
 		
 	};
 
@@ -289,12 +311,12 @@ var Main = (function(){
 	};
 
 	Main.prototype.cleanMeteorites = function(){
-
 		for (var i = 0; i < meteorites.length; i++) {
 			if(meteorites[i].readyToRemove){
 				stage.removeChild(meteorites[i].meteorite);
 				meteorites[i] = null;					
 				meteorites.splice(i, 1);
+				console.log('removed');
 			}
 		}
 		
@@ -302,8 +324,6 @@ var Main = (function(){
 
 	Main.prototype.newMeteorite = function() {		
 		if (activeWindow && enableNewMeteorites) {
-
-
 
 			if (Math.round(Math.random()*3) > 0) {
 				var randomX = Math.random()*($('#cnvs').width());

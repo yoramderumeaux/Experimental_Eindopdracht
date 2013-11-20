@@ -66,6 +66,21 @@ body.connected {
 			}
 		}
 
+		#score{
+			position: absolute;
+			top: 10px;
+			left: 10px;
+			font-size: 3em;
+			color: #bbb;
+			font-family: monospace;
+			text-transform: uppercase;
+
+			#scoreValue{
+				color: #eeeeee;
+				font-size: 2em;
+			}
+		}
+
 		#cnvs {
 			display: block;
 			margin: 0 auto 0 auto;

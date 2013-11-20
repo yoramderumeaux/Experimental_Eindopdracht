@@ -135,6 +135,21 @@ body.connected #container #timer p {
   cursor: default;
 }
 /* line 69, ../sass/screen.scss */
+body.connected #container #score {
+  position: absolute;
+  top: 10px;
+  left: 10px;
+  font-size: 3em;
+  color: #bbb;
+  font-family: monospace;
+  text-transform: uppercase;
+}
+/* line 78, ../sass/screen.scss */
+body.connected #container #score #scoreValue {
+  color: #eeeeee;
+  font-size: 2em;
+}
+/* line 84, ../sass/screen.scss */
 body.connected #container #cnvs {
   display: block;
   margin: 0 auto 0 auto;
