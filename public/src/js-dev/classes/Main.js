@@ -116,7 +116,7 @@ var Main = (function(){
 
 		setTimeout(function(){
 			self.togglePowerUpWarp(false);	
-		}, 9000);
+		}, 8000);
 		
 	};
 
