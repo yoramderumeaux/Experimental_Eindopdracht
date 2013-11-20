@@ -101,12 +101,12 @@ var CollisionDetection = (function(){
 
 })();
 
-/* globals CanvasSetup:true, SpaceShip:true, Timer:true, Meteorite:true, Score:true, SocketConnection:true, Bullet:true, CollisionDetection:true */
+/* globals CanvasSetup:true, SpaceShip:true, Timer:true, Meteorite:true, Score:true, SocketConnection:true, Bullet:true, CollisionDetection:true, Sound:true*/
 
 var Main = (function(){
 
 	var stage, ticker, keys;
-	var spaceShip, timer, meteorite, meteorites, bullet;
+	var spaceShip, timer, meteorite, meteorites, bullet, sound;
 	var meteorTimer;
 	var socketConnection;
 	var score;
@@ -148,6 +148,10 @@ var Main = (function(){
 
 		console.log('connection ok');
 		$('body').addClass('connected');
+
+		// Play Sound
+		sound = new Sound();
+		//sound.playBackgroundMusic("BackgroundMusic_EXD");
 
 		var self = this;
 
@@ -221,6 +225,9 @@ var Main = (function(){
 
 	Main.prototype.togglePowerUpWarp = function(enablePowerUp){
 		if (enablePowerUp) {
+			// Play soundeffect
+			sound.playEffect('WarpSpeed');
+
 			// clear timer and restart faster
 			clearInterval(meteorTimer);
 			meteorTimer = setInterval(this.newMeteorite, meteoriteTimerValue/10);
@@ -746,6 +753,37 @@ var SocketConnection = (function(){
 	};
 
 	return SocketConnection;
+})();
+
+/* globals buzz:true */
+
+var Sound = (function(){
+
+	function Sound() {
+		_.bindAll(this);
+		this.init();
+	}
+
+	Sound.prototype.init = function() {
+		buzz.defaults.preload = 'auto';
+		buzz.defaults.autoplay = false;
+		buzz.defaults.formats = ['mp3', 'ogg'];
+	};
+
+	Sound.prototype.playEffect = function(soundName) {
+		buzz.defaults.loop = false;
+		var effectSound = new buzz.sound('../sound/' + soundName);
+		effectSound.play();
+	};
+
+	Sound.prototype.playBackgroundMusic = function(soundName) {
+		buzz.defaults.loop = true;
+		var backgroundMusic = new buzz.sound('../sound/' + soundName);
+		backgroundMusic.play();
+	};
+
+	return Sound;
+
 })();
 
 /*globals  Bullet:true */
