@@ -5,6 +5,7 @@ var SpaceShip = (function(){
 	var bullets = [];
 	var bullet;
 	var flameFlickerTimer = 0;
+	var capableToFly = true;
 	// var lowestX = 10000;
 	// var highestX = 0;
 	// var lowestY = 10000;
@@ -308,48 +309,72 @@ var SpaceShip = (function(){
 		var destinationXpos = ($('#cnvs').width() - this.shipWidth) * this.destinationPosition / 100;
 		this.x = (this.shipWidth/2) + destinationXpos;
 		this.ship.x = this.x;
-
+		this.ship.scaleX = this.ship.scaleY = 1;
+		this.ship.y = this.y = $('#cnvs').height() *(1-0.1313);
 		this.ship.rotation = 0;
+		capableToFly = true;
+	};
+
+	SpaceShip.prototype.gotShot = function(){
+		capableToFly = false;
 	};
 
 	SpaceShip.prototype.update = function() {
 
-		//ease to position;
-		//destinatonpos between 0 and 100
-		this.destinationPosition = Math.min(Math.max(0, this.destinationPosition), 100);
+		if (capableToFly) {
+			//ease to position;
+			//destinatonpos between 0 and 100
+			this.destinationPosition = Math.min(Math.max(0, this.destinationPosition), 100);
 
-		var destinationXpos = ($('#cnvs').width() - this.shipWidth) * this.destinationPosition / 100;
-		this.x = (this.shipWidth/2) + destinationXpos;
-		this.ship.x += (this.x-this.ship.x)* this.velX;
+			var destinationXpos = ($('#cnvs').width() - this.shipWidth) * this.destinationPosition / 100;
+			this.x = (this.shipWidth/2) + destinationXpos;
+			this.ship.x += (this.x-this.ship.x)* this.velX;
 
-		this.ship.rotation = (this.x-this.ship.x)*0.1;
+			this.ship.rotation = (this.x-this.ship.x)*0.1;
 
-		//big flame on when ship angle bigger than 3
-		var rotationOffset = 3;
-		if (Math.abs(this.ship.rotation) > rotationOffset) {
-			this.bigFlame.alpha = (Math.abs(this.ship.rotation)-rotationOffset)/3;
+			//big flame on when ship angle bigger than 3
+			var rotationOffset = 3;
+			if (Math.abs(this.ship.rotation) > rotationOffset) {
+				this.bigFlame.alpha = (Math.abs(this.ship.rotation)-rotationOffset)/3;
+			}else{
+				this.bigFlame.alpha = 0;
+			}
+			
+			if (flameFlickerTimer === 5) {
+				flameFlickerTimer = 0;
+				this.smallFlame.alpha = 0.3 + Math.random()*0.7;
+				this.bigFlame.alpha *= 0.5 + Math.random()*0.5;
+			}
+
+			if (this.shipImmune) {
+				//this.warpShield.alpha = 1;
+				this.warpShield.scaleX = this.warpShield.scaleY += (1-this.warpShield.scaleX)*0.2;
+			}else{
+				this.warpShield.scaleX = this.warpShield.scaleY += (0-this.warpShield.scaleX)*0.2;
+				//this.warpShield.alpha = 0;
+			}
+
+			flameFlickerTimer++;
+			
+			$('body').css('background-position-x', (this.ship.x/26)+'px');
+			$('#container').css('background-position-x', (this.ship.x/13)+'px');
 		}else{
-			this.bigFlame.alpha = 0;
-		}
-		
-		if (flameFlickerTimer === 5) {
-			flameFlickerTimer = 0;
-			this.smallFlame.alpha = 0.3 + Math.random()*0.7;
-			this.bigFlame.alpha *= 0.5 + Math.random()*0.5;
-		}
 
-		if (this.shipImmune) {
-			//this.warpShield.alpha = 1;
-			this.warpShield.scaleX = this.warpShield.scaleY += (1-this.warpShield.scaleX)*0.2;
-		}else{
-			this.warpShield.scaleX = this.warpShield.scaleY += (0-this.warpShield.scaleX)*0.2;
-			//this.warpShield.alpha = 0;
+			if (this.ship.y < $('#cnvs').height() + 100 ){
+				this.ship.y += 4;
+				this.ship.scaleY = this.ship.scaleX += (0 - this.ship.scaleX) * 0.1;
+				this.ship.x += 1;
+				if (this.destinationPosition < 50) {
+					this.ship.rotation += 10;
+				}else{
+					this.ship.rotation -= 10;
+				}
+			}else{
+				bean.fire(this, 'restartGame');
+			}
+			
+			
 		}
-
-		flameFlickerTimer++;
-		
-		$('body').css('background-position-x', (this.ship.x/26)+'px');
-		$('#container').css('background-position-x', (this.ship.x/13)+'px');
 
 	};
 

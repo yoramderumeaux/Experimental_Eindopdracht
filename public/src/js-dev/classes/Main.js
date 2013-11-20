@@ -66,6 +66,7 @@ var Main = (function(){
 
 		spaceShip = new SpaceShip(midX, bottomY);
 		spaceShip.init();
+		bean.on(spaceShip, 'restartGame', this.restartGame);
 
 		// Timer for new Meteorite
 		this.newMeteorite();
@@ -161,6 +162,10 @@ var Main = (function(){
 
 	Main.prototype.speedUpMeteoriteTimer = function(){
 		meteoriteTimerValue -= 300;
+		if (meteoriteTimerValue < 300) {
+			meteoriteTimerValue = 300;
+		}
+
 		clearInterval(meteorTimer);
 		if (spaceShip.warpSpeed) {
 			meteorTimer = setInterval(this.newMeteorite, meteoriteTimerValue/10);
@@ -263,6 +268,9 @@ var Main = (function(){
 				if (!spaceShip.shipImmune) {
 					if(CollisionDetection.checkCollisionCenterAnchor(spaceShip.ship, meteorites[k].meteorite) === 'hit'){
 						// Ship crashed into a meteorite
+						spaceShip.gotShot();
+						meteorites[k].gotShot();
+
 						if (meteorites[k].canDoDamage) {
 							this.restartGame();
 						}
@@ -317,6 +325,7 @@ var Main = (function(){
 		spaceShip.reset();
 
 		setTimeout(function(){
+			console.log('restart game');
 			timer.start();
 		}, 3000);
 		
@@ -337,7 +346,6 @@ var Main = (function(){
 				stage.removeChild(meteorites[i].meteorite);
 				meteorites[i] = null;					
 				meteorites.splice(i, 1);
-				console.log('removed');
 			}
 		}
 		
