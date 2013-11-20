@@ -14,6 +14,7 @@ var Timer = (function(){
 	}
 
 	Timer.prototype.start = function() {
+		console.log('[TIMER] start timer');
 		this.timer = this.timerValue;
 		this.isRunning = true;
 		eventTimer = 1;
@@ -22,19 +23,16 @@ var Timer = (function(){
 	};
 
 	Timer.prototype.stop = function() {
+		console.log('[TIMER] stop timer');
 		$('#timer p').html('');
 		this.isRunning = false;
 		clearInterval(myTimer);
 	};
 
-	Timer.prototype.restart = function(){
-		this.timer = this.timerValue;
-		this.stop();
-		this.start();
-	};
-
 	Timer.prototype.update = function() {
 		$('#timer p').html(this.timer);
+
+		bean.fire(this, 'secondPast');
 
 		if(this.timer <= 0) {
 			this.stop();

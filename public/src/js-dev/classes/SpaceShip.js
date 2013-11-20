@@ -132,6 +132,8 @@ var SpaceShip = (function(){
 		this.shipImmune = false;
 		this.warpSpeed = false;
 		this.capableToFly = true;
+
+		this.init();
 	}
 
 	SpaceShip.prototype.init = function() {
@@ -367,7 +369,7 @@ var SpaceShip = (function(){
 					this.ship.rotation -= 10;
 				}
 			}else{
-				bean.fire(this, 'restartGame');
+				bean.fire(this, 'stopGame');
 			}
 			
 			

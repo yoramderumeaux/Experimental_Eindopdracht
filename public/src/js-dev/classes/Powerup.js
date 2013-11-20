@@ -2,19 +2,26 @@ var Powerup = (function(){
 
 	var x;
 	var y;
+	var types = ['shoot', 'warp'];
 
 	function Powerup(x, y) {
 		_.bindAll(this);
 		this.x = x;
 		this.y = y;
+		this.velY = 0;
+		this.speed = 30;
+		this.speedFactor = 1;
+		this.enableWarpSpeed = false;
+		this.warpSpeedTarget = 30;
+		this.currentWarpSpeed = 0;
+		this.rotationDirection = -1 + 2*(Math.random());
+		this.removeMe = false;
+		this.canDoDamage = true;
+		this.readyToRemove = false;
 	}
 
-	Powerup.prototype.init = function() {
-		this.powerup = new createjs.Shape();
-		this.powerup.width = 4;
-		this.powerup.height = 4;
-		
-		this.type = 'shoot';
+	Powerup.prototype.init = function() {		
+		this.type = types[Math.floor(Math.random()*types.length)];
 		this.drawPowerup();
 	};
 
@@ -24,6 +31,8 @@ var Powerup = (function(){
 
 		this.powerup.x = this.x;
 		this.powerup.y = this.y;
+		this.powerup.width = 50;
+		this.powerup.height = 50;
 
 		var squareSize = 40;
 		var square = new createjs.Shape();
@@ -86,7 +95,24 @@ var Powerup = (function(){
 	};
 
 	Powerup.prototype.update = function() {
+		if (this.currentWarpSpeed < (this.warpSpeedTarget*this.enableWarpSpeed)) {
+			this.currentWarpSpeed += 0.01;
+		}else{
+			this.currentWarpSpeed = 0;
+		}
+		
+		this.y += this.velY * (this.speed * (1 + this.currentWarpSpeed *30));
+		this.powerup.y = this.y;
+		//this.meteorite.rotation += 30;
+		this.velY *= this.gravity;
 
+		if (this.removeMe) {
+			this.powerup.scaleX = this.powerup.scaleY += (0 - this.powerup.scaleX) * 0.1;
+
+			if (this.powerup.scaleX < 0.05) {
+				this.readyToRemove = true;
+			}
+		}
 	};
 
 	return Powerup;

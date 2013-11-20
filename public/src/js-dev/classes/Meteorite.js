@@ -55,8 +55,8 @@ var Meteorite = (function(){
 		_.bindAll(this);
 		this.x = x;
 		this.y = y;
-		this.velY = 0;
-		this.speed = 30;
+		this.velY = 0.1;
+		this.speed = 10;
 		this.speedFactor = 1;
 		this.enableWarpSpeed = false;
 		this.warpSpeedTarget = 30;
@@ -70,7 +70,7 @@ var Meteorite = (function(){
 
 	Meteorite.prototype.init = function() {
 
-		this.speed = (10+ Math.round(Math.random()*20)) * this.speedFactor;
+		this.speed = (10+ Math.round(Math.random()*10)) * this.speedFactor;
 
 		this.meteorite = new createjs.Shape();
 		this.meteorite.x = this.x;

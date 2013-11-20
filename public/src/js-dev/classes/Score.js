@@ -2,20 +2,24 @@ var Score = (function(){
 
 	function Score() {
 		_.bindAll(this);
+		this.enableScoreEdit = true;
+		this.init();
 	}
 
 	Score.prototype.init = function() {
 		this.score = 0;
-		console.log('start score timer');
 	};
 
 	Score.prototype.updateScore = function(value){
-		this.score += value;
-		$('#scoreValue').html(Math.round(this.score / 10));
+		if (this.enableScoreEdit) {
+			this.score += value;
+			$('#scoreValue').html(Math.round(this.score / 10));
+		}
 	};
 
 	Score.prototype.reset = function(){
 		this.score = 0;
+		this.enableScoreEdit = true;
 		$('#scoreValue').html(this.score);
 	};
 

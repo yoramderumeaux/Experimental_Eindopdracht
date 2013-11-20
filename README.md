@@ -10,7 +10,6 @@ Our HTML5 based game in combination with NodeJS for the socket connection with o
 - als je dood bent: animatie? ontploffing, en scherm die zegt dat je dood bent en opnieuw kan beginnen. --> weer naar startscherm.
 - Power-ups toevoegen: schieten, warp-speed,...
 - active powerup
-- random powerups
-- bug fix rocket audio bij dood
+- game niet eindigen wanneer warp powerup nog bezig is
 - slapen
 - Geluid

@@ -28,7 +28,7 @@ var Sound = (function(){
 
 	Sound.prototype.playBackgroundMusic = function(soundName) {		
 		var backgroundMusic = new buzz.sound('../sound/' + soundName);
-		backgroundMusic.setVolume(60);
+		backgroundMusic.setVolume(40);
 		backgroundMusic.loop();
 		backgroundMusic.play();
 
