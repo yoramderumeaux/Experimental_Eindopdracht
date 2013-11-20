@@ -3,7 +3,7 @@
 var Main = (function(){
 
 	var stage, ticker, keys;
-	var spaceShip, timer, meteorite, powerup, meteorites, bullet, sound;
+	var spaceShip, timer, meteorite, powerup, meteorites, powerups, bullet, sound;
 	var meteorTimer;
 	var socketConnection;
 	var score;
@@ -216,9 +216,9 @@ var Main = (function(){
 			}
 
 			//	Space to shoot
-			if (keys[32]) {		
+			if (keys[32]) {
 
-				if (spaceShip.capableToFly) {
+				if (spaceShip.capableToFly && 1 === 2 ) {
 					if (!bulletFired) {
 						bulletFired = true;
 

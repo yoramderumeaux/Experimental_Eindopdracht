@@ -14,7 +14,7 @@ var Powerup = (function(){
 		this.powerup.width = 4;
 		this.powerup.height = 4;
 		
-		this.type = 'warp';
+		this.type = 'shoot';
 		this.drawPowerup();
 	};
 
@@ -40,9 +40,7 @@ var Powerup = (function(){
 		
 		square.graphics.setStrokeStyle(3);
 		square.graphics.drawRect(-(squareSize/2),-(squareSize/2),squareSize,squareSize);
-		//square.graphics.endStroke();
 		square.rotation = 45;
-		//this.powerup.shadow = new createjs.Shadow('#eb1c17', 0, 0, 10);
 
 		//square.graphics.beginStroke('#eba19f');
 		square.graphics.setStrokeStyle(3);
@@ -84,8 +82,6 @@ var Powerup = (function(){
 
 			this.powerup.addChild(circles);
 		}
-
-		
 		
 	};
 
