@@ -101,12 +101,12 @@ var CollisionDetection = (function(){
 
 })();
 
-/* globals CanvasSetup:true, SpaceShip:true, Timer:true, Meteorite:true, Score:true, SocketConnection:true, Bullet:true, CollisionDetection:true, Sound:true*/
+/* globals CanvasSetup:true, SpaceShip:true, Timer:true, Meteorite:true, Score:true, Powerup:true, SocketConnection:true, Bullet:true, CollisionDetection:true, Sound:true*/
 
 var Main = (function(){
 
 	var stage, ticker, keys;
-	var spaceShip, timer, meteorite, meteorites, bullet, sound;
+	var spaceShip, timer, meteorite, powerup, meteorites, bullet, sound;
 	var meteorTimer;
 	var socketConnection;
 	var score;
@@ -151,8 +151,8 @@ var Main = (function(){
 
 		// Play Sound
 		sound = new Sound();
-		sound.playBackgroundMusic("BackgroundMusic_EXD");
-		//sound.playBackgroundMusic("backgroundmusictest");
+		//sound.playBackgroundMusic("BackgroundMusic_EXD");
+		sound.playBackgroundMusic("backgroundmusictest");
 		
 		sound.playRocketSound("rocket");
 
@@ -190,6 +190,11 @@ var Main = (function(){
 
 		// Add objects to stage
 		stage.addChild(spaceShip.ship);
+
+		powerup = new Powerup(100,100);
+		powerup.init();
+
+		stage.addChild(powerup.powerup);
 
 		bean.on(socketConnection, 'jump', this.jumpHandler);
 
@@ -315,21 +320,25 @@ var Main = (function(){
 
 			//	Space to shoot
 			if (keys[32]) {		
-				if (!bulletFired) {
-					bulletFired = true;
 
-					var bullet = new Bullet();
-					bullet.init();
-					bullet.directionAngle = spaceShip.ship.rotation;
-					bullet.bullet.x = spaceShip.ship.x;
-					bullet.bullet.y = spaceShip.ship.y- 25;
+				if (spaceShip.capableToFly) {
+					if (!bulletFired) {
+						bulletFired = true;
 
-					bullets.push(bullet);
+						var bullet = new Bullet();
+						bullet.init();
+						bullet.directionAngle = spaceShip.ship.rotation;
+						bullet.bullet.x = spaceShip.ship.x;
+						bullet.bullet.y = spaceShip.ship.y- 25;
 
-					stage.addChild(bullet.bullet);
+						bullets.push(bullet);
 
-					sound.playEffectWithVolume('Shoot', 100);
+						stage.addChild(bullet.bullet);
+
+						sound.playEffectWithVolume('Shoot', 100);
+					}
 				}
+				
 			}else{
 				bulletFired = false;
 			}
@@ -371,11 +380,11 @@ var Main = (function(){
 				if (!spaceShip.shipImmune) {
 					if(CollisionDetection.checkCollisionCenterAnchor(spaceShip.ship, meteorites[k].meteorite) === 'hit'){
 						// Ship crashed into a meteorite
-						spaceShip.gotShot();
-						meteorites[k].gotShot();
-
+						
 						if (meteorites[k].canDoDamage) {
-							this.restartGame();
+							spaceShip.gotShot();
+							meteorites[k].gotShot();
+							//this.restartGame(); 
 						}
 					}
 				}
@@ -593,8 +602,6 @@ var Meteorite = (function(){
 	Meteorite.prototype.gotShot = function(){
 		this.removeMe = true;
 		this.canDoDamage = false;
-
-		
 	};
 
 	Meteorite.prototype.drawMeteorite = function() {
@@ -679,29 +686,90 @@ var Powerup = (function(){
 	var x;
 	var y;
 
-	function Powerup() {
+	function Powerup(x, y) {
 		_.bindAll(this);
+		this.x = x;
+		this.y = y;
 	}
 
 	Powerup.prototype.init = function() {
 		this.powerup = new createjs.Shape();
 		this.powerup.width = 4;
 		this.powerup.height = 4;
-		this.powerup.x = this.x;
-		this.powerup.y = this.y;
-		this.drawBullet();
+		
+		this.type = 'warp';
+		this.drawPowerup();
 	};
 
 	Powerup.prototype.drawPowerup = function(){
-		this.powerup.graphics.beginStroke('#eba19f');
-		this.powerup.graphics.setStrokeStyle(3);
-		this.powerup.graphics.drawRect(0,0,30,30);
-		// this.bullet.graphics.moveTo(0, -27.75);
-		// this.bullet.graphics.lineTo(25, 27.75);
-		// this.bullet.graphics.lineTo(-25, 27.75);
-		// this.bullet.graphics.lineTo(0, -27.75);
-		this.powerup.graphics.endStroke();
-		this.powerup.shadow = new createjs.Shadow('#eb1c17', 0, 0, 10);
+
+		this.powerup = new createjs.Container();
+
+		this.powerup.x = this.x;
+		this.powerup.y = this.y;
+
+		var squareSize = 40;
+		var square = new createjs.Shape();
+
+		if (this.type === 'shoot') {
+			square.graphics.beginStroke('#aef69d');
+			this.powerup.shadow = new createjs.Shadow('#1bf43f', 0, 0, 10);
+			square.graphics.beginFill('rgba(0, 92,112,0.2)');
+		}else{
+			square.graphics.beginStroke('#00d2ff');
+			square.graphics.beginFill('rgba(0, 92,112,0.2)');
+			this.powerup.shadow = new createjs.Shadow('#005c70', 0, 0, 10);
+		}
+		
+		square.graphics.setStrokeStyle(3);
+		square.graphics.drawRect(-(squareSize/2),-(squareSize/2),squareSize,squareSize);
+		//square.graphics.endStroke();
+		square.rotation = 45;
+		//this.powerup.shadow = new createjs.Shadow('#eb1c17', 0, 0, 10);
+
+		//square.graphics.beginStroke('#eba19f');
+		square.graphics.setStrokeStyle(3);
+		square.graphics.drawCircle(0,0,25);
+		square.graphics.endStroke();
+
+		this.powerup.addChild(square);
+
+		if (this.type === 'warp') {
+
+			var iconlines = new createjs.Shape();
+			var yOffset = 2;
+			iconlines.graphics.beginStroke('#00d2ff');
+			iconlines.graphics.setStrokeStyle(4);
+			iconlines.graphics.moveTo(-10, 0 - yOffset);	
+			iconlines.graphics.lineTo(0, -10- yOffset);
+			iconlines.graphics.lineTo(10, 0- yOffset);
+
+			iconlines.graphics.moveTo(-10, 10- yOffset);	
+			iconlines.graphics.lineTo(0, 0- yOffset);
+			iconlines.graphics.lineTo(10, 10- yOffset);
+
+			this.powerup.addChild(iconlines);
+			
+		}else if(this.type === 'shoot'){
+
+			var circles =  new createjs.Shape();
+			circles.graphics.beginFill('#aef69d');
+			circles.graphics.drawCircle(-10,3,4);
+			circles.graphics.endFill();
+			circles.graphics.beginFill('#aef69d');
+			circles.graphics.drawCircle(0,-10,4);
+			circles.graphics.endFill();
+			circles.graphics.beginFill('#aef69d');
+			circles.graphics.drawCircle(10,3,4);
+			circles.graphics.endFill();
+			circles.graphics.beginFill('#aef69d');
+			circles.graphics.endFill();
+
+			this.powerup.addChild(circles);
+		}
+
+		
+		
 	};
 
 	Powerup.prototype.update = function() {
@@ -863,7 +931,6 @@ var SpaceShip = (function(){
 	var bullets = [];
 	var bullet;
 	var flameFlickerTimer = 0;
-	var capableToFly = true;
 	// var lowestX = 10000;
 	// var highestX = 0;
 	// var lowestY = 10000;
@@ -990,6 +1057,7 @@ var SpaceShip = (function(){
 		this.scaleFactor = 0.33;
 		this.shipImmune = false;
 		this.warpSpeed = false;
+		this.capableToFly = true;
 	}
 
 	SpaceShip.prototype.init = function() {
@@ -1065,8 +1133,6 @@ var SpaceShip = (function(){
 		this.rightWing.graphics.endStroke();
 		if(enableFill) {this.rightWing.graphics.endFill();}
 
-		
-
 		this.leftWing.graphics.beginStroke('#d17c7c');
 		if(enableFill) {this.leftWing.graphics.beginFill('rgba(255,0,0,0.2)');}
 		this.leftWing.graphics.setStrokeStyle(2);
@@ -1074,7 +1140,6 @@ var SpaceShip = (function(){
 		this.leftWing.graphics.endStroke();
 		if(enableFill) {this.leftWing.graphics.endFill();}
 		this.leftWing.shadow = this.rightWing.shadow = new createjs.Shadow('#d83232', 0, 0, 10);
-		//= new createjs.Shadow('#00ADEE', 0, 0, 10);
 
 		this.ship.addChild(this.leftWing);
 		this.ship.addChild(this.rightWing);
@@ -1170,16 +1235,16 @@ var SpaceShip = (function(){
 		this.ship.scaleX = this.ship.scaleY = 1;
 		this.ship.y = this.y = $('#cnvs').height() *(1-0.1313);
 		this.ship.rotation = 0;
-		capableToFly = true;
+		this.capableToFly = true;
 	};
 
 	SpaceShip.prototype.gotShot = function(){
-		capableToFly = false;
+		this.capableToFly = false;
 	};
 
 	SpaceShip.prototype.update = function() {
 
-		if (capableToFly) {
+		if (this.capableToFly) {
 			//ease to position;
 			//destinatonpos between 0 and 100
 			this.destinationPosition = Math.min(Math.max(0, this.destinationPosition), 100);

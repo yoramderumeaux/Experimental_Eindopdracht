@@ -5,7 +5,6 @@ var SpaceShip = (function(){
 	var bullets = [];
 	var bullet;
 	var flameFlickerTimer = 0;
-	var capableToFly = true;
 	// var lowestX = 10000;
 	// var highestX = 0;
 	// var lowestY = 10000;
@@ -132,6 +131,7 @@ var SpaceShip = (function(){
 		this.scaleFactor = 0.33;
 		this.shipImmune = false;
 		this.warpSpeed = false;
+		this.capableToFly = true;
 	}
 
 	SpaceShip.prototype.init = function() {
@@ -207,8 +207,6 @@ var SpaceShip = (function(){
 		this.rightWing.graphics.endStroke();
 		if(enableFill) {this.rightWing.graphics.endFill();}
 
-		
-
 		this.leftWing.graphics.beginStroke('#d17c7c');
 		if(enableFill) {this.leftWing.graphics.beginFill('rgba(255,0,0,0.2)');}
 		this.leftWing.graphics.setStrokeStyle(2);
@@ -216,7 +214,6 @@ var SpaceShip = (function(){
 		this.leftWing.graphics.endStroke();
 		if(enableFill) {this.leftWing.graphics.endFill();}
 		this.leftWing.shadow = this.rightWing.shadow = new createjs.Shadow('#d83232', 0, 0, 10);
-		//= new createjs.Shadow('#00ADEE', 0, 0, 10);
 
 		this.ship.addChild(this.leftWing);
 		this.ship.addChild(this.rightWing);
@@ -312,16 +309,16 @@ var SpaceShip = (function(){
 		this.ship.scaleX = this.ship.scaleY = 1;
 		this.ship.y = this.y = $('#cnvs').height() *(1-0.1313);
 		this.ship.rotation = 0;
-		capableToFly = true;
+		this.capableToFly = true;
 	};
 
 	SpaceShip.prototype.gotShot = function(){
-		capableToFly = false;
+		this.capableToFly = false;
 	};
 
 	SpaceShip.prototype.update = function() {
 
-		if (capableToFly) {
+		if (this.capableToFly) {
 			//ease to position;
 			//destinatonpos between 0 and 100
 			this.destinationPosition = Math.min(Math.max(0, this.destinationPosition), 100);

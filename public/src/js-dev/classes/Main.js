@@ -1,9 +1,9 @@
-/* globals CanvasSetup:true, SpaceShip:true, Timer:true, Meteorite:true, Score:true, SocketConnection:true, Bullet:true, CollisionDetection:true, Sound:true*/
+/* globals CanvasSetup:true, SpaceShip:true, Timer:true, Meteorite:true, Score:true, Powerup:true, SocketConnection:true, Bullet:true, CollisionDetection:true, Sound:true*/
 
 var Main = (function(){
 
 	var stage, ticker, keys;
-	var spaceShip, timer, meteorite, meteorites, bullet, sound;
+	var spaceShip, timer, meteorite, powerup, meteorites, bullet, sound;
 	var meteorTimer;
 	var socketConnection;
 	var score;
@@ -48,8 +48,8 @@ var Main = (function(){
 
 		// Play Sound
 		sound = new Sound();
-		sound.playBackgroundMusic("BackgroundMusic_EXD");
-		//sound.playBackgroundMusic("backgroundmusictest");
+		//sound.playBackgroundMusic("BackgroundMusic_EXD");
+		sound.playBackgroundMusic("backgroundmusictest");
 		
 		sound.playRocketSound("rocket");
 
@@ -87,6 +87,11 @@ var Main = (function(){
 
 		// Add objects to stage
 		stage.addChild(spaceShip.ship);
+
+		powerup = new Powerup(100,100);
+		powerup.init();
+
+		stage.addChild(powerup.powerup);
 
 		bean.on(socketConnection, 'jump', this.jumpHandler);
 
@@ -212,21 +217,25 @@ var Main = (function(){
 
 			//	Space to shoot
 			if (keys[32]) {		
-				if (!bulletFired) {
-					bulletFired = true;
 
-					var bullet = new Bullet();
-					bullet.init();
-					bullet.directionAngle = spaceShip.ship.rotation;
-					bullet.bullet.x = spaceShip.ship.x;
-					bullet.bullet.y = spaceShip.ship.y- 25;
+				if (spaceShip.capableToFly) {
+					if (!bulletFired) {
+						bulletFired = true;
 
-					bullets.push(bullet);
+						var bullet = new Bullet();
+						bullet.init();
+						bullet.directionAngle = spaceShip.ship.rotation;
+						bullet.bullet.x = spaceShip.ship.x;
+						bullet.bullet.y = spaceShip.ship.y- 25;
 
-					stage.addChild(bullet.bullet);
+						bullets.push(bullet);
 
-					sound.playEffectWithVolume('Shoot', 100);
+						stage.addChild(bullet.bullet);
+
+						sound.playEffectWithVolume('Shoot', 100);
+					}
 				}
+				
 			}else{
 				bulletFired = false;
 			}
@@ -268,11 +277,11 @@ var Main = (function(){
 				if (!spaceShip.shipImmune) {
 					if(CollisionDetection.checkCollisionCenterAnchor(spaceShip.ship, meteorites[k].meteorite) === 'hit'){
 						// Ship crashed into a meteorite
-						spaceShip.gotShot();
-						meteorites[k].gotShot();
-
+						
 						if (meteorites[k].canDoDamage) {
-							this.restartGame();
+							spaceShip.gotShot();
+							meteorites[k].gotShot();
+							//this.restartGame(); 
 						}
 					}
 				}

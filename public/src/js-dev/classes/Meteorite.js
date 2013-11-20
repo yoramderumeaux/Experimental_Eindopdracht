@@ -84,8 +84,6 @@ var Meteorite = (function(){
 	Meteorite.prototype.gotShot = function(){
 		this.removeMe = true;
 		this.canDoDamage = false;
-
-		
 	};
 
 	Meteorite.prototype.drawMeteorite = function() {
