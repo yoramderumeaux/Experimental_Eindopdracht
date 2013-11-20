@@ -48,7 +48,10 @@ var Main = (function(){
 
 		// Play Sound
 		sound = new Sound();
-		//sound.playBackgroundMusic("BackgroundMusic_EXD");
+		sound.playBackgroundMusic("BackgroundMusic_EXD");
+		//sound.playBackgroundMusic("backgroundmusictest");
+		
+		sound.playRocketSound("rocket");
 
 		var self = this;
 
@@ -86,6 +89,11 @@ var Main = (function(){
 
 		bean.on(socketConnection, 'jump', this.jumpHandler);
 
+		$(document).on('click', '#mute', function(event) {
+			event.preventDefault();
+			sound.toggleMute();			
+		});
+
 		bean.on(socketConnection, 'horizontalPosition', function(data){
 			if (spaceShip) {
 				spaceShip.destinationPosition = data;
@@ -110,20 +118,22 @@ var Main = (function(){
 			activeWindow = false;
 		});
 
-		setTimeout(function(){
+		/*setTimeout(function(){
 			self.togglePowerUpWarp(true);
 		}, 5000);
 
 		setTimeout(function(){
 			self.togglePowerUpWarp(false);	
-		}, 8000);
+		}, 8000);*/
+
+		sound.toggleMute();	
 		
 	};
 
 	Main.prototype.togglePowerUpWarp = function(enablePowerUp){
 		if (enablePowerUp) {
 			// Play soundeffect
-			sound.playEffect('WarpSpeed');
+			sound.playEffectWithVolume('WarpSpeed', 100);
 
 			// clear timer and restart faster
 			clearInterval(meteorTimer);
@@ -209,6 +219,8 @@ var Main = (function(){
 					bullets.push(bullet);
 
 					stage.addChild(bullet.bullet);
+
+					sound.playEffectWithVolume('Shoot', 100);
 				}
 			}else{
 				bulletFired = false;
@@ -263,6 +275,7 @@ var Main = (function(){
 						// A bullet hit a meteorite
 						if (meteorites[k].canDoDamage) {
 							meteorites[k].gotShot();
+							sound.playEffectWithVolume('Explosion', 20);
 
 							stage.removeChild(bullets[l].bullet);
 
@@ -275,6 +288,7 @@ var Main = (function(){
 				}
 			}
 
+			sound.changeRocketVolume(spaceShip.ship.rotation);
 			spaceShip.update();
 			stage.update();
 		}

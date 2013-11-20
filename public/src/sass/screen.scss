@@ -35,6 +35,14 @@ body.disconnected #noConnection{
 
 body.connected {
 
+	#mute{
+		position: absolute;
+		right: 10px;
+		top: 10px;
+		color: #9f9;
+		font-size: 4em;
+	}
+	
 	background-image: url('../images/starryBackgroundBlur.png');
 
 	#container {

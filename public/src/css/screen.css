@@ -104,7 +104,15 @@ body.disconnected #noConnection {
 body.connected {
   background-image: url("../images/starryBackgroundBlur.png");
 }
-/* line 40, ../sass/screen.scss */
+/* line 38, ../sass/screen.scss */
+body.connected #mute {
+  position: absolute;
+  right: 10px;
+  top: 10px;
+  color: #9f9;
+  font-size: 4em;
+}
+/* line 48, ../sass/screen.scss */
 body.connected #container {
   display: block;
   width: 100%;
@@ -113,7 +121,7 @@ body.connected #container {
   background-position-x: 40px;
   background-position-y: 20px;
 }
-/* line 48, ../sass/screen.scss */
+/* line 56, ../sass/screen.scss */
 body.connected #container #timer {
   display: block;
   color: #fff;
@@ -121,7 +129,7 @@ body.connected #container #timer {
   top: 25%;
   left: 50%;
 }
-/* line 55, ../sass/screen.scss */
+/* line 63, ../sass/screen.scss */
 body.connected #container #timer p {
   display: block;
   position: relative;
@@ -136,7 +144,7 @@ body.connected #container #timer p {
   -ms-user-select: none;
   cursor: default;
 }
-/* line 71, ../sass/screen.scss */
+/* line 79, ../sass/screen.scss */
 body.connected #container #score {
   position: absolute;
   top: 10px;
@@ -146,12 +154,12 @@ body.connected #container #score {
   font-family: monospace;
   text-transform: uppercase;
 }
-/* line 80, ../sass/screen.scss */
+/* line 88, ../sass/screen.scss */
 body.connected #container #score #scoreValue {
   color: #eeeeee;
   font-size: 2em;
 }
-/* line 86, ../sass/screen.scss */
+/* line 94, ../sass/screen.scss */
 body.connected #container #cnvs {
   display: block;
   margin: 0 auto 0 auto;
