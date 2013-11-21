@@ -19,15 +19,17 @@ var Bullet = (function(){
 	};
 
 	Bullet.prototype.drawBullet = function(){
-		this.bullet.graphics.beginStroke('#eba19f');
+		this.bullet.graphics.beginStroke('#aef69d');
 		this.bullet.graphics.setStrokeStyle(3);
+		this.bullet.graphics.beginFill('rgba(0, 92,112,0.2)');
 		this.bullet.graphics.drawCircle(0,0,2);
+
 		// this.bullet.graphics.moveTo(0, -27.75);
 		// this.bullet.graphics.lineTo(25, 27.75);
 		// this.bullet.graphics.lineTo(-25, 27.75);
 		// this.bullet.graphics.lineTo(0, -27.75);
 		this.bullet.graphics.endStroke();
-		this.bullet.shadow = new createjs.Shadow('#eb1c17', 0, 0, 10);
+		this.bullet.shadow = new createjs.Shadow('#1bf43f', 0, 0, 10);
 	};
 
 	Bullet.prototype.update = function() {
