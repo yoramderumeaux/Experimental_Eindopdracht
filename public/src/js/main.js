@@ -124,6 +124,8 @@ var Main = (function(){
 	var meteoriteTimerValue = defaultMeteoriteTimerValue;
 	var defaultPowerupTimerValue = 2000;
 	var powerupTimerValue = defaultPowerupTimerValue;
+	var debugKeyboardControl = true;
+	var bulletCounter = 0;
 
 	var bullets = [];
 	var powerups = [];
@@ -175,11 +177,6 @@ var Main = (function(){
 		window.onkeyup = this.keyup;
 		window.onkeydown = this.keydown;
 
-		// StageTicker
-		ticker = createjs.Ticker;
-		ticker.setFPS(60);
-		ticker.addEventListener('tick', this.update);
-
 		// Bean events
 		bean.on(spaceShip, 'stopGame', this.stopGame);
 
@@ -191,7 +188,7 @@ var Main = (function(){
 		});
 
 		bean.on(socketConnection, 'horizontalPosition', function(data){
-			if (spaceShip) {
+			if (spaceShip && !debugKeyboardControl) {
 				spaceShip.destinationPosition = data;
 			}
 		});
@@ -220,6 +217,7 @@ var Main = (function(){
 
 			var self = this;
 
+			console.log('shoot soudn');
 			sound.playEffectWithVolume('WarpSpeed', 100);
 
 			// clear timer and restart faster
@@ -243,6 +241,24 @@ var Main = (function(){
 			clearInterval(meteorTimer);
 			meteorTimer = setInterval(this.newMeteorite, meteoriteTimerValue);
 			spaceShip.warpSpeed = false;
+		}
+	};
+
+	Main.prototype.togglePowerupShoot = function(enablePowerUp){
+		if (enablePowerUp) {
+			spaceShip.shootMode = true;
+
+			var self = this;
+
+			//sound.playEffectWithVolume('WarpSpeed', 100);
+
+			setTimeout(function(){
+				self.togglePowerupShoot(false);
+			}, 5000);
+
+		}else{
+			powerUpActive = false;
+			spaceShip.shootMode = false;
 		}
 	};
 
@@ -270,6 +286,8 @@ var Main = (function(){
 		if (timer.isRunning) {
 
 			this.cleanMeteorites();
+			this.cleanPowerUps();
+
 			score.updateScore(1+gameSpeedFactor);
 
 			//set background speed
@@ -296,9 +314,9 @@ var Main = (function(){
 			}
 
 			//	Space to shoot
-			if (keys[32]) {
+			if (keys[32] || spaceShip.shootMode) {
 
-				if (spaceShip.capableToFly && 1 === 2 ) {
+				if (spaceShip.capableToFly && spaceShip.shootMode) {
 					if (!bulletFired) {
 						bulletFired = true;
 
@@ -313,6 +331,12 @@ var Main = (function(){
 						stage.addChild(bullet.bullet);
 
 						sound.playEffectWithVolume('Shoot', 100);
+					}else{
+						bulletCounter++;
+						if (bulletCounter > 20) {
+							bulletFired = false;
+							bulletCounter = 0;
+						}
 					}
 				}
 				
@@ -350,7 +374,7 @@ var Main = (function(){
 						meteorites[i].update();
 					}
 
-					if (!spaceShip.shipImmune) {
+					if (!spaceShip.shipImmune && meteorites[i].meteorite) {
 						if(CollisionDetection.checkCollisionCenterAnchor(spaceShip.ship, meteorites[i].meteorite) === 'hit'){
 							// Ship crashed into a meteorite
 							
@@ -369,6 +393,7 @@ var Main = (function(){
 							// A bullet hit a meteorite
 							if (meteorites[i].canDoDamage) {
 								meteorites[i].gotShot();
+								score.updateScore(1000);
 								sound.playEffectWithVolume('Explosion', 20);
 
 								stage.removeChild(bullets[l].bullet);
@@ -388,19 +413,25 @@ var Main = (function(){
 				for (var m = 0; m < powerups.length; m++) {
 					powerups[m].velY = 0.1;
 
-					if (!spaceShip.shipImmune) {
+					if (!powerUpActive) {
 
 						if(CollisionDetection.checkCollisionCenterAnchor(spaceShip.ship, powerups[m].powerup) === 'hit'){
 							// Ship crashed into a powerup
 							//console.log('hit powerup');
 							//console.log('[MAIN] powerup type = ' + powerups[m].type);
+
+							sound.playEffectWithVolume('powerupCollected', 90);
+
 							powerUpActive = true;
+							powerups[m].collected = true;
 
 							switch (powerups[m].type){
 								case 'warp':
 									this.togglePowerUpWarp(true);
 								break;
 								case 'shoot':
+									this.togglePowerupShoot(true);
+									//powerUpActive = false;
 								break;
 							}
 						}
@@ -506,6 +537,19 @@ var Main = (function(){
 
 	Main.prototype.keydown = function(e) {
 		keys[e.keyCode] = true;
+	};
+
+	Main.prototype.cleanPowerUps = function(){
+
+
+		for (var i = 0; i < powerups.length; i++) {
+			//console.log(powerups[i].readyToRemove);
+			if(powerups[i].readyToRemove){
+				stage.removeChild(powerups[i].powerup);
+				powerups[i] = null;					
+				powerups.splice(i, 1);
+			}
+		}
 	};
 
 	Main.prototype.cleanMeteorites = function(){
@@ -767,8 +811,8 @@ var Powerup = (function(){
 		this.currentWarpSpeed = 0;
 		this.rotationDirection = -1 + 2*(Math.random());
 		this.removeMe = false;
-		this.canDoDamage = true;
 		this.readyToRemove = false;
+		this.collected = false;
 	}
 
 	Powerup.prototype.init = function() {		
@@ -841,29 +885,29 @@ var Powerup = (function(){
 			circles.graphics.endFill();
 
 			this.powerup.addChild(circles);
-		}
-		
+		}		
 	};
 
 	Powerup.prototype.update = function() {
-		if (this.currentWarpSpeed < (this.warpSpeedTarget*this.enableWarpSpeed)) {
-			this.currentWarpSpeed += 0.01;
+
+		if (!this.collected) {
+			if (this.currentWarpSpeed < (this.warpSpeedTarget*this.enableWarpSpeed)) {
+				this.currentWarpSpeed += 0.01;
+			}else{
+				this.currentWarpSpeed = 0;
+			}
+			
+			this.y += this.velY * (this.speed * (1 + this.currentWarpSpeed *30));
+			this.powerup.y = this.y;
 		}else{
-			this.currentWarpSpeed = 0;
-		}
-		
-		this.y += this.velY * (this.speed * (1 + this.currentWarpSpeed *30));
-		this.powerup.y = this.y;
-		//this.meteorite.rotation += 30;
-		this.velY *= this.gravity;
+			this.powerup.scaleX = this.powerup.scaleY += 0.1;
+			this.powerup.alpha -= 0.1;
 
-		if (this.removeMe) {
-			this.powerup.scaleX = this.powerup.scaleY += (0 - this.powerup.scaleX) * 0.1;
-
-			if (this.powerup.scaleX < 0.05) {
+			if (this.powerup.alpha <= 0) {
 				this.readyToRemove = true;
 			}
 		}
+		
 	};
 
 	return Powerup;
@@ -1149,8 +1193,8 @@ var SpaceShip = (function(){
 		this.scaleFactor = 0.33;
 		this.shipImmune = false;
 		this.warpSpeed = false;
+		this.shootMode = false;
 		this.capableToFly = true;
-
 		this.init();
 	}
 
@@ -1162,7 +1206,9 @@ var SpaceShip = (function(){
 		
 		this.drawFlames();
 		this.drawWindow();		
+		this.drawCannon();
 		this.drawWings();
+		
 		this.drawShip();		
 		this.drawShield();
 
@@ -1189,6 +1235,43 @@ var SpaceShip = (function(){
 
 		this.ship.addChild(this.warpShield);
 
+	};
+
+	SpaceShip.prototype.drawCannon = function(){
+		this.cannon = new createjs.Shape();
+
+		this.cannon.graphics.beginStroke('#aef69d');
+		this.cannon.graphics.setStrokeStyle(2);
+		this.cannon.graphics.beginFill('rgba(0, 92,112,0.2)');
+		//this.drawFromArray(this.warpShield, warpShieldBody, 0,-18+fullYOffset);
+		// this.cannon.graphics.moveTo(-25*this.scaleFactor, -60*this.scaleFactor);
+		// this.cannon.graphics.lineTo(-30*this.scaleFactor, -105*this.scaleFactor);
+		// this.cannon.graphics.lineTo(0*this.scaleFactor, -100*this.scaleFactor);
+		// this.cannon.graphics.lineTo(30*this.scaleFactor, -105*this.scaleFactor);
+		// this.cannon.graphics.lineTo(25*this.scaleFactor, -60*this.scaleFactor);
+
+		this.cannon.graphics.moveTo(0*this.scaleFactor, -85*this.scaleFactor);
+		this.cannon.graphics.lineTo(0*this.scaleFactor, -120*this.scaleFactor);
+
+		this.cannon.graphics.moveTo(-55*this.scaleFactor, 15*this.scaleFactor);
+		this.cannon.graphics.lineTo(-60*this.scaleFactor, -20*this.scaleFactor);
+
+		this.cannon.graphics.moveTo(-67*this.scaleFactor, 35*this.scaleFactor);
+		this.cannon.graphics.lineTo(-72*this.scaleFactor, 10*this.scaleFactor);
+
+		this.cannon.graphics.moveTo(55*this.scaleFactor, 15*this.scaleFactor);
+		this.cannon.graphics.lineTo(60*this.scaleFactor, -20*this.scaleFactor);
+
+		this.cannon.graphics.moveTo(67*this.scaleFactor, 35*this.scaleFactor);
+		this.cannon.graphics.lineTo(72*this.scaleFactor, 10*this.scaleFactor);
+
+		this.cannon.graphics.endFill();
+
+		this.cannon.graphics.endStroke();
+		this.cannon.scaleX = this.cannon.scaleY = 0;
+
+		this.cannon.shadow = new createjs.Shadow('#1bf43f', 0, 0, 3);
+		this.ship.addChild(this.cannon);
 	};
 
 	SpaceShip.prototype.drawFlames = function(){
@@ -1370,6 +1453,13 @@ var SpaceShip = (function(){
 				this.warpShield.scaleX = this.warpShield.scaleY += (0-this.warpShield.scaleX)*0.2;
 				//this.warpShield.alpha = 0;
 			}
+
+			if (this.shootMode) {
+				this.cannon.scaleX = this.cannon.scaleY += (1-this.cannon.scaleX)*0.2;
+			}else{
+				this.cannon.scaleX = this.cannon.scaleY += (0-this.cannon.scaleX)*0.2;
+			}
+
 
 			flameFlickerTimer++;
 			

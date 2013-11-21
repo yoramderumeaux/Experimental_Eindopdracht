@@ -131,8 +131,8 @@ var SpaceShip = (function(){
 		this.scaleFactor = 0.33;
 		this.shipImmune = false;
 		this.warpSpeed = false;
+		this.shootMode = false;
 		this.capableToFly = true;
-
 		this.init();
 	}
 
@@ -144,7 +144,9 @@ var SpaceShip = (function(){
 		
 		this.drawFlames();
 		this.drawWindow();		
+		this.drawCannon();
 		this.drawWings();
+		
 		this.drawShip();		
 		this.drawShield();
 
@@ -171,6 +173,43 @@ var SpaceShip = (function(){
 
 		this.ship.addChild(this.warpShield);
 
+	};
+
+	SpaceShip.prototype.drawCannon = function(){
+		this.cannon = new createjs.Shape();
+
+		this.cannon.graphics.beginStroke('#aef69d');
+		this.cannon.graphics.setStrokeStyle(2);
+		this.cannon.graphics.beginFill('rgba(0, 92,112,0.2)');
+		//this.drawFromArray(this.warpShield, warpShieldBody, 0,-18+fullYOffset);
+		// this.cannon.graphics.moveTo(-25*this.scaleFactor, -60*this.scaleFactor);
+		// this.cannon.graphics.lineTo(-30*this.scaleFactor, -105*this.scaleFactor);
+		// this.cannon.graphics.lineTo(0*this.scaleFactor, -100*this.scaleFactor);
+		// this.cannon.graphics.lineTo(30*this.scaleFactor, -105*this.scaleFactor);
+		// this.cannon.graphics.lineTo(25*this.scaleFactor, -60*this.scaleFactor);
+
+		this.cannon.graphics.moveTo(0*this.scaleFactor, -85*this.scaleFactor);
+		this.cannon.graphics.lineTo(0*this.scaleFactor, -120*this.scaleFactor);
+
+		this.cannon.graphics.moveTo(-55*this.scaleFactor, 15*this.scaleFactor);
+		this.cannon.graphics.lineTo(-60*this.scaleFactor, -20*this.scaleFactor);
+
+		this.cannon.graphics.moveTo(-67*this.scaleFactor, 35*this.scaleFactor);
+		this.cannon.graphics.lineTo(-72*this.scaleFactor, 10*this.scaleFactor);
+
+		this.cannon.graphics.moveTo(55*this.scaleFactor, 15*this.scaleFactor);
+		this.cannon.graphics.lineTo(60*this.scaleFactor, -20*this.scaleFactor);
+
+		this.cannon.graphics.moveTo(67*this.scaleFactor, 35*this.scaleFactor);
+		this.cannon.graphics.lineTo(72*this.scaleFactor, 10*this.scaleFactor);
+
+		this.cannon.graphics.endFill();
+
+		this.cannon.graphics.endStroke();
+		this.cannon.scaleX = this.cannon.scaleY = 0;
+
+		this.cannon.shadow = new createjs.Shadow('#1bf43f', 0, 0, 3);
+		this.ship.addChild(this.cannon);
 	};
 
 	SpaceShip.prototype.drawFlames = function(){
@@ -352,6 +391,13 @@ var SpaceShip = (function(){
 				this.warpShield.scaleX = this.warpShield.scaleY += (0-this.warpShield.scaleX)*0.2;
 				//this.warpShield.alpha = 0;
 			}
+
+			if (this.shootMode) {
+				this.cannon.scaleX = this.cannon.scaleY += (1-this.cannon.scaleX)*0.2;
+			}else{
+				this.cannon.scaleX = this.cannon.scaleY += (0-this.cannon.scaleX)*0.2;
+			}
+
 
 			flameFlickerTimer++;
 			

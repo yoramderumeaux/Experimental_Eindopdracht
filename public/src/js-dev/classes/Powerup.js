@@ -16,8 +16,8 @@ var Powerup = (function(){
 		this.currentWarpSpeed = 0;
 		this.rotationDirection = -1 + 2*(Math.random());
 		this.removeMe = false;
-		this.canDoDamage = true;
 		this.readyToRemove = false;
+		this.collected = false;
 	}
 
 	Powerup.prototype.init = function() {		
@@ -90,29 +90,29 @@ var Powerup = (function(){
 			circles.graphics.endFill();
 
 			this.powerup.addChild(circles);
-		}
-		
+		}		
 	};
 
 	Powerup.prototype.update = function() {
-		if (this.currentWarpSpeed < (this.warpSpeedTarget*this.enableWarpSpeed)) {
-			this.currentWarpSpeed += 0.01;
+
+		if (!this.collected) {
+			if (this.currentWarpSpeed < (this.warpSpeedTarget*this.enableWarpSpeed)) {
+				this.currentWarpSpeed += 0.01;
+			}else{
+				this.currentWarpSpeed = 0;
+			}
+			
+			this.y += this.velY * (this.speed * (1 + this.currentWarpSpeed *30));
+			this.powerup.y = this.y;
 		}else{
-			this.currentWarpSpeed = 0;
-		}
-		
-		this.y += this.velY * (this.speed * (1 + this.currentWarpSpeed *30));
-		this.powerup.y = this.y;
-		//this.meteorite.rotation += 30;
-		this.velY *= this.gravity;
+			this.powerup.scaleX = this.powerup.scaleY += 0.1;
+			this.powerup.alpha -= 0.1;
 
-		if (this.removeMe) {
-			this.powerup.scaleX = this.powerup.scaleY += (0 - this.powerup.scaleX) * 0.1;
-
-			if (this.powerup.scaleX < 0.05) {
+			if (this.powerup.alpha <= 0) {
 				this.readyToRemove = true;
 			}
 		}
+		
 	};
 
 	return Powerup;

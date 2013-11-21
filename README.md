@@ -7,9 +7,12 @@ Our HTML5 based game in combination with NodeJS for the socket connection with o
 ## To-do's
 ------------------
 - beginscherm met titel en zegt welke actie je moet doen om te beginnen
-- als je dood bent: animatie? ontploffing, en scherm die zegt dat je dood bent en opnieuw kan beginnen. --> weer naar startscherm.
+- eindscherm met jouw score + hoogste score van de dag (cookie);
+- jump to restart
+- korte infographic over hoe te vliegen (ventje);
 - Power-ups toevoegen: schieten, warp-speed,...
 - active powerup
+- bulllet update in bullet class please
+- betere random voor meteorieten
 - game niet eindigen wanneer warp powerup nog bezig is
-- slapen
-- Geluid
+- Geluid voor crash
