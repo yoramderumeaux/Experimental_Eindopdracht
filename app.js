@@ -136,7 +136,7 @@ function checkForJump(){
 }
 
 function readLeftTopButton(data){
-	console.log('[SENSOR LEFT TOP]: ' + data);
+	//console.log('[SENSOR LEFT TOP]: ' + data);
 	if (Math.abs(data - leftSensorTopVal) > 2) {
 		leftSensorTopVal = data;
 		calculatePosition();
