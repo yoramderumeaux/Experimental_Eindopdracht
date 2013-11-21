@@ -1,9 +1,9 @@
-/* globals CanvasSetup:true, SpaceShip:true, Timer:true, Meteorite:true, Score:true, Powerup:true, SocketConnection:true, Bullet:true, CollisionDetection:true, Sound:true*/
+/* globals CanvasSetup:true, SpaceShip:true, Timer:true, Meteorite:true, Score:true, PowerupProgress:true, Powerup:true, SocketConnection:true, Bullet:true, CollisionDetection:true, Sound:true*/
 
 var Main = (function(){
 
 	var stage, ticker, keys;
-	var spaceShip, timer, meteorite, powerup, meteorites, bullet, sound;
+	var spaceShip, timer, meteorite, powerupProgress, powerup, meteorites, bullet, sound;
 	var meteorTimer;
 	var powerupTimer;
 	var socketConnection;
@@ -68,7 +68,9 @@ var Main = (function(){
 		timer = new Timer();	
 
 		// score init
-		score = new Score();	
+		score = new Score();
+
+		powerupProgress = new PowerupProgress();
 
 		// KeyboardEvents
 		window.onkeyup = this.keyup;
@@ -105,6 +107,7 @@ var Main = (function(){
 
 		// start game
 		stage.addChild(spaceShip.ship);
+		stage.addChild(powerupProgress.powerupProgress);
 		this.startGame();	
 	};
 
@@ -128,6 +131,8 @@ var Main = (function(){
 				meteorites[i].enableWarpSpeed = true;
 			}
 
+			powerupProgress.beginWarpProgress(4000);
+
 			setTimeout(function(){
 				self.togglePowerUpWarp(false);
 			}, 3000);
@@ -147,7 +152,7 @@ var Main = (function(){
 
 			var self = this;
 
-			//sound.playEffectWithVolume('WarpSpeed', 100);
+			powerupProgress.beginShootProgress(5000);
 
 			setTimeout(function(){
 				self.togglePowerupShoot(false);
@@ -352,8 +357,10 @@ var Main = (function(){
 			}else{
 				sound.changeRocketVolume(0);	
 			}
+
 			spaceShip.update();
 			stage.update();
+			powerupProgress.update();
 		}
 	};
 
