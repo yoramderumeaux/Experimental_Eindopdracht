@@ -39,18 +39,27 @@ var firmata = require('firmata');
 var path = '/dev/tty.usbmodemfa131';
 
 //program variables
-var leftSensorPin =  3;
-var rightSensorPin = 4;
+var leftSensorTopPin =  0;
+var leftSensorBottomPin = 1;
+var rightSensorTopPin = 2;
+var rightSensorBottomPin = 3;
+
 var dataLed = 3;
 var activeLed = 2;
 
-var leftSensorMin = 0;
-var leftSensorMax = 1023; //max 1023
-var leftSensorVal = 0;
+var leftSensorTopMin = 0;
+var leftSensorTopMax = 1023; //max 1023
+var leftSensorTopVal = 0;
+var leftSensorBottomMin = 0;
+var leftSensorBottomMax = 1023; //max 1023
+var leftSensorBottomVal = 0;
 
-var rightSensorMin = 0;
-var rightSensorMax = 1023; //max 1023
-var rightSensorVal = 0;
+var rightSensorTopMin = 0;
+var rightSensorTopMax = 1023; //max 1023
+var rightSensorTopVal = 0;
+var rightSensorBottomMin = 0;
+var rightSensorBottomMax = 1023; //max 1023
+var rightSensorBottomVal = 0;
 
 var leftJumpLog = [];
 var rightJumpLog = [];
@@ -64,11 +73,13 @@ var board = new firmata.Board(path, function(err){
 	}
 	console.log('arduino connected'); 
 
-	board.pinMode(leftSensorPin, board.MODES.INPUT);
-	board.pinMode(rightSensorPin, board.MODES.INPUT);
-	board.pinMode(5, board.MODES.OUTPUT);
-	board.pinMode(6, board.MODES.OUTPUT);
+	// Sensors
+	board.pinMode(leftSensorTopPin, board.MODES.INPUT);
+	board.pinMode(leftSensorBottomPin, board.MODES.INPUT);
+	board.pinMode(rightSensorTopPin, board.MODES.INPUT);
+	board.pinMode(rightSensorBottomPin, board.MODES.INPUT);
 
+	// Ledjes
 	board.pinMode(2, board.MODES.OUTPUT);
 	board.pinMode(3, board.MODES.OUTPUT);
 
@@ -83,8 +94,10 @@ var board = new firmata.Board(path, function(err){
 
 	setInterval(checkForJump, jumpIntervalTime);
 
-	board.analogRead(leftSensorPin, readLeftButton);
-	board.analogRead(rightSensorPin, readRightButton);
+	board.analogRead(leftSensorTopPin, readLeftTopButton);
+	board.analogRead(leftSensorBottomPin, readLeftBottomButton);
+	board.analogRead(rightSensorTopPin, readRightTopButton);
+	board.analogRead(rightSensorBottomPin, readRightBottomButton);
 });
 
 function checkForJump(){
@@ -122,16 +135,34 @@ function checkForJump(){
 	//console.log(rightJumpLog);
 }
 
-function readLeftButton(data){
-	if (Math.abs(data - leftSensorVal) > 2) {
-		leftSensorVal = data;
+function readLeftTopButton(data){
+	console.log('[SENSOR LEFT TOP]: ' + data);
+	if (Math.abs(data - leftSensorTopVal) > 2) {
+		leftSensorTopVal = data;
 		calculatePosition();
 	}
 }
 
-function readRightButton(data){
-	if ( Math.abs(data - rightSensorVal) > 2) {
-		rightSensorVal = data;			
+function readLeftBottomButton(data){
+	//console.log('[SENSOR LEFT BOTTOM]: ' + data);
+	if (Math.abs(data - leftSensorBottomVal) > 2) {
+		leftSensorBottomVal = data;
+		calculatePosition();
+	}
+}
+
+function readRightTopButton(data){
+	//console.log('[SENSOR RIGHT TOP]: ' + data);
+	if ( Math.abs(data - rightSensorTopVal) > 2) {
+		rightSensorTopVal = data;			
+		calculatePosition();
+	}
+}
+
+function readRightBottomButton(data){
+	//console.log('[SENSOR RIGHT BOTTOM]: ' + data);
+	if ( Math.abs(data - rightSensorBottomVal) > 2) {
+		rightSensorBottomVal = data;			
 		calculatePosition();
 	}
 }
@@ -158,11 +189,21 @@ function emitSocket(type, value){
 		}
 		
 	}else{
-		console.log("No sockets emmited, no client connected");
+		//console.log("No sockets emmited, no client connected");
 	}
 }
 
 function calculatePosition(){
+
+	var leftSensorMax = leftSensorTopMax;
+	var rightSensorMax = rightSensorTopMax;
+
+	var leftSensorVal = Math.max(leftSensorTopVal, leftSensorBottomVal);
+	var rightSensorVal = Math.max(rightSensorTopVal, rightSensorBottomVal);
+
+	var leftSensorMin = Math.min(leftSensorTopMin, leftSensorBottomMin);
+	var rightSensorMin = Math.min(rightSensorTopMin, rightSensorBottomMin);
+
 	var leftPerc = Math.round(((leftSensorVal - leftSensorMin) / (leftSensorMax - leftSensorMin))*100);
 	if (leftPerc<0) leftPerc = 0;
 	else if (leftPerc > 100) leftPerc = 100;
