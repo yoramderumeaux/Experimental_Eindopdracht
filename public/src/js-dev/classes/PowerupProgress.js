@@ -93,6 +93,12 @@ var PowerupProgress = (function(){
 		}, milisec);
 	};
 
+	PowerupProgress.prototype.reset = function(){
+		this.currentTimerValue = 0;
+		this.hideProgressBar = true;
+		this.powerupProgress.y = (canvasHeight+1);
+	};
+
 	PowerupProgress.prototype.update = function(){
 		if (this.hideProgressBar) {
 			this.powerupProgress.y += ((canvasHeight+1) - this.powerupProgress.y)*0.1;

@@ -351,6 +351,10 @@ var SpaceShip = (function(){
 		this.ship.y = this.y = $('#cnvs').height() *(1-0.1313);
 		this.ship.rotation = 0;
 		this.capableToFly = true;
+		this.warpSpeed = false;
+		this.shootMode = false;
+		this.warpShield.scaleX = this.warpShield.scaleY = 0;
+		this.cannon.scaleX = this.cannon.scaleY = 0;
 	};
 
 	SpaceShip.prototype.gotShot = function(){
@@ -397,7 +401,6 @@ var SpaceShip = (function(){
 			}else{
 				this.cannon.scaleX = this.cannon.scaleY += (0-this.cannon.scaleX)*0.2;
 			}
-
 
 			flameFlickerTimer++;
 			

@@ -24,7 +24,7 @@ var Timer = (function(){
 
 	Timer.prototype.stop = function() {
 		console.log('[TIMER] stop timer');
-		$('#timer p').html('');
+		$('#timer p').html('end');
 		this.isRunning = false;
 		clearInterval(myTimer);
 	};
