@@ -23,6 +23,7 @@ var Main = (function(){
 	var powerupTimerValue = defaultPowerupTimerValue;
 	var debugKeyboardControl = true;
 	var bulletCounter = 0;
+	var reversedControls = false;
 
 	var bullets = [];
 	var powerups = [];
@@ -88,7 +89,11 @@ var Main = (function(){
 
 		bean.on(socketConnection, 'horizontalPosition', function(data){
 			if (spaceShip && !debugKeyboardControl) {
-				spaceShip.destinationPosition = data;
+				if( !reversedControls ) {
+					spaceShip.destinationPosition = data;
+				}else {
+					spaceShip.destinationPosition = 100 - data;
+				}
 			}
 		});
 
@@ -164,6 +169,22 @@ var Main = (function(){
 		}
 	};
 
+	Main.prototype.togglePowerUpReverse = function(enablePowerUp) {
+		if (enablePowerUp) {
+			var self = this;
+
+			reversedControls = true;
+
+			setTimeout(function(){
+				self.togglePowerUpReverse(false);
+			}, 4000);
+
+		}else{
+			powerUpActive = false;
+			reversedControls = false;
+		}
+	};
+
 	Main.prototype.jumpHandler = function(){
 		// Jump detected
 		console.log('jump met bean');
@@ -205,14 +226,22 @@ var Main = (function(){
 			$('#container').css('background-position-y', (backgroundPos)+'px');
 
 			// Use arrows as debug controls
+			// Check if reverse powerup is taken and reverse the controls
+			var reverseFactor;
+			if (reversedControls) {
+				reverseFactor = -1;
+			}else{
+				reverseFactor = 1;
+			}
+
 			//	left
 			if(keys[37]) {
-				spaceShip.destinationPosition -= 2;
+				spaceShip.destinationPosition -= (2 * reverseFactor);	
 			}
 
 			//	Right
 			if(keys[39]) {
-				spaceShip.destinationPosition += 2;
+				spaceShip.destinationPosition += (2 * reverseFactor);
 			}
 
 			//	Space to shoot
@@ -336,6 +365,9 @@ var Main = (function(){
 									this.togglePowerupShoot(true);
 									//powerUpActive = false;
 								break;
+								case 'reverse':
+									this.togglePowerUpReverse(true);
+								break;
 							}
 						}
 					}
@@ -394,6 +426,7 @@ var Main = (function(){
 		}
 
 		gameSpeedFactor = 1;
+		reversedControls = false;
 
 		meteorites = [];
 		bullets = [];

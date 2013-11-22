@@ -128,6 +128,7 @@ var Main = (function(){
 	var powerupTimerValue = defaultPowerupTimerValue;
 	var debugKeyboardControl = true;
 	var bulletCounter = 0;
+	var reversedControls = false;
 
 	var bullets = [];
 	var powerups = [];
@@ -193,7 +194,11 @@ var Main = (function(){
 
 		bean.on(socketConnection, 'horizontalPosition', function(data){
 			if (spaceShip && !debugKeyboardControl) {
-				spaceShip.destinationPosition = data;
+				if( !reversedControls ) {
+					spaceShip.destinationPosition = data;
+				}else {
+					spaceShip.destinationPosition = 100 - data;
+				}
 			}
 		});
 
@@ -269,6 +274,22 @@ var Main = (function(){
 		}
 	};
 
+	Main.prototype.togglePowerUpReverse = function(enablePowerUp) {
+		if (enablePowerUp) {
+			var self = this;
+
+			reversedControls = true;
+
+			setTimeout(function(){
+				self.togglePowerUpReverse(false);
+			}, 4000);
+
+		}else{
+			powerUpActive = false;
+			reversedControls = false;
+		}
+	};
+
 	Main.prototype.jumpHandler = function(){
 		// Jump detected
 		console.log('jump met bean');
@@ -310,14 +331,22 @@ var Main = (function(){
 			$('#container').css('background-position-y', (backgroundPos)+'px');
 
 			// Use arrows as debug controls
+			// Check if reverse powerup is taken and reverse the controls
+			var reverseFactor;
+			if (reversedControls) {
+				reverseFactor = -1;
+			}else{
+				reverseFactor = 1;
+			}
+
 			//	left
 			if(keys[37]) {
-				spaceShip.destinationPosition -= 2;
+				spaceShip.destinationPosition -= (2 * reverseFactor);	
 			}
 
 			//	Right
 			if(keys[39]) {
-				spaceShip.destinationPosition += 2;
+				spaceShip.destinationPosition += (2 * reverseFactor);
 			}
 
 			//	Space to shoot
@@ -441,6 +470,9 @@ var Main = (function(){
 									this.togglePowerupShoot(true);
 									//powerUpActive = false;
 								break;
+								case 'reverse':
+									this.togglePowerUpReverse(true);
+								break;
 							}
 						}
 					}
@@ -499,6 +531,7 @@ var Main = (function(){
 		}
 
 		gameSpeedFactor = 1;
+		reversedControls = false;
 
 		meteorites = [];
 		bullets = [];
@@ -813,7 +846,9 @@ var Powerup = (function(){
 
 	var x;
 	var y;
-	var types = ['shoot', 'warp'];
+	var types = ['shoot', 'warp', 'reverse'];
+	var primaryColor = ['#aef69d', '#00d2ff', '#e75f5f'];
+	var shadowColor = ['#1bf43f', '#005c70', '#db2020'];
 
 	function Powerup(x, y) {
 		_.bindAll(this);
@@ -831,8 +866,10 @@ var Powerup = (function(){
 		this.collected = false;
 	}
 
-	Powerup.prototype.init = function() {		
-		this.type = types[Math.floor(Math.random()*types.length)];
+	Powerup.prototype.init = function() {	
+		this.randomNumber = Math.floor(Math.random()*types.length);
+		//this.randomNumber = 1;
+		this.type = types[this.randomNumber];
 		this.drawPowerup();
 	};
 
@@ -848,15 +885,9 @@ var Powerup = (function(){
 		var squareSize = 40;
 		var square = new createjs.Shape();
 
-		if (this.type === 'shoot') {
-			square.graphics.beginStroke('#aef69d');
-			this.powerup.shadow = new createjs.Shadow('#1bf43f', 0, 0, 10);
-			square.graphics.beginFill('rgba(0, 92,112,0.2)');
-		}else{
-			square.graphics.beginStroke('#00d2ff');
-			square.graphics.beginFill('rgba(0, 92,112,0.2)');
-			this.powerup.shadow = new createjs.Shadow('#005c70', 0, 0, 10);
-		}
+		square.graphics.beginStroke(primaryColor[this.randomNumber]);
+		this.powerup.shadow = new createjs.Shadow(shadowColor[this.randomNumber], 0, 0, 10);
+		square.graphics.beginFill('rgba(0, 92,112,0.2)');
 		
 		square.graphics.setStrokeStyle(3);
 		square.graphics.drawRect(-(squareSize/2),-(squareSize/2),squareSize,squareSize);
@@ -870,7 +901,6 @@ var Powerup = (function(){
 		this.powerup.addChild(square);
 
 		if (this.type === 'warp') {
-
 			var iconlines = new createjs.Shape();
 			var yOffset = 2;
 			iconlines.graphics.beginStroke('#00d2ff');
@@ -885,8 +915,7 @@ var Powerup = (function(){
 
 			this.powerup.addChild(iconlines);
 			
-		}else if(this.type === 'shoot'){
-
+		}else if(this.type === 'shoot') {
 			var circles =  new createjs.Shape();
 			circles.graphics.beginFill('#aef69d');
 			circles.graphics.drawCircle(-10,3,4);
@@ -901,20 +930,40 @@ var Powerup = (function(){
 			circles.graphics.endFill();
 
 			this.powerup.addChild(circles);
-		}		
+
+		}else if(this.type === 'reverse') {
+			var arrowLines = new createjs.Shape();
+
+			arrowLines.graphics.beginStroke(primaryColor[this.randomNumber]);
+			arrowLines.graphics.setStrokeStyle(3);
+			arrowLines.graphics.moveTo(10, -5);
+			arrowLines.graphics.lineTo(-10, -5);
+			arrowLines.graphics.lineTo(-6, -9);
+			arrowLines.graphics.moveTo(-10, -5);
+			arrowLines.graphics.lineTo(-6, -1);
+
+			arrowLines.graphics.moveTo(-10, 5);
+			arrowLines.graphics.lineTo(10, 5);
+			arrowLines.graphics.lineTo(6, 1);
+			arrowLines.graphics.moveTo(10,5);
+			arrowLines.graphics.lineTo(6, 9);
+
+			this.powerup.addChild(arrowLines);
+		}	
 	};
 
 	Powerup.prototype.update = function() {
 
 		if (!this.collected) {
-			if (this.currentWarpSpeed < (this.warpSpeedTarget*this.enableWarpSpeed)) {
+			/*if (this.currentWarpSpeed < (this.warpSpeedTarget*this.enableWarpSpeed)) {
 				this.currentWarpSpeed += 0.01;
 			}else{
 				this.currentWarpSpeed = 0;
 			}
-			
+			*/
 			this.y += this.velY * (this.speed * (1 + this.currentWarpSpeed *30));
 			this.powerup.y = this.y;
+			var lol = 1;
 		}else{
 			this.powerup.scaleX = this.powerup.scaleY += 0.1;
 			this.powerup.alpha -= 0.1;
