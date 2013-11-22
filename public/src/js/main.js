@@ -279,6 +279,7 @@ var Main = (function(){
 			var self = this;
 
 			reversedControls = true;
+			powerupProgress.beginReverseProgress(4000);
 
 			setTimeout(function(){
 				self.togglePowerUpReverse(false);
@@ -296,7 +297,7 @@ var Main = (function(){
 	};
 
 	Main.prototype.speedUpMeteoriteTimer = function(){
-		meteoriteTimerValue -= 100;
+		meteoriteTimerValue -= 200;
 		if (meteoriteTimerValue < 300) {
 			meteoriteTimerValue = 300;
 		}
@@ -867,6 +868,8 @@ var Powerup = (function(){
 	}
 
 	Powerup.prototype.init = function() {	
+		this.speed = (30+ Math.round(Math.random()*30)) * this.speedFactor;
+
 		this.randomNumber = Math.floor(Math.random()*types.length);
 		//this.randomNumber = 1;
 		this.type = types[this.randomNumber];
@@ -1010,19 +1013,25 @@ var PowerupProgress = (function(){
 		this.greenprogressSlider = new createjs.Shape();
 		this.greenprogressSlider.y = 0;
 		this.greenprogressSlider.x = - canvasWidth;
-		this.greenprogressSlider.graphics.beginFill('rgba(174,246,157,1)');
+		this.greenprogressSlider.graphics.beginFill('#aef69d');
 		this.greenprogressSlider.graphics.drawRect(0,0,canvasWidth,15);
 
 		this.blueprogressSlider = new createjs.Shape();
 		this.blueprogressSlider.y = 0;
 		this.blueprogressSlider.x = - canvasWidth;
-		this.blueprogressSlider.graphics.beginFill('rgba(0,210,255,1)');
+		this.blueprogressSlider.graphics.beginFill('#00d2ff');
 		this.blueprogressSlider.graphics.drawRect(0,0,canvasWidth,15);
+
+		this.redprogressSlider = new createjs.Shape();
+		this.redprogressSlider.y = 0;
+		this.redprogressSlider.x = - canvasWidth;
+		this.redprogressSlider.graphics.beginFill('#e75f5f');
+		this.redprogressSlider.graphics.drawRect(0,0,canvasWidth,15);
 
 		this.greenprogressbar = new createjs.Shape();
 		this.greenprogressbar.x = this.x;
 		this.greenprogressbar.y = 0;
-		this.greenprogressbar.graphics.beginFill('rgba(0, 92,112,0.2)');
+		this.greenprogressbar.graphics.beginFill('rgba(0, 92, 112, 0.2)');
 		this.greenprogressbar.graphics.beginStroke('#aef69d');
 		this.greenprogressbar.graphics.drawRect(0,0,canvasWidth,15);
 		this.greenprogressbar.shadow = new createjs.Shadow('#1bf43f', 0, 0, 10);
@@ -1030,26 +1039,45 @@ var PowerupProgress = (function(){
 		this.blueprogressbar = new createjs.Shape();
 		this.blueprogressbar.x = this.x;
 		this.blueprogressbar.y = 0;
-		this.blueprogressbar.graphics.beginFill('rgba(0, 92,112,0.2)');
+		this.blueprogressbar.graphics.beginFill('rgba(0, 92, 112, 0.2)');
 		this.blueprogressbar.graphics.beginStroke('#00d2ff');
 		this.blueprogressbar.graphics.drawRect(0,0,canvasWidth,15);
-		this.blueprogressbar.shadow = new createjs.Shadow('#005c70', 0, 0, 10);
+		this.blueprogressbar.shadow = new createjs.Shadow('#005c70', 0, 0, 10);	
+
+		this.redprogressbar = new createjs.Shape();
+		this.redprogressbar.x = this.x;
+		this.redprogressbar.y = 0;
+		this.redprogressbar.graphics.beginFill('rgba(0, 92, 112, 0.2)');
+		this.redprogressbar.graphics.beginStroke('#e75f5f');
+		this.redprogressbar.graphics.drawRect(0,0,canvasWidth,15);
+		this.redprogressbar.shadow = new createjs.Shadow('#db2020', 0, 0, 10);
 
 		this.powerupProgress.addChild(this.greenprogressSlider);
 		this.powerupProgress.addChild(this.blueprogressSlider);
+		this.powerupProgress.addChild(this.redprogressSlider);
 		this.powerupProgress.addChild(this.greenprogressbar);
 		this.powerupProgress.addChild(this.blueprogressbar);
+		this.powerupProgress.addChild(this.redprogressbar);
 	};
 
 	PowerupProgress.prototype.beginShootProgress = function(time){
 		this.greenprogressbar.alpha = this.greenprogressSlider.alpha = 1;
 		this.blueprogressbar.alpha = this.blueprogressSlider.alpha = 0;
+		this.redprogressbar.alpha = this.redprogressSlider.alpha = 0;
 		this.startTimer(time);
 	};
 
 	PowerupProgress.prototype.beginWarpProgress = function(time){
 		this.greenprogressbar.alpha = this.greenprogressSlider.alpha = 0;
 		this.blueprogressbar.alpha = this.blueprogressSlider.alpha = 1;
+		this.redprogressbar.alpha = this.redprogressSlider.alpha = 0;
+		this.startTimer(time);
+	};
+
+	PowerupProgress.prototype.beginReverseProgress = function(time){
+		this.greenprogressbar.alpha = this.greenprogressSlider.alpha = 0;
+		this.blueprogressbar.alpha = this.blueprogressSlider.alpha = 0;
+		this.redprogressbar.alpha = this.redprogressSlider.alpha = 1;
 		this.startTimer(time);
 	};
 
@@ -1058,7 +1086,7 @@ var PowerupProgress = (function(){
 		this.timerValue = Math.round(time/milisec);
 		this.currentTimerValue = 0;
 		var self = this;
-		self.greenprogressSlider.x = self.blueprogressSlider.x = - canvasWidth;
+		self.greenprogressSlider.x = self.blueprogressSlider.x = self.redprogressSlider.x = - canvasWidth;
 
 		this.timer = setInterval(function(){
 
@@ -1067,7 +1095,7 @@ var PowerupProgress = (function(){
 				self.hideProgressBar = true;
 				
 			}else{
-				self.greenprogressSlider.x = self.blueprogressSlider.x = - canvasWidth + (canvasWidth* (self.currentTimerValue/self.timerValue));
+				self.greenprogressSlider.x = self.blueprogressSlider.x = self.redprogressSlider.x = - canvasWidth + (canvasWidth* (self.currentTimerValue/self.timerValue));
 				self.currentTimerValue ++;				
 			}
 

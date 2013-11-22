@@ -174,6 +174,7 @@ var Main = (function(){
 			var self = this;
 
 			reversedControls = true;
+			powerupProgress.beginReverseProgress(4000);
 
 			setTimeout(function(){
 				self.togglePowerUpReverse(false);
@@ -191,7 +192,7 @@ var Main = (function(){
 	};
 
 	Main.prototype.speedUpMeteoriteTimer = function(){
-		meteoriteTimerValue -= 100;
+		meteoriteTimerValue -= 200;
 		if (meteoriteTimerValue < 300) {
 			meteoriteTimerValue = 300;
 		}
