@@ -16,3 +16,6 @@ Our HTML5 based game in combination with NodeJS for the socket connection with o
 - betere random voor meteorieten
 - game niet eindigen wanneer warp powerup nog bezig is
 - Geluid voor crash
+- nieuwe evil powerup -> switch links en rechts
+
+## Tijd over

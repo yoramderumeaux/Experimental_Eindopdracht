@@ -55,8 +55,8 @@ var Main = (function(){
 
 		// sound init
 		sound = new Sound();
-			// sound.playBackgroundMusic("BackgroundMusic_EXD");
-		sound.playBackgroundMusic("backgroundmusictest");
+		sound.playBackgroundMusic("BackgroundMusic_EXD");
+		//sound.playBackgroundMusic("backgroundmusictest");
 		sound.playRocketSound("rocket");
 
 		// spaceship init
