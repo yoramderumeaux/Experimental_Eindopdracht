@@ -107,8 +107,6 @@ var EndScreen = (function(){
 		this.endContainer.x = 100;
 		this.endContainer. y = 100;
 		this.endContainer.addChild(text);
-
-		console.log("Schrijf die fucking tekst!!!");
 	};
 
 	EndScreen.prototype.restartGame = function(e) {
