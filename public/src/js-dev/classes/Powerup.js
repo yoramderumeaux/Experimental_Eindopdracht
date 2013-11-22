@@ -24,7 +24,8 @@ var Powerup = (function(){
 
 	Powerup.prototype.init = function() {	
 		this.speed = (30+ Math.round(Math.random()*30)) * this.speedFactor;
-		this.randomNumber = Math.floor(Math.random()*types.length);
+		//this.randomNumber = Math.floor(Math.random()*types.length);
+		this.randomNumber = 1;
 		this.type = types[this.randomNumber];
 		this.drawPowerup();
 	};

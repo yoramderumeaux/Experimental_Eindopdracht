@@ -115,6 +115,7 @@ var Main = (function(){
 	var debugKeyboardControl = true;
 	var bulletCounter = 0;
 	var reversedControls = false;
+	var preventGameFromStopping = false;
 
 	var bullets = [];
 	var powerups = [];
@@ -189,7 +190,9 @@ var Main = (function(){
 		});
 
 		bean.on(timer, 'endTimer', function(){
-			self.stopGame();
+			if( !preventGameFromStopping ) {
+				self.stopGame();	
+			}
 		});
 
 		bean.on(timer, 'secondPast', this.speedUpGame);
@@ -208,9 +211,12 @@ var Main = (function(){
 	};
 
 	Main.prototype.togglePowerUpWarp = function(enablePowerUp){
+		var self = this;
+
 		if (enablePowerUp) {
 			// Play soundeffect
-			var self = this;
+			score.updateScore(2500);
+			preventGameFromStopping = true;
 
 			sound.playEffectWithVolume('WarpSpeed', 100);
 
@@ -237,6 +243,13 @@ var Main = (function(){
 			clearInterval(meteorTimer);
 			meteorTimer = setInterval(this.newMeteorite, meteoriteTimerValue);
 			spaceShip.warpSpeed = false;
+
+			if( preventGameFromStopping ) {
+				setTimeout(function(){
+					preventGameFromStopping = false;
+					self.stopGame();
+				}, 1300);
+			}
 		}
 	};
 
@@ -245,6 +258,7 @@ var Main = (function(){
 			spaceShip.shootMode = true;
 
 			var self = this;
+			score.updateScore(2500);
 
 			powerupProgress.beginShootProgress(5000);
 
@@ -261,6 +275,7 @@ var Main = (function(){
 	Main.prototype.togglePowerUpReverse = function(enablePowerUp) {
 		if (enablePowerUp) {
 			var self = this;
+			score.updateScore(2500);
 
 			reversedControls = true;
 			powerupProgress.beginReverseProgress(4000);
@@ -296,7 +311,7 @@ var Main = (function(){
 
 	Main.prototype.update = function() {
 
-		if (timer.isRunning) {
+		if (timer.isRunning || preventGameFromStopping) {
 
 			this.cleanMeteorites();
 			this.cleanPowerUps();
@@ -517,6 +532,8 @@ var Main = (function(){
 
 		gameSpeedFactor = 1;
 		reversedControls = false;
+		spaceShip.shootMode = false;
+		powerUpActive = false;
 
 		meteorites = [];
 		bullets = [];
@@ -850,7 +867,8 @@ var Powerup = (function(){
 
 	Powerup.prototype.init = function() {	
 		this.speed = (30+ Math.round(Math.random()*30)) * this.speedFactor;
-		this.randomNumber = Math.floor(Math.random()*types.length);
+		//this.randomNumber = Math.floor(Math.random()*types.length);
+		this.randomNumber = 1;
 		this.type = types[this.randomNumber];
 		this.drawPowerup();
 	};
@@ -1674,7 +1692,7 @@ var Timer = (function(){
 
 	function Timer() {
 		_.bindAll(this);
-		this.timerValue = 60;
+		this.timerValue = 7;
 		this.isRunning = false;
 		this.timer = this.timerValue;
 		numberOfEvents = Math.floor(this.timerValue/10);

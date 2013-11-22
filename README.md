@@ -12,7 +12,6 @@ Our HTML5 based game in combination with NodeJS for the socket connection with o
 - korte infographic over hoe te vliegen (ventje);
 - bulllet update in bullet class please
 - betere random voor meteorieten
-- game niet eindigen wanneer warp powerup nog bezig is
 - Geluidje voor tijdens de reverse
 
 ## Tijd over
