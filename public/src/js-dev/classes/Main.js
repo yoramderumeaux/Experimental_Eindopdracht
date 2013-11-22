@@ -1,9 +1,9 @@
-/* globals CanvasSetup:true, SpaceShip:true, Timer:true, Meteorite:true, Score:true, PowerupProgress:true, Powerup:true, SocketConnection:true, Bullet:true, CollisionDetection:true, Sound:true*/
+/* globals CanvasSetup:true, SpaceShip:true, Timer:true, Meteorite:true, Score:true, PowerupProgress:true, Powerup:true, SocketConnection:true, Bullet:true, CollisionDetection:true, Sound:true, EndScreen:true */
 
 var Main = (function(){
 
 	var stage, ticker, keys;
-	var spaceShip, timer, meteorite, powerupProgress, powerup, meteorites, bullet, sound;
+	var spaceShip, timer, meteorite, powerupProgress, powerup, meteorites, bullet, sound, endScreen;
 	var meteorTimer;
 	var powerupTimer;
 	var socketConnection;
@@ -455,7 +455,19 @@ var Main = (function(){
 
 		stage.update();
 
-		setTimeout(this.startGame, 2000);
+		//setTimeout(this.startGame, 2000);
+
+		// Call EndScreen and clear object from screen
+		//spaceShip.ship.alpha = 0;
+		endScreen = new EndScreen();
+		bean.on(endScreen, 'restartGame', this.restartGame);
+		stage.addChild(endScreen.endContainer);
+	};
+
+	Main.prototype.restartGame = function() {
+		console.log('RESTART');
+		stage.removeChild(endScreen.endContainer);
+		this.startGame();
 	};
 
 	Main.prototype.startGame = function(){

@@ -89,12 +89,43 @@ var CollisionDetection = (function(){
 
 })();
 
-/* globals CanvasSetup:true, SpaceShip:true, Timer:true, Meteorite:true, Score:true, PowerupProgress:true, Powerup:true, SocketConnection:true, Bullet:true, CollisionDetection:true, Sound:true*/
+var EndScreen = (function(){
+
+	function EndScreen() {
+		_.bindAll(this);
+		this.init();
+
+		$(document).on('click', this.restartGame);
+	}
+
+	EndScreen.prototype.init = function() {
+
+		this.endContainer = new createjs.Container();
+
+		var text = new createjs.Text('Tis gedaan', 'bold 36px Arial', '#00FF00');
+
+		this.endContainer.x = 100;
+		this.endContainer. y = 100;
+		this.endContainer.addChild(text);
+
+		console.log("Schrijf die fucking tekst!!!");
+	};
+
+	EndScreen.prototype.restartGame = function(e) {
+		var self = this;
+		bean.fire(this, 'restartGame');
+	};
+
+	return EndScreen;
+
+})();
+
+/* globals CanvasSetup:true, SpaceShip:true, Timer:true, Meteorite:true, Score:true, PowerupProgress:true, Powerup:true, SocketConnection:true, Bullet:true, CollisionDetection:true, Sound:true, EndScreen:true */
 
 var Main = (function(){
 
 	var stage, ticker, keys;
-	var spaceShip, timer, meteorite, powerupProgress, powerup, meteorites, bullet, sound;
+	var spaceShip, timer, meteorite, powerupProgress, powerup, meteorites, bullet, sound, endScreen;
 	var meteorTimer;
 	var powerupTimer;
 	var socketConnection;
@@ -546,7 +577,19 @@ var Main = (function(){
 
 		stage.update();
 
-		setTimeout(this.startGame, 2000);
+		//setTimeout(this.startGame, 2000);
+
+		// Call EndScreen and clear object from screen
+		//spaceShip.ship.alpha = 0;
+		endScreen = new EndScreen();
+		bean.on(endScreen, 'restartGame', this.restartGame);
+		stage.addChild(endScreen.endContainer);
+	};
+
+	Main.prototype.restartGame = function() {
+		console.log('RESTART');
+		stage.removeChild(endScreen.endContainer);
+		this.startGame();
 	};
 
 	Main.prototype.startGame = function(){
@@ -1692,7 +1735,7 @@ var Timer = (function(){
 
 	function Timer() {
 		_.bindAll(this);
-		this.timerValue = 7;
+		this.timerValue = 30;
 		this.isRunning = false;
 		this.timer = this.timerValue;
 		numberOfEvents = Math.floor(this.timerValue/10);

@@ -13,5 +13,6 @@ Our HTML5 based game in combination with NodeJS for the socket connection with o
 - bulllet update in bullet class please
 - betere random voor meteorieten
 - Geluidje voor tijdens de reverse
+- Show text on endScreen
 
 ## Tijd over
