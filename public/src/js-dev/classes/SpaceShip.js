@@ -170,9 +170,7 @@ var SpaceShip = (function(){
 
 		//this.warpShield.scaleX = this.warpShield.scaleY = 1.5;
 
-
 		this.ship.addChild(this.warpShield);
-
 	};
 
 	SpaceShip.prototype.drawCannon = function(){
@@ -294,7 +292,6 @@ var SpaceShip = (function(){
 		// this.shipBody.graphics.drawCircle(0,0, 3);
 		// this.shipBody.graphics.endFill();
 
-
 		this.shipBody.shadow = new createjs.Shadow('#00ADEE', 0, 0, 10);
 
 		this.ship.addChild(this.shipBody);
@@ -339,7 +336,6 @@ var SpaceShip = (function(){
 				shape.graphics.lineTo(xPos, yPos);
 			}
 		}
-
 	};
 
 	SpaceShip.prototype.reset = function(){
@@ -419,13 +415,9 @@ var SpaceShip = (function(){
 				}
 			}else{
 				bean.fire(this, 'stopGame');
-			}
-			
-			
+			}	
 		}
-
 	};
-
 
 	return SpaceShip;
 

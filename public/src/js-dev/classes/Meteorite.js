@@ -69,7 +69,6 @@ var Meteorite = (function(){
 	}
 
 	Meteorite.prototype.init = function() {
-
 		this.speed = (10+ Math.round(Math.random()*10)) * this.speedFactor;
 
 		this.meteorite = new createjs.Shape();
@@ -77,8 +76,6 @@ var Meteorite = (function(){
 		this.meteorite.y = this.y;
 
 		this.drawMeteorite();
-
-		//console.log(this.speedFactor);
 	};
 
 	Meteorite.prototype.gotShot = function(){

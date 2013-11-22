@@ -24,9 +24,7 @@ var Powerup = (function(){
 
 	Powerup.prototype.init = function() {	
 		this.speed = (30+ Math.round(Math.random()*30)) * this.speedFactor;
-
 		this.randomNumber = Math.floor(Math.random()*types.length);
-		//this.randomNumber = 1;
 		this.type = types[this.randomNumber];
 		this.drawPowerup();
 	};
@@ -51,7 +49,6 @@ var Powerup = (function(){
 		square.graphics.drawRect(-(squareSize/2),-(squareSize/2),squareSize,squareSize);
 		square.rotation = 45;
 
-		//square.graphics.beginStroke('#eba19f');
 		square.graphics.setStrokeStyle(3);
 		square.graphics.drawCircle(0,0,25);
 		square.graphics.endStroke();
@@ -91,7 +88,6 @@ var Powerup = (function(){
 
 		}else if(this.type === 'reverse') {
 			var arrowLines = new createjs.Shape();
-
 			arrowLines.graphics.beginStroke(primaryColor[this.randomNumber]);
 			arrowLines.graphics.setStrokeStyle(3);
 			arrowLines.graphics.moveTo(10, -5);

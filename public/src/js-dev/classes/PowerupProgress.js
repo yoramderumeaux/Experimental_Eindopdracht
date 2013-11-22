@@ -21,8 +21,6 @@ var PowerupProgress = (function(){
 		this.hideProgressBar = true;
 
 		this.drawSliders();
-
-		//this.beginShootProgress(3000);
 	}
 
 	PowerupProgress.prototype.drawSliders = function(){

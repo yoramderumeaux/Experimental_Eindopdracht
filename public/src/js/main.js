@@ -17,7 +17,6 @@ var Bullet = (function(){
 		this.bullet.x = this.x;
 		this.bullet.y = this.y;
 		this.drawBullet();
-
 	};
 
 	Bullet.prototype.drawBullet = function(){
@@ -25,17 +24,8 @@ var Bullet = (function(){
 		this.bullet.graphics.setStrokeStyle(3);
 		this.bullet.graphics.beginFill('rgba(0, 92,112,0.2)');
 		this.bullet.graphics.drawCircle(0,0,2);
-
-		// this.bullet.graphics.moveTo(0, -27.75);
-		// this.bullet.graphics.lineTo(25, 27.75);
-		// this.bullet.graphics.lineTo(-25, 27.75);
-		// this.bullet.graphics.lineTo(0, -27.75);
 		this.bullet.graphics.endStroke();
 		this.bullet.shadow = new createjs.Shadow('#1bf43f', 0, 0, 10);
-	};
-
-	Bullet.prototype.update = function() {
-
 	};
 
 	return Bullet;
@@ -94,11 +84,7 @@ var CollisionDetection = (function(){
 		return 'noHit';
 
 	};
-
-	CollisionDetection.sayHello = function(){
-		console.log('say hello');
-	};
-
+	
 	return CollisionDetection;
 
 })();
@@ -224,10 +210,8 @@ var Main = (function(){
 	Main.prototype.togglePowerUpWarp = function(enablePowerUp){
 		if (enablePowerUp) {
 			// Play soundeffect
-
 			var self = this;
 
-			console.log('shoot soudn');
 			sound.playEffectWithVolume('WarpSpeed', 100);
 
 			// clear timer and restart faster
@@ -749,7 +733,6 @@ var Meteorite = (function(){
 	}
 
 	Meteorite.prototype.init = function() {
-
 		this.speed = (10+ Math.round(Math.random()*10)) * this.speedFactor;
 
 		this.meteorite = new createjs.Shape();
@@ -757,8 +740,6 @@ var Meteorite = (function(){
 		this.meteorite.y = this.y;
 
 		this.drawMeteorite();
-
-		//console.log(this.speedFactor);
 	};
 
 	Meteorite.prototype.gotShot = function(){
@@ -869,9 +850,7 @@ var Powerup = (function(){
 
 	Powerup.prototype.init = function() {	
 		this.speed = (30+ Math.round(Math.random()*30)) * this.speedFactor;
-
 		this.randomNumber = Math.floor(Math.random()*types.length);
-		//this.randomNumber = 1;
 		this.type = types[this.randomNumber];
 		this.drawPowerup();
 	};
@@ -896,7 +875,6 @@ var Powerup = (function(){
 		square.graphics.drawRect(-(squareSize/2),-(squareSize/2),squareSize,squareSize);
 		square.rotation = 45;
 
-		//square.graphics.beginStroke('#eba19f');
 		square.graphics.setStrokeStyle(3);
 		square.graphics.drawCircle(0,0,25);
 		square.graphics.endStroke();
@@ -936,7 +914,6 @@ var Powerup = (function(){
 
 		}else if(this.type === 'reverse') {
 			var arrowLines = new createjs.Shape();
-
 			arrowLines.graphics.beginStroke(primaryColor[this.randomNumber]);
 			arrowLines.graphics.setStrokeStyle(3);
 			arrowLines.graphics.moveTo(10, -5);
@@ -1005,8 +982,6 @@ var PowerupProgress = (function(){
 		this.hideProgressBar = true;
 
 		this.drawSliders();
-
-		//this.beginShootProgress(3000);
 	}
 
 	PowerupProgress.prototype.drawSliders = function(){
@@ -1438,9 +1413,7 @@ var SpaceShip = (function(){
 
 		//this.warpShield.scaleX = this.warpShield.scaleY = 1.5;
 
-
 		this.ship.addChild(this.warpShield);
-
 	};
 
 	SpaceShip.prototype.drawCannon = function(){
@@ -1562,7 +1535,6 @@ var SpaceShip = (function(){
 		// this.shipBody.graphics.drawCircle(0,0, 3);
 		// this.shipBody.graphics.endFill();
 
-
 		this.shipBody.shadow = new createjs.Shadow('#00ADEE', 0, 0, 10);
 
 		this.ship.addChild(this.shipBody);
@@ -1607,7 +1579,6 @@ var SpaceShip = (function(){
 				shape.graphics.lineTo(xPos, yPos);
 			}
 		}
-
 	};
 
 	SpaceShip.prototype.reset = function(){
@@ -1687,13 +1658,9 @@ var SpaceShip = (function(){
 				}
 			}else{
 				bean.fire(this, 'stopGame');
-			}
-			
-			
+			}	
 		}
-
 	};
-
 
 	return SpaceShip;
 

@@ -28,11 +28,7 @@ var CollisionDetection = (function(){
 		return 'noHit';
 
 	};
-
-	CollisionDetection.sayHello = function(){
-		console.log('say hello');
-	};
-
+	
 	return CollisionDetection;
 
 })();

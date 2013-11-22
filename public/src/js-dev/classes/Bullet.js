@@ -15,7 +15,6 @@ var Bullet = (function(){
 		this.bullet.x = this.x;
 		this.bullet.y = this.y;
 		this.drawBullet();
-
 	};
 
 	Bullet.prototype.drawBullet = function(){
@@ -23,17 +22,8 @@ var Bullet = (function(){
 		this.bullet.graphics.setStrokeStyle(3);
 		this.bullet.graphics.beginFill('rgba(0, 92,112,0.2)');
 		this.bullet.graphics.drawCircle(0,0,2);
-
-		// this.bullet.graphics.moveTo(0, -27.75);
-		// this.bullet.graphics.lineTo(25, 27.75);
-		// this.bullet.graphics.lineTo(-25, 27.75);
-		// this.bullet.graphics.lineTo(0, -27.75);
 		this.bullet.graphics.endStroke();
 		this.bullet.shadow = new createjs.Shadow('#1bf43f', 0, 0, 10);
-	};
-
-	Bullet.prototype.update = function() {
-
 	};
 
 	return Bullet;

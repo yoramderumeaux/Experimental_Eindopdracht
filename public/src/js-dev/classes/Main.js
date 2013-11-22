@@ -119,10 +119,8 @@ var Main = (function(){
 	Main.prototype.togglePowerUpWarp = function(enablePowerUp){
 		if (enablePowerUp) {
 			// Play soundeffect
-
 			var self = this;
 
-			console.log('shoot soudn');
 			sound.playEffectWithVolume('WarpSpeed', 100);
 
 			// clear timer and restart faster
