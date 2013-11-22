@@ -417,7 +417,7 @@ var Main = (function(){
 							
 							if (meteorites[i].canDoDamage) {
 								console.log('[MAIN] stop score');
-								sound.playEffectWithVolume('Explosion', 30);
+								sound.playEffectWithVolume('crashImpact', 100);
 								score.enableScoreEdit = false;
 								spaceShip.gotShot();
 								meteorites[i].gotShot();
