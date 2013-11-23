@@ -48,23 +48,26 @@ var dataLed = 3;
 var activeLed = 2;
 
 var leftSensorTopMin = 740;
-var leftSensorTopMax = 0;
+var leftSensorTopMax = 50;
 var leftSensorTopVal = 0;
 var leftSensorBottomMin = 562;
-var leftSensorBottomMax = 0; //max 1023
+var leftSensorBottomMax = 50; //max 1023
 var leftSensorBottomVal = 0;
 
 var rightSensorTopMin = 750;
-var rightSensorTopMax = 0; //max 1023
+var rightSensorTopMax = 150; //max 1023
 var rightSensorTopVal = 0;
 var rightSensorBottomMin = 748;
-var rightSensorBottomMax = 0; //max 1023
+var rightSensorBottomMax = 150; //max 1023
 var rightSensorBottomVal = 0;
 
 var leftJumpLog = [];
 var rightJumpLog = [];
-var jumpThreshold = 30;
+var jumpThreshold = 200;
 var jumpIntervalTime = 1000; //ms
+
+var horizontalPosition = 50;
+var emitIntervalTime = 1000/10;
 
 var board = new firmata.Board(path, function(err){
 	if(err){ 
@@ -93,6 +96,7 @@ var board = new firmata.Board(path, function(err){
 	}, 1000);
 
 	setInterval(checkForJump, jumpIntervalTime);
+	setInterval(emitPosition, emitIntervalTime);
 
 	board.analogRead(leftSensorTopPin, readLeftTopButton);
 	board.analogRead(leftSensorBottomPin, readLeftBottomButton);
@@ -121,10 +125,9 @@ function checkForJump(){
 			minRight = Math.min(minRight, rightJumpLog[i]);		
 		};
 
-		console.log(minLeft, maxLeft, minRight, maxRight);
-
 		if (maxLeft - minLeft > jumpThreshold && maxRight - minRight > jumpThreshold) {		
 			emitSocket('jump', true);	
+			console.log('jump!');
 		};
 	}
 
@@ -198,11 +201,11 @@ function calculatePosition(){
 	var leftSensorMax = leftSensorTopMax;
 	var rightSensorMax = rightSensorTopMax;
 
-	var leftSensorVal = Math.min(leftSensorTopVal, leftSensorBottomVal);
-	var rightSensorVal = Math.min(rightSensorTopVal, rightSensorBottomVal);
+	var leftSensorVal = leftSensorTopVal + leftSensorBottomVal;
+	var rightSensorVal = rightSensorTopVal + rightSensorBottomVal;
 
-	var leftSensorMin = Math.min(leftSensorTopMin, leftSensorBottomMin);
-	var rightSensorMin = Math.min(rightSensorTopMin, rightSensorBottomMin);
+	var leftSensorMin = leftSensorTopMin + leftSensorBottomMin;
+	var rightSensorMin = rightSensorTopMin +rightSensorBottomMin;
 
 	var leftPerc = Math.round(((leftSensorVal - leftSensorMin) / (leftSensorMax - leftSensorMin))*100);
 	if (leftPerc<0) leftPerc = 0;
@@ -222,7 +225,7 @@ function calculatePosition(){
 
 	if (differce<0) factor = 1;
 
-	var horizontalPosition = 50 + ((avgPerc - Math.min(leftPerc, rightPerc)))* factor;
+	horizontalPosition = 50 + ((avgPerc - Math.min(leftPerc, rightPerc)))* factor;
 
 	var visualPosition = '';
 
@@ -235,6 +238,10 @@ function calculatePosition(){
 	};
 
 	//console.log(horizontalPosition);
-	emitSocket('horizontalPosition', horizontalPosition);
+	//emitSocket('horizontalPosition', horizontalPosition);
 
+}
+
+function emitPosition(){
+	emitSocket('horizontalPosition', horizontalPosition);
 }

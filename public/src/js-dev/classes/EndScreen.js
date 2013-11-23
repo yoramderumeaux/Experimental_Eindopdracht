@@ -11,11 +11,11 @@ var EndScreen = (function(){
 
 		this.endContainer = new createjs.Container();
 
-		var text = new createjs.Text('Tis gedaan', 'bold 36px Arial', '#00FF00');
+		this.text = new createjs.Text('Tis gedaan', 'bold 36px Arial', '#00FF00');
 
 		this.endContainer.x = 100;
 		this.endContainer. y = 100;
-		this.endContainer.addChild(text);
+		this.endContainer.addChild(this.text);
 	};
 
 	EndScreen.prototype.restartGame = function(e) {

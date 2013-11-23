@@ -25,6 +25,7 @@ var Main = (function(){
 	var bulletCounter = 0;
 	var reversedControls = false;
 	var preventGameFromStopping = false;
+	var weigthFactor = 1.1;
 
 	var bullets = [];
 	var powerups = [];
@@ -57,8 +58,8 @@ var Main = (function(){
 
 		// sound init
 		sound = new Sound();
-		sound.playBackgroundMusic("BackgroundMusic_EXD");
-		//sound.playBackgroundMusic("backgroundmusictest");
+		//sound.playBackgroundMusic("BackgroundMusic_EXD");
+		sound.playBackgroundMusic("backgroundmusictest");
 		sound.playRocketSound("rocket");
 
 		// spaceship init
@@ -89,6 +90,11 @@ var Main = (function(){
 		});
 
 		bean.on(socketConnection, 'horizontalPosition', function(data){
+
+			data = data + ((data - 50) * weigthFactor );
+			data = Math.min(100, data);
+			data = Math.max(0, data);
+
 			if (spaceShip && !debugKeyboardControl) {
 				if( !reversedControls ) {
 					spaceShip.destinationPosition = data;
@@ -254,12 +260,12 @@ var Main = (function(){
 			}
 
 			//	left
-			if(keys[37]) {
+			if(keys[37] && debugKeyboardControl) {
 				spaceShip.destinationPosition -= (2 * reverseFactor);	
 			}
 
 			//	Right
-			if(keys[39]) {
+			if(keys[39]  && debugKeyboardControl) {
 				spaceShip.destinationPosition += (2 * reverseFactor);
 			}
 
@@ -458,20 +464,24 @@ var Main = (function(){
 		spaceShip.reset();
 		powerupProgress.reset();
 
-		stage.update();
-
-		//setTimeout(this.startGame, 2000);
-
 		// Call EndScreen and clear object from screen
 		//spaceShip.ship.alpha = 0;
 		endScreen = new EndScreen();
 		bean.on(endScreen, 'restartGame', this.restartGame);
 		stage.addChild(endScreen.endContainer);
+
+		stage.update();
+
+		//ssetTimeout(this.startGame, 500);
 	};
 
 	Main.prototype.restartGame = function() {
 		console.log('RESTART');
 		stage.removeChild(endScreen.endContainer);
+		bean.off(endScreen, 'restartGame', this.restartGame);
+		endScreen.endContainer = null;
+		console.log(meteorites.length);
+
 		this.startGame();
 	};
 
@@ -482,6 +492,8 @@ var Main = (function(){
 		timer.start();
 		this.toggleMeteoriteTimer(true);
 		this.togglePowerupTimer(true);
+
+		console.log(meteorites);
 	};
 
 	Main.prototype.toggleMeteoriteTimer = function(bool){

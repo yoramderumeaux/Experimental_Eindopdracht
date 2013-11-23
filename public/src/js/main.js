@@ -102,11 +102,11 @@ var EndScreen = (function(){
 
 		this.endContainer = new createjs.Container();
 
-		var text = new createjs.Text('Tis gedaan', 'bold 36px Arial', '#00FF00');
+		this.text = new createjs.Text('Tis gedaan', 'bold 36px Arial', '#00FF00');
 
 		this.endContainer.x = 100;
 		this.endContainer. y = 100;
-		this.endContainer.addChild(text);
+		this.endContainer.addChild(this.text);
 	};
 
 	EndScreen.prototype.restartGame = function(e) {
@@ -145,6 +145,7 @@ var Main = (function(){
 	var bulletCounter = 0;
 	var reversedControls = false;
 	var preventGameFromStopping = false;
+	var weigthFactor = 1.1;
 
 	var bullets = [];
 	var powerups = [];
@@ -177,8 +178,8 @@ var Main = (function(){
 
 		// sound init
 		sound = new Sound();
-		sound.playBackgroundMusic("BackgroundMusic_EXD");
-		//sound.playBackgroundMusic("backgroundmusictest");
+		//sound.playBackgroundMusic("BackgroundMusic_EXD");
+		sound.playBackgroundMusic("backgroundmusictest");
 		sound.playRocketSound("rocket");
 
 		// spaceship init
@@ -209,6 +210,11 @@ var Main = (function(){
 		});
 
 		bean.on(socketConnection, 'horizontalPosition', function(data){
+
+			data = data + ((data - 50) * weigthFactor );
+			data = Math.min(100, data);
+			data = Math.max(0, data);
+
 			if (spaceShip && !debugKeyboardControl) {
 				if( !reversedControls ) {
 					spaceShip.destinationPosition = data;
@@ -374,12 +380,12 @@ var Main = (function(){
 			}
 
 			//	left
-			if(keys[37]) {
+			if(keys[37] && debugKeyboardControl) {
 				spaceShip.destinationPosition -= (2 * reverseFactor);	
 			}
 
 			//	Right
-			if(keys[39]) {
+			if(keys[39]  && debugKeyboardControl) {
 				spaceShip.destinationPosition += (2 * reverseFactor);
 			}
 
@@ -578,20 +584,24 @@ var Main = (function(){
 		spaceShip.reset();
 		powerupProgress.reset();
 
-		stage.update();
-
-		//setTimeout(this.startGame, 2000);
-
 		// Call EndScreen and clear object from screen
 		//spaceShip.ship.alpha = 0;
 		endScreen = new EndScreen();
 		bean.on(endScreen, 'restartGame', this.restartGame);
 		stage.addChild(endScreen.endContainer);
+
+		stage.update();
+
+		//ssetTimeout(this.startGame, 500);
 	};
 
 	Main.prototype.restartGame = function() {
 		console.log('RESTART');
 		stage.removeChild(endScreen.endContainer);
+		bean.off(endScreen, 'restartGame', this.restartGame);
+		endScreen.endContainer = null;
+		console.log(meteorites.length);
+
 		this.startGame();
 	};
 
@@ -602,6 +612,8 @@ var Main = (function(){
 		timer.start();
 		this.toggleMeteoriteTimer(true);
 		this.togglePowerupTimer(true);
+
+		console.log(meteorites);
 	};
 
 	Main.prototype.toggleMeteoriteTimer = function(bool){
@@ -1051,30 +1063,32 @@ var PowerupProgress = (function(){
 	}
 
 	PowerupProgress.prototype.drawSliders = function(){
+
+		var progressBarHeight = 50;
 		this.greenprogressSlider = new createjs.Shape();
 		this.greenprogressSlider.y = 0;
 		this.greenprogressSlider.x = - canvasWidth;
 		this.greenprogressSlider.graphics.beginFill('#aef69d');
-		this.greenprogressSlider.graphics.drawRect(0,0,canvasWidth,15);
+		this.greenprogressSlider.graphics.drawRect(0,0,canvasWidth,progressBarHeight);
 
 		this.blueprogressSlider = new createjs.Shape();
 		this.blueprogressSlider.y = 0;
 		this.blueprogressSlider.x = - canvasWidth;
 		this.blueprogressSlider.graphics.beginFill('#00d2ff');
-		this.blueprogressSlider.graphics.drawRect(0,0,canvasWidth,15);
+		this.blueprogressSlider.graphics.drawRect(0,0,canvasWidth,progressBarHeight);
 
 		this.redprogressSlider = new createjs.Shape();
 		this.redprogressSlider.y = 0;
 		this.redprogressSlider.x = - canvasWidth;
 		this.redprogressSlider.graphics.beginFill('#e75f5f');
-		this.redprogressSlider.graphics.drawRect(0,0,canvasWidth,15);
+		this.redprogressSlider.graphics.drawRect(0,0,canvasWidth,progressBarHeight);
 
 		this.greenprogressbar = new createjs.Shape();
 		this.greenprogressbar.x = this.x;
 		this.greenprogressbar.y = 0;
 		this.greenprogressbar.graphics.beginFill('rgba(0, 92, 112, 0.2)');
 		this.greenprogressbar.graphics.beginStroke('#aef69d');
-		this.greenprogressbar.graphics.drawRect(0,0,canvasWidth,15);
+		this.greenprogressbar.graphics.drawRect(0,0,canvasWidth,progressBarHeight);
 		this.greenprogressbar.shadow = new createjs.Shadow('#1bf43f', 0, 0, 10);
 		
 		this.blueprogressbar = new createjs.Shape();
@@ -1082,7 +1096,7 @@ var PowerupProgress = (function(){
 		this.blueprogressbar.y = 0;
 		this.blueprogressbar.graphics.beginFill('rgba(0, 92, 112, 0.2)');
 		this.blueprogressbar.graphics.beginStroke('#00d2ff');
-		this.blueprogressbar.graphics.drawRect(0,0,canvasWidth,15);
+		this.blueprogressbar.graphics.drawRect(0,0,canvasWidth,progressBarHeight);
 		this.blueprogressbar.shadow = new createjs.Shadow('#005c70', 0, 0, 10);	
 
 		this.redprogressbar = new createjs.Shape();
@@ -1090,7 +1104,7 @@ var PowerupProgress = (function(){
 		this.redprogressbar.y = 0;
 		this.redprogressbar.graphics.beginFill('rgba(0, 92, 112, 0.2)');
 		this.redprogressbar.graphics.beginStroke('#e75f5f');
-		this.redprogressbar.graphics.drawRect(0,0,canvasWidth,15);
+		this.redprogressbar.graphics.drawRect(0,0,canvasWidth,progressBarHeight);
 		this.redprogressbar.shadow = new createjs.Shadow('#db2020', 0, 0, 10);
 
 		this.powerupProgress.addChild(this.greenprogressSlider);
@@ -1153,7 +1167,7 @@ var PowerupProgress = (function(){
 		if (this.hideProgressBar) {
 			this.powerupProgress.y += ((canvasHeight+1) - this.powerupProgress.y)*0.1;
 		}else{
-			this.powerupProgress.y += ((canvasHeight-10) - this.powerupProgress.y)*0.1;
+			this.powerupProgress.y += ((canvasHeight-30) - this.powerupProgress.y)*0.1;
 		}
 	};
 
