@@ -179,12 +179,6 @@ var SpaceShip = (function(){
 		this.cannon.graphics.beginStroke('#aef69d');
 		this.cannon.graphics.setStrokeStyle(2);
 		this.cannon.graphics.beginFill('rgba(0, 92,112,0.2)');
-		//this.drawFromArray(this.warpShield, warpShieldBody, 0,-18+fullYOffset);
-		// this.cannon.graphics.moveTo(-25*this.scaleFactor, -60*this.scaleFactor);
-		// this.cannon.graphics.lineTo(-30*this.scaleFactor, -105*this.scaleFactor);
-		// this.cannon.graphics.lineTo(0*this.scaleFactor, -100*this.scaleFactor);
-		// this.cannon.graphics.lineTo(30*this.scaleFactor, -105*this.scaleFactor);
-		// this.cannon.graphics.lineTo(25*this.scaleFactor, -60*this.scaleFactor);
 
 		this.cannon.graphics.moveTo(0*this.scaleFactor, -85*this.scaleFactor);
 		this.cannon.graphics.lineTo(0*this.scaleFactor, -120*this.scaleFactor);

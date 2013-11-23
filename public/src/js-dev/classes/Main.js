@@ -122,6 +122,8 @@ var Main = (function(){
 		startScreen = new StartScreen();
 		stage.addChild(startScreen.startContainer);
 		stage.update();
+
+		//this.startGame();
 	};
 
 	Main.prototype.togglePowerUpWarp = function(enablePowerUp){

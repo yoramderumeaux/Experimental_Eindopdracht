@@ -128,6 +128,7 @@ function checkForJump(){
 
 		var minVal = 5;
 		if (maxLeft - minLeft > jumpThreshold && maxRight - minRight > jumpThreshold && minLeft < minVal && minRight < minVal) {		
+			console.log('jump detected');
 			emitSocket('jump', true);	
 		};
 	//}
