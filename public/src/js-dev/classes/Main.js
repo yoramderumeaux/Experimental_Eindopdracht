@@ -21,7 +21,7 @@ var Main = (function(){
 	var meteoriteTimerValue = defaultMeteoriteTimerValue;
 	var defaultPowerupTimerValue = 2000;
 	var powerupTimerValue = defaultPowerupTimerValue;
-	var debugKeyboardControl = false;
+	var debugKeyboardControl = true;
 	var bulletCounter = 0;
 	var reversedControls = false;
 	var preventGameFromStopping = false;
@@ -59,10 +59,10 @@ var Main = (function(){
 		// sound init
 		sound = new Sound();
 		//sound.playBackgroundMusic("BackgroundMusic_EXD");
-		sound.playBackgroundMusic("backgroundmusictest");
+		//sound.playBackgroundMusic("backgroundmusictest");
 		sound.playRocketSound("rocket");
 
-		// spaceship init
+		// spaceShip init
 		var midX = ($('#cnvs').width()/2);
 		var bottomY = $('#cnvs').height() *(1-0.1313);
 		spaceShip = new SpaceShip(midX, bottomY);
@@ -130,7 +130,7 @@ var Main = (function(){
 
 		if (enablePowerUp) {
 			// Play soundeffect
-			score.updateScore(2500);
+			score.updateScore(250);
 
 			console.log(timer.timer);
 
@@ -178,7 +178,7 @@ var Main = (function(){
 			spaceShip.shootMode = true;
 
 			var self = this;
-			score.updateScore(2500);
+			score.updateScore(250);
 
 			powerupProgress.beginShootProgress(5000);
 
@@ -195,7 +195,7 @@ var Main = (function(){
 	Main.prototype.togglePowerUpReverse = function(enablePowerUp) {
 		if (enablePowerUp) {
 			var self = this;
-			score.updateScore(2500);
+			score.updateScore(250);
 
 			reversedControls = true;
 			powerupProgress.beginReverseProgress(4000);
@@ -325,7 +325,7 @@ var Main = (function(){
 					if ($('#cnvs').height() + 150 < meteorites[i].y) {
 						meteorites[i] = null;					
 						meteorites.splice(i, 1);						
-						score.updateScore(500);	
+						score.updateScore(50);	
 					}else{
 						meteorites[i].update();
 					}
@@ -350,7 +350,7 @@ var Main = (function(){
 							// A bullet hit a meteorite
 							if (meteorites[i].canDoDamage) {
 								meteorites[i].gotShot();
-								score.updateScore(1000);
+								score.updateScore(100);
 								sound.playEffectWithVolume('Explosion', 30);
 
 								stage.removeChild(bullets[l].bullet);
@@ -459,14 +459,15 @@ var Main = (function(){
 		bullets = [];
 		powerups = [];
 
-		score.showScore();
+		var endScore = score.score;
+
 		score.reset();
 		spaceShip.reset();
 		powerupProgress.reset();
 
 		// Call EndScreen and clear object from screen
 		//spaceShip.ship.alpha = 0;
-		endScreen = new EndScreen();
+		endScreen = new EndScreen(endScore);
 		bean.on(endScreen, 'restartGame', this.restartGame);
 		stage.addChild(endScreen.endContainer);
 
@@ -490,6 +491,7 @@ var Main = (function(){
 		date = date.getHours() + ':' + date.getMinutes() + ':' + date.getSeconds();
 		console.log('[MAIN] start game ' + date);
 		timer.start();
+		spaceShip.ship.alpha = 1;
 		this.toggleMeteoriteTimer(true);
 		this.togglePowerupTimer(true);
 

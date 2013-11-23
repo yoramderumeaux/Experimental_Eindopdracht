@@ -91,8 +91,13 @@ var CollisionDetection = (function(){
 
 var EndScreen = (function(){
 
-	function EndScreen() {
+	function EndScreen(endScore) {
 		_.bindAll(this);
+		
+
+		this.endScore = endScore;
+		console.log(this.endScore);
+
 		this.init();
 
 		$(document).on('click', this.restartGame);
@@ -102,11 +107,14 @@ var EndScreen = (function(){
 
 		this.endContainer = new createjs.Container();
 
-		this.text = new createjs.Text('Tis gedaan', 'bold 36px Arial', '#00FF00');
+		this.text = new createjs.Text('Tis gedaan', 'bold 36px Arial', '#FFFFFF');
+		this.scoreText = new createjs.Text(this.endScore, 'bold 36px Arial', '#FFFFFF');
+		this.scoreText.y = 40;
 
 		this.endContainer.x = 100;
-		this.endContainer. y = 100;
+		this.endContainer.y = 100;
 		this.endContainer.addChild(this.text);
+		this.endContainer.addChild(this.scoreText);
 	};
 
 	EndScreen.prototype.restartGame = function(e) {
@@ -141,7 +149,7 @@ var Main = (function(){
 	var meteoriteTimerValue = defaultMeteoriteTimerValue;
 	var defaultPowerupTimerValue = 2000;
 	var powerupTimerValue = defaultPowerupTimerValue;
-	var debugKeyboardControl = false;
+	var debugKeyboardControl = true;
 	var bulletCounter = 0;
 	var reversedControls = false;
 	var preventGameFromStopping = false;
@@ -179,10 +187,10 @@ var Main = (function(){
 		// sound init
 		sound = new Sound();
 		//sound.playBackgroundMusic("BackgroundMusic_EXD");
-		sound.playBackgroundMusic("backgroundmusictest");
+		//sound.playBackgroundMusic("backgroundmusictest");
 		sound.playRocketSound("rocket");
 
-		// spaceship init
+		// spaceShip init
 		var midX = ($('#cnvs').width()/2);
 		var bottomY = $('#cnvs').height() *(1-0.1313);
 		spaceShip = new SpaceShip(midX, bottomY);
@@ -250,7 +258,7 @@ var Main = (function(){
 
 		if (enablePowerUp) {
 			// Play soundeffect
-			score.updateScore(2500);
+			score.updateScore(250);
 
 			console.log(timer.timer);
 
@@ -298,7 +306,7 @@ var Main = (function(){
 			spaceShip.shootMode = true;
 
 			var self = this;
-			score.updateScore(2500);
+			score.updateScore(250);
 
 			powerupProgress.beginShootProgress(5000);
 
@@ -315,7 +323,7 @@ var Main = (function(){
 	Main.prototype.togglePowerUpReverse = function(enablePowerUp) {
 		if (enablePowerUp) {
 			var self = this;
-			score.updateScore(2500);
+			score.updateScore(250);
 
 			reversedControls = true;
 			powerupProgress.beginReverseProgress(4000);
@@ -445,7 +453,7 @@ var Main = (function(){
 					if ($('#cnvs').height() + 150 < meteorites[i].y) {
 						meteorites[i] = null;					
 						meteorites.splice(i, 1);						
-						score.updateScore(500);	
+						score.updateScore(50);	
 					}else{
 						meteorites[i].update();
 					}
@@ -470,7 +478,7 @@ var Main = (function(){
 							// A bullet hit a meteorite
 							if (meteorites[i].canDoDamage) {
 								meteorites[i].gotShot();
-								score.updateScore(1000);
+								score.updateScore(100);
 								sound.playEffectWithVolume('Explosion', 30);
 
 								stage.removeChild(bullets[l].bullet);
@@ -579,14 +587,15 @@ var Main = (function(){
 		bullets = [];
 		powerups = [];
 
-		score.showScore();
+		var endScore = score.score;
+
 		score.reset();
 		spaceShip.reset();
 		powerupProgress.reset();
 
 		// Call EndScreen and clear object from screen
 		//spaceShip.ship.alpha = 0;
-		endScreen = new EndScreen();
+		endScreen = new EndScreen(endScore);
 		bean.on(endScreen, 'restartGame', this.restartGame);
 		stage.addChild(endScreen.endContainer);
 
@@ -610,6 +619,7 @@ var Main = (function(){
 		date = date.getHours() + ':' + date.getMinutes() + ':' + date.getSeconds();
 		console.log('[MAIN] start game ' + date);
 		timer.start();
+		spaceShip.ship.alpha = 1;
 		this.toggleMeteoriteTimer(true);
 		this.togglePowerupTimer(true);
 
@@ -1189,8 +1199,9 @@ var Score = (function(){
 
 	Score.prototype.updateScore = function(value){
 		if (this.enableScoreEdit) {
-			this.score += value;
-			$('#scoreValue').html(Math.round(this.score / 10));
+			this.score += value /2;
+			this.score = Math.round(this.score);
+			$('#scoreValue').html(this.score);
 		}
 	};
 
@@ -1198,10 +1209,6 @@ var Score = (function(){
 		this.score = 0;
 		this.enableScoreEdit = true;
 		$('#scoreValue').html(this.score);
-	};
-
-	Score.prototype.showScore = function(){
-		//window.alert(Math.round(this.score / 10));
 	};
 
 	return Score;
@@ -1229,6 +1236,11 @@ var SocketConnection = (function(){
 			if (data) {
 				bean.fire(self, 'jump');
 			}
+		});
+
+		socket.on('disconnect', function(data){
+			console.log('server shut down');
+			//bean.fire(self, 'cancelConnection');
 		});
 
 		socket.on('otherUserConnected', function(data) {
@@ -1666,12 +1678,14 @@ var SpaceShip = (function(){
 		var destinationXpos = ($('#cnvs').width() - this.shipWidth) * this.destinationPosition / 100;
 		this.x = (this.shipWidth/2) + destinationXpos;
 		this.ship.x = this.x;
+		this.ship.alpha = 0;
 		this.ship.scaleX = this.ship.scaleY = 1;
 		this.ship.y = this.y = $('#cnvs').height() *(1-0.1313);
 		this.ship.rotation = 0;
 		this.capableToFly = true;
 		this.warpSpeed = false;
 		this.shootMode = false;
+		this.ship.alpha = 0;
 		this.warpShield.scaleX = this.warpShield.scaleY = 0;
 		this.cannon.scaleX = this.cannon.scaleY = 0;
 	};
@@ -1746,6 +1760,28 @@ var SpaceShip = (function(){
 
 })();	
 
+var StartScreen = (function(){
+
+	function StartScreen() {
+		_.bindAll(this);
+		this.init();
+	}
+
+	StartScreen.prototype.init = function() {
+
+		this.endContainer = new createjs.Container();
+
+		this.text = new createjs.Text('Tis gedaan', 'bold 36px Arial', '#FFFFFF');
+
+		this.endContainer.x = 100;
+		this.endContainer. y = 100;
+		this.endContainer.addChild(this.text);
+	};
+
+	return StartScreen;
+
+})();
+
 var Timer = (function(){
 
 	var myTimer;
@@ -1772,7 +1808,7 @@ var Timer = (function(){
 
 	Timer.prototype.stop = function() {
 		console.log('[TIMER] stop timer');
-		$('#timer p').html('end');
+		$('#timer p').html('');
 		this.isRunning = false;
 		clearInterval(myTimer);
 	};

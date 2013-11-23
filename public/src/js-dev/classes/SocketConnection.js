@@ -21,6 +21,11 @@ var SocketConnection = (function(){
 			}
 		});
 
+		socket.on('disconnect', function(data){
+			console.log('server shut down');
+			//bean.fire(self, 'cancelConnection');
+		});
+
 		socket.on('otherUserConnected', function(data) {
 			if (!data) {
 				bean.fire(self, 'connectionOk');

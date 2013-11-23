@@ -12,8 +12,9 @@ var Score = (function(){
 
 	Score.prototype.updateScore = function(value){
 		if (this.enableScoreEdit) {
-			this.score += value;
-			$('#scoreValue').html(Math.round(this.score / 10));
+			this.score += value /2;
+			this.score = Math.round(this.score);
+			$('#scoreValue').html(this.score);
 		}
 	};
 
@@ -21,10 +22,6 @@ var Score = (function(){
 		this.score = 0;
 		this.enableScoreEdit = true;
 		$('#scoreValue').html(this.score);
-	};
-
-	Score.prototype.showScore = function(){
-		//window.alert(Math.round(this.score / 10));
 	};
 
 	return Score;

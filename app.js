@@ -63,8 +63,8 @@ var rightSensorBottomVal = 0;
 
 var leftJumpLog = [];
 var rightJumpLog = [];
-var jumpThreshold = 200;
-var jumpIntervalTime = 1000; //ms
+var jumpThreshold = 30;
+var jumpIntervalTime = 500; //ms
 
 var horizontalPosition = 50;
 var emitIntervalTime = 1000/10;
@@ -107,7 +107,8 @@ var board = new firmata.Board(path, function(err){
 function checkForJump(){
 
 	//wait for more than 30 registered values
-	if (Math.min(leftJumpLog.length, rightJumpLog.length) > 30) {
+	//if (Math.min(leftJumpLog.length, rightJumpLog.length) > 30) {
+
 		var minLeft = 100000;
 		var maxLeft = 0;
 		var minRight = 100000;
@@ -125,11 +126,11 @@ function checkForJump(){
 			minRight = Math.min(minRight, rightJumpLog[i]);		
 		};
 
-		if (maxLeft - minLeft > jumpThreshold && maxRight - minRight > jumpThreshold) {		
+		var minVal = 5;
+		if (maxLeft - minLeft > jumpThreshold && maxRight - minRight > jumpThreshold && minLeft < minVal && minRight < minVal) {		
 			emitSocket('jump', true);	
-			console.log('jump!');
 		};
-	}
+	//}
 
 	//empty jump log
 	leftJumpLog = [];

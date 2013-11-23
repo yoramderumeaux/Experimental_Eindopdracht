@@ -343,12 +343,14 @@ var SpaceShip = (function(){
 		var destinationXpos = ($('#cnvs').width() - this.shipWidth) * this.destinationPosition / 100;
 		this.x = (this.shipWidth/2) + destinationXpos;
 		this.ship.x = this.x;
+		this.ship.alpha = 0;
 		this.ship.scaleX = this.ship.scaleY = 1;
 		this.ship.y = this.y = $('#cnvs').height() *(1-0.1313);
 		this.ship.rotation = 0;
 		this.capableToFly = true;
 		this.warpSpeed = false;
 		this.shootMode = false;
+		this.ship.alpha = 0;
 		this.warpShield.scaleX = this.warpShield.scaleY = 0;
 		this.cannon.scaleX = this.cannon.scaleY = 0;
 	};
