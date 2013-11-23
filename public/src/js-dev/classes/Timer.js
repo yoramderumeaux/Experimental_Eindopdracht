@@ -10,7 +10,7 @@ var Timer = (function(){
 		this.isRunning = false;
 		this.timer = this.timerValue;
 		numberOfEvents = Math.floor(this.timerValue/10);
-		$('#timer p').html(this.timer);
+		//$('#timer p').html(this.timer);
 	}
 
 	Timer.prototype.start = function() {

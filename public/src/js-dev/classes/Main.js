@@ -1,9 +1,9 @@
-/* globals CanvasSetup:true, SpaceShip:true, Timer:true, Meteorite:true, Score:true, PowerupProgress:true, Powerup:true, SocketConnection:true, Bullet:true, CollisionDetection:true, Sound:true, EndScreen:true */
+/* globals CanvasSetup:true, SpaceShip:true, Timer:true, Meteorite:true, Score:true, PowerupProgress:true, StartScreen:true, Powerup:true, SocketConnection:true, Bullet:true, CollisionDetection:true, Sound:true, EndScreen:true */
 
 var Main = (function(){
 
 	var stage, ticker, keys;
-	var spaceShip, timer, meteorite, powerupProgress, powerup, meteorites, bullet, sound, endScreen;
+	var spaceShip, timer, meteorite, powerupProgress, powerup, meteorites, bullet, sound, endScreen, startScreen;
 	var meteorTimer;
 	var powerupTimer;
 	var socketConnection;
@@ -119,10 +119,9 @@ var Main = (function(){
 		ticker.setFPS(60);
 		ticker.addEventListener('tick', this.update);
 
-		// start game
-		stage.addChild(spaceShip.ship);
-		stage.addChild(powerupProgress.powerupProgress);
-		this.startGame();	
+		startScreen = new StartScreen();
+		stage.addChild(startScreen.startContainer);
+		stage.update();
 	};
 
 	Main.prototype.togglePowerUpWarp = function(enablePowerUp){
@@ -487,6 +486,10 @@ var Main = (function(){
 	};
 
 	Main.prototype.startGame = function(){
+
+		stage.addChild(spaceShip.ship);
+		stage.addChild(powerupProgress.powerupProgress);
+
 		var date = new Date();
 		date = date.getHours() + ':' + date.getMinutes() + ':' + date.getSeconds();
 		console.log('[MAIN] start game ' + date);

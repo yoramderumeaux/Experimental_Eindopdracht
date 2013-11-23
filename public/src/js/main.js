@@ -126,12 +126,12 @@ var EndScreen = (function(){
 
 })();
 
-/* globals CanvasSetup:true, SpaceShip:true, Timer:true, Meteorite:true, Score:true, PowerupProgress:true, Powerup:true, SocketConnection:true, Bullet:true, CollisionDetection:true, Sound:true, EndScreen:true */
+/* globals CanvasSetup:true, SpaceShip:true, Timer:true, Meteorite:true, Score:true, PowerupProgress:true, StartScreen:true, Powerup:true, SocketConnection:true, Bullet:true, CollisionDetection:true, Sound:true, EndScreen:true */
 
 var Main = (function(){
 
 	var stage, ticker, keys;
-	var spaceShip, timer, meteorite, powerupProgress, powerup, meteorites, bullet, sound, endScreen;
+	var spaceShip, timer, meteorite, powerupProgress, powerup, meteorites, bullet, sound, endScreen, startScreen;
 	var meteorTimer;
 	var powerupTimer;
 	var socketConnection;
@@ -247,10 +247,9 @@ var Main = (function(){
 		ticker.setFPS(60);
 		ticker.addEventListener('tick', this.update);
 
-		// start game
-		stage.addChild(spaceShip.ship);
-		stage.addChild(powerupProgress.powerupProgress);
-		this.startGame();	
+		startScreen = new StartScreen();
+		stage.addChild(startScreen.startContainer);
+		stage.update();
 	};
 
 	Main.prototype.togglePowerUpWarp = function(enablePowerUp){
@@ -615,6 +614,10 @@ var Main = (function(){
 	};
 
 	Main.prototype.startGame = function(){
+
+		stage.addChild(spaceShip.ship);
+		stage.addChild(powerupProgress.powerupProgress);
+
 		var date = new Date();
 		date = date.getHours() + ':' + date.getMinutes() + ':' + date.getSeconds();
 		console.log('[MAIN] start game ' + date);
@@ -1762,6 +1765,9 @@ var SpaceShip = (function(){
 
 var StartScreen = (function(){
 
+	var canvasWidth = 0;
+	var canvasHeight = 0;
+
 	function StartScreen() {
 		_.bindAll(this);
 		this.init();
@@ -1769,13 +1775,25 @@ var StartScreen = (function(){
 
 	StartScreen.prototype.init = function() {
 
-		this.endContainer = new createjs.Container();
+		canvasWidth = $('#cnvs').width() +5;
+		canvasHeight = $('#cnvs').height()+5;
 
-		this.text = new createjs.Text('Tis gedaan', 'bold 36px Arial', '#FFFFFF');
+		this.startContainer = new createjs.Container();
 
-		this.endContainer.x = 100;
-		this.endContainer. y = 100;
-		this.endContainer.addChild(this.text);
+		this.text = new createjs.Text('game name', 'bold 36px Arial', '#FFFFFF');
+		this.text.x = (canvasWidth - this.text.getBounds().width)/2;
+
+		//afbeeldingen hier!
+
+		this.jumpText = new createjs.Text('Spring om te beginnen', 'bold 30px Arial', '#FFFFFF');		
+		this.jumpText.y = 250;
+		this.jumpText.x = (canvasWidth - this.jumpText.getBounds().width)/2;
+
+
+		this.startContainer.x = 0;
+		this.startContainer.y = 0;
+		this.startContainer.addChild(this.text);
+		this.startContainer.addChild(this.jumpText);
 	};
 
 	return StartScreen;
@@ -1794,7 +1812,7 @@ var Timer = (function(){
 		this.isRunning = false;
 		this.timer = this.timerValue;
 		numberOfEvents = Math.floor(this.timerValue/10);
-		$('#timer p').html(this.timer);
+		//$('#timer p').html(this.timer);
 	}
 
 	Timer.prototype.start = function() {
