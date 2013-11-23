@@ -1,3 +1,5 @@
+
+
 var PowerupProgress = (function(){
 
 	var canvasWidth = 0;

@@ -21,7 +21,7 @@ var Main = (function(){
 	var meteoriteTimerValue = defaultMeteoriteTimerValue;
 	var defaultPowerupTimerValue = 2000;
 	var powerupTimerValue = defaultPowerupTimerValue;
-	var debugKeyboardControl = true;
+	var debugKeyboardControl = false;
 	var bulletCounter = 0;
 	var reversedControls = false;
 	var preventGameFromStopping = false;
@@ -125,8 +125,13 @@ var Main = (function(){
 		if (enablePowerUp) {
 			// Play soundeffect
 			score.updateScore(2500);
-			preventGameFromStopping = true;
 
+			console.log(timer.timer);
+
+			if (timer.timer < 4) {
+				preventGameFromStopping = true;	
+			}
+			
 			sound.playEffectWithVolume('WarpSpeed', 100);
 
 			// clear timer and restart faster

@@ -47,18 +47,18 @@ var rightSensorBottomPin = 3;
 var dataLed = 3;
 var activeLed = 2;
 
-var leftSensorTopMin = 0;
-var leftSensorTopMax = 1023; //max 1023
+var leftSensorTopMin = 740;
+var leftSensorTopMax = 0;
 var leftSensorTopVal = 0;
-var leftSensorBottomMin = 0;
-var leftSensorBottomMax = 1023; //max 1023
+var leftSensorBottomMin = 562;
+var leftSensorBottomMax = 0; //max 1023
 var leftSensorBottomVal = 0;
 
-var rightSensorTopMin = 0;
-var rightSensorTopMax = 1023; //max 1023
+var rightSensorTopMin = 750;
+var rightSensorTopMax = 0; //max 1023
 var rightSensorTopVal = 0;
-var rightSensorBottomMin = 0;
-var rightSensorBottomMax = 1023; //max 1023
+var rightSensorBottomMin = 748;
+var rightSensorBottomMax = 0; //max 1023
 var rightSensorBottomVal = 0;
 
 var leftJumpLog = [];
@@ -136,7 +136,7 @@ function checkForJump(){
 }
 
 function readLeftTopButton(data){
-	console.log('[SENSOR LEFT TOP]: ' + data);
+	//console.log('[SENSOR LEFT TOP]: ' + data);
 	if (Math.abs(data - leftSensorTopVal) > 2) {
 		leftSensorTopVal = data;
 		calculatePosition();
@@ -198,8 +198,8 @@ function calculatePosition(){
 	var leftSensorMax = leftSensorTopMax;
 	var rightSensorMax = rightSensorTopMax;
 
-	var leftSensorVal = Math.max(leftSensorTopVal, leftSensorBottomVal);
-	var rightSensorVal = Math.max(rightSensorTopVal, rightSensorBottomVal);
+	var leftSensorVal = Math.min(leftSensorTopVal, leftSensorBottomVal);
+	var rightSensorVal = Math.min(rightSensorTopVal, rightSensorBottomVal);
 
 	var leftSensorMin = Math.min(leftSensorTopMin, leftSensorBottomMin);
 	var rightSensorMin = Math.min(rightSensorTopMin, rightSensorBottomMin);
@@ -234,6 +234,7 @@ function calculatePosition(){
 		}
 	};
 
+	//console.log(horizontalPosition);
 	emitSocket('horizontalPosition', horizontalPosition);
 
 }

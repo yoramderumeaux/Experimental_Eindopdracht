@@ -141,7 +141,7 @@ var Main = (function(){
 	var meteoriteTimerValue = defaultMeteoriteTimerValue;
 	var defaultPowerupTimerValue = 2000;
 	var powerupTimerValue = defaultPowerupTimerValue;
-	var debugKeyboardControl = true;
+	var debugKeyboardControl = false;
 	var bulletCounter = 0;
 	var reversedControls = false;
 	var preventGameFromStopping = false;
@@ -245,8 +245,13 @@ var Main = (function(){
 		if (enablePowerUp) {
 			// Play soundeffect
 			score.updateScore(2500);
-			preventGameFromStopping = true;
 
+			console.log(timer.timer);
+
+			if (timer.timer < 4) {
+				preventGameFromStopping = true;	
+			}
+			
 			sound.playEffectWithVolume('WarpSpeed', 100);
 
 			// clear timer and restart faster
@@ -908,8 +913,8 @@ var Powerup = (function(){
 
 	Powerup.prototype.init = function() {	
 		this.speed = (30+ Math.round(Math.random()*30)) * this.speedFactor;
-		//this.randomNumber = Math.floor(Math.random()*types.length);
-		this.randomNumber = 1;
+		this.randomNumber = Math.floor(Math.random()*types.length);
+		//this.randomNumber = 1;
 		this.type = types[this.randomNumber];
 		this.drawPowerup();
 	};
@@ -1017,6 +1022,8 @@ var Powerup = (function(){
 	return Powerup;
 
 })();
+
+
 
 var PowerupProgress = (function(){
 
@@ -1733,7 +1740,7 @@ var Timer = (function(){
 
 	function Timer() {
 		_.bindAll(this);
-		this.timerValue = 30;
+		this.timerValue = 60;
 		this.isRunning = false;
 		this.timer = this.timerValue;
 		numberOfEvents = Math.floor(this.timerValue/10);
