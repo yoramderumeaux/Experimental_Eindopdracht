@@ -21,7 +21,7 @@ var Main = (function(){
 	var meteoriteTimerValue = defaultMeteoriteTimerValue;
 	var defaultPowerupTimerValue = 2000;
 	var powerupTimerValue = defaultPowerupTimerValue;
-	var debugKeyboardControl = true;
+	var debugKeyboardControl = false;
 	var bulletCounter = 0;
 	var reversedControls = false;
 	var preventGameFromStopping = false;
@@ -59,7 +59,7 @@ var Main = (function(){
 		// sound init
 		sound = new Sound();
 		//sound.playBackgroundMusic("BackgroundMusic_EXD");
-		//sound.playBackgroundMusic("backgroundmusictest");
+		sound.playBackgroundMusic("backgroundmusictest");
 		sound.playRocketSound("rocket");
 
 		// spaceShip init
@@ -211,6 +211,10 @@ var Main = (function(){
 
 	Main.prototype.jumpHandler = function(){
 		// Jump detected
+		if (startScreen) {
+			this.startGame();	
+		}
+		
 		console.log('jump met bean');
 	};
 
@@ -487,6 +491,11 @@ var Main = (function(){
 
 	Main.prototype.startGame = function(){
 
+		if (startScreen) {
+			stage.removeChild(startScreen.startContainer);
+			startScreen = null;	
+		}
+		
 		stage.addChild(spaceShip.ship);
 		stage.addChild(powerupProgress.powerupProgress);
 

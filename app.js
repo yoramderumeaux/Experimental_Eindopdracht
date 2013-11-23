@@ -238,7 +238,7 @@ function calculatePosition(){
 		}
 	};
 
-	//console.log(horizontalPosition);
+	console.log(horizontalPosition);
 	//emitSocket('horizontalPosition', horizontalPosition);
 
 }
