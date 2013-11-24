@@ -279,8 +279,8 @@ var Main = (function(){
 
 			//console.log(backgroundPos);
 
-			//$('body').css('background-position-y', (backgroundPos/2)+'px');
-			//$('#container').css('background-position-y', (backgroundPos)+'px');
+			$('body').css('background-position-y', (backgroundPos/2)+'px');
+			$('#container').css('background-position-y', (backgroundPos)+'px');
 
 			// Use arrows as debug controls
 			// Check if reverse powerup is taken and reverse the controls

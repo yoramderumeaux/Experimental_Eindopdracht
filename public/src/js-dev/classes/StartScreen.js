@@ -31,8 +31,8 @@ var StartScreen = (function(){
 		this.line.shadow = new createjs.Shadow('#00ADEE', 0, 0, 10);
 
 		this.leunText = new createjs.Text('Leun links en rechts om je raket te besturen', '18px ralewayLight', '#FFFFFF');
-		this.leunText.x = (canvasWidth - this.leunText.getBounds().width)/2;
-		this.leunText.y = 300;
+		this.leunText.x = -60;
+		this.leunText.y = 150;
 
 		var yOffset = -50;
 		var canvasPerc = (canvasHeight*0.68);
@@ -92,17 +92,68 @@ var StartScreen = (function(){
 		this.jumpText.y = canvasHeight - 80;
 		this.jumpText.x = (canvasWidth - this.jumpText.getBounds().width)/2;
 
+		this.ventjeContainer = new createjs.Container();
+
+		this.ventje = new createjs.Shape();
+		this.ventje.x = 0;
+		this.ventje.y = 0;
+		this.ventje.graphics.beginStroke('#00d2ff');
+		this.ventje.graphics.setStrokeStyle(2);
+		this.ventje.graphics.moveTo(0,104);
+		this.ventje.graphics.lineTo(97,104);
+		this.ventje.graphics.lineTo(77,84);
+		this.ventje.graphics.lineTo(20,84);
+		this.ventje.graphics.lineTo(0,104);
+		this.ventje.graphics.endStroke();
+		this.ventje.graphics.beginStroke('#ffffff');
+		this.ventje.graphics.moveTo(39,94);
+		this.ventje.graphics.lineTo(37,77);
+		this.ventje.graphics.lineTo(50,63);
+		this.ventje.graphics.lineTo(62,77);
+		this.ventje.graphics.lineTo(59,94);
+		this.ventje.graphics.moveTo(50,63);
+		this.ventje.graphics.lineTo(45,36);
+		this.ventje.graphics.lineTo(37,23);
+		this.ventje.graphics.moveTo(22,27);
+		this.ventje.graphics.lineTo(31,36);
+		this.ventje.graphics.lineTo(45,36);
+		this.ventje.graphics.lineTo(56,25);
+		this.ventje.graphics.lineTo(56,11);
+		this.ventje.graphics.endFill();
+		//this.ventje.graphics.moveTo(100,100);
+		// this.ventje.graphics.arc(13, 80, 30, 180, -Math.PI/3);
+
+		// this.ventje.graphics.endFill();
+		// this.ventje.graphics.arc(80, 80, 30, 180, -Math.PI/3);
+
+		this.ventje.graphics.beginStroke('#ffffff');
+		//this.ventje.graphics.moveTo(32,12);
+		this.ventje.graphics.drawCircle(32,12, 12);
+		this.ventje.graphics.endFill();
+		this.ventje.shadow = new createjs.Shadow('#00ADEE', 0, 0, 10);
+
+		this.ventje2 = this.ventje.clone();
+		this.ventje2.x = 250;
+		this.ventje2.scaleX *= -1;
+
+		this.ventjeContainer.addChild(this.ventje);
+		this.ventjeContainer.addChild(this.ventje2);
+		this.ventjeContainer.addChild(this.leunText);
+
+		this.ventjeContainer.x = (canvasWidth-250)/2;
+		this.ventjeContainer.y = canvasHeight * 0.27;
+
 		this.startContainer.x = 0;
 		this.startContainer.y = 0;
 		this.startContainer.addChild(this.text);
 		this.startContainer.addChild(this.jumpText);
 		this.startContainer.addChild(this.line);
-		this.startContainer.addChild(this.leunText);
 		this.startContainer.addChild(this.verzamelText);
 		this.startContainer.addChild(this.verzamelLine);
 		this.startContainer.addChild(this.ontwijkText);
 		this.startContainer.addChild(this.ontwijkLine);
 		this.startContainer.addChild(this.warpImage);
+		this.startContainer.addChild(this.ventjeContainer);
 
 	};
 
