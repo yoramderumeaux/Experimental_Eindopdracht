@@ -12,6 +12,7 @@ var CanvasSetup = (function(){
 	CanvasSetup.prototype.init = function() {
 		canvasHeight = $('body').height();
 		canvasWidth = canvasHeight/aspectRatio;
+		canvasWidth = Math.round(canvasWidth*100)/100;
 		this.$canvasElement.css('width', canvasWidth);
 	};
 

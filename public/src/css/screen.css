@@ -75,7 +75,7 @@ article, aside, details, figcaption, figure, footer, header, hgroup, menu, nav, 
 html, body {
   background-color: #000000;
   height: 100%;
-  font-size: 0.652em;
+  font-size: 62.5%;
 }
 
 /* line 17, ../sass/screen.scss */
@@ -122,6 +122,30 @@ body.connected #container {
   background-position-y: 20px;
 }
 /* line 56, ../sass/screen.scss */
+body.connected #container #fps {
+  position: absolute;
+  right: 10px;
+  bottom: 10px;
+  color: #777777;
+  font-family: monospace;
+  font-size: 3em;
+}
+/* line 64, ../sass/screen.scss */
+body.connected #container #fps.veryLow {
+  color: #f00;
+  font-weight: bold;
+}
+/* line 69, ../sass/screen.scss */
+body.connected #container #fps.low {
+  color: #ff0;
+  font-weight: bold;
+}
+/* line 74, ../sass/screen.scss */
+body.connected #container #fps.midLow {
+  color: #f90;
+  font-weight: bold;
+}
+/* line 80, ../sass/screen.scss */
 body.connected #container #timer {
   display: block;
   color: #fff;
@@ -129,7 +153,7 @@ body.connected #container #timer {
   top: 25%;
   left: 50%;
 }
-/* line 63, ../sass/screen.scss */
+/* line 87, ../sass/screen.scss */
 body.connected #container #timer p {
   display: block;
   position: relative;
@@ -144,7 +168,7 @@ body.connected #container #timer p {
   -ms-user-select: none;
   cursor: default;
 }
-/* line 79, ../sass/screen.scss */
+/* line 103, ../sass/screen.scss */
 body.connected #container #score {
   position: absolute;
   top: 10px;
@@ -154,12 +178,12 @@ body.connected #container #score {
   font-family: monospace;
   text-transform: uppercase;
 }
-/* line 88, ../sass/screen.scss */
+/* line 112, ../sass/screen.scss */
 body.connected #container #score #scoreValue {
   color: #eeeeee;
   font-size: 2em;
 }
-/* line 94, ../sass/screen.scss */
+/* line 118, ../sass/screen.scss */
 body.connected #container #cnvs {
   display: block;
   margin: 0 auto 0 auto;

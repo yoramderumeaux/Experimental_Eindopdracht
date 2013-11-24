@@ -46,6 +46,7 @@ var CanvasSetup = (function(){
 	CanvasSetup.prototype.init = function() {
 		canvasHeight = $('body').height();
 		canvasWidth = canvasHeight/aspectRatio;
+		canvasWidth = Math.round(canvasWidth*100)/100;
 		this.$canvasElement.css('width', canvasWidth);
 	};
 
@@ -149,7 +150,7 @@ var Main = (function(){
 	var meteoriteTimerValue = defaultMeteoriteTimerValue;
 	var defaultPowerupTimerValue = 2000;
 	var powerupTimerValue = defaultPowerupTimerValue;
-	var debugKeyboardControl = false;
+	var debugKeyboardControl = true;
 	var bulletCounter = 0;
 	var reversedControls = false;
 	var preventGameFromStopping = false;
@@ -364,6 +365,29 @@ var Main = (function(){
 
 	Main.prototype.update = function() {
 
+		//fps
+		var currentFPS = Math.round(ticker.getMeasuredFPS()*10)/10;
+		$('#fps').html(currentFPS);
+
+		if (currentFPS < 30) {
+			$('#fps').addClass('veryLow');			
+		}else if(currentFPS < 40){
+			$('#fps').addClass('midLow');
+		}else if(currentFPS < 50){	
+			$('#fps').addClass('low');
+		}else{
+			$('#fps').removeClass('veryLow').removeClass('low').removeClass('midLow');
+		}
+		
+		//	Space to shoot
+		if(keys[32]){
+
+			console.log('space');
+			if (debugKeyboardControl && startScreen) {
+				this.startGame();
+			}
+		}
+
 		if (timer.isRunning || preventGameFromStopping) {
 
 			this.cleanMeteorites();
@@ -379,6 +403,7 @@ var Main = (function(){
 			}
 
 			backgroundPos += (backgroundSpeed*gameSpeedFactor);
+			backgroundPos = Math.round(backgroundPos*10)/10;
 
 			$('body').css('background-position-y', (backgroundPos/2)+'px');
 			$('#container').css('background-position-y', (backgroundPos)+'px');
@@ -401,9 +426,8 @@ var Main = (function(){
 			if(keys[39]  && debugKeyboardControl) {
 				spaceShip.destinationPosition += (2 * reverseFactor);
 			}
-
-			//	Space to shoot
-			if (keys[32] || spaceShip.shootMode) {
+			
+			if (spaceShip.shootMode) {
 
 				if (spaceShip.capableToFly && spaceShip.shootMode) {
 					if (!bulletFired) {
@@ -1233,6 +1257,8 @@ var Score = (function(){
 
 var SocketConnection = (function(){
 
+	var connectionEstablished = false;
+
 	function SocketConnection() {
 		_.bindAll(this);
 	}
@@ -1258,12 +1284,15 @@ var SocketConnection = (function(){
 		});
 
 		socket.on('otherUserConnected', function(data) {
-			if (!data) {
+			if (!data && !connectionEstablished) {
+				connectionEstablished = true;
 				bean.fire(self, 'connectionOk');
-			}else{
+			}else if(!connectionEstablished){
 				socket.disconnect();
 				bean.fire(self, 'cancelConnection');
-			}
+			}else{
+				console.log('server reconnected');
+			}	
 		});
 	};
 
@@ -1744,9 +1773,11 @@ var SpaceShip = (function(){
 			}
 
 			flameFlickerTimer++;
+
+			var backgroundPos = Math.round((this.ship.x/26)*10)/10;
 			
-			$('body').css('background-position-x', (this.ship.x/26)+'px');
-			$('#container').css('background-position-x', (this.ship.x/13)+'px');
+			$('body').css('background-position-x', (backgroundPos)+'px');
+			$('#container').css('background-position-x', (backgroundPos*2)+'px');
 		}else{
 
 			if (this.ship.y < $('#cnvs').height() + 100 ){

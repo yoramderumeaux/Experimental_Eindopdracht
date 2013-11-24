@@ -2,6 +2,8 @@
 
 var SocketConnection = (function(){
 
+	var connectionEstablished = false;
+
 	function SocketConnection() {
 		_.bindAll(this);
 	}
@@ -27,12 +29,15 @@ var SocketConnection = (function(){
 		});
 
 		socket.on('otherUserConnected', function(data) {
-			if (!data) {
+			if (!data && !connectionEstablished) {
+				connectionEstablished = true;
 				bean.fire(self, 'connectionOk');
-			}else{
+			}else if(!connectionEstablished){
 				socket.disconnect();
 				bean.fire(self, 'cancelConnection');
-			}
+			}else{
+				console.log('server reconnected');
+			}	
 		});
 	};
 

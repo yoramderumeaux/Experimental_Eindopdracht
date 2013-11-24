@@ -21,7 +21,7 @@ var Main = (function(){
 	var meteoriteTimerValue = defaultMeteoriteTimerValue;
 	var defaultPowerupTimerValue = 2000;
 	var powerupTimerValue = defaultPowerupTimerValue;
-	var debugKeyboardControl = false;
+	var debugKeyboardControl = true;
 	var bulletCounter = 0;
 	var reversedControls = false;
 	var preventGameFromStopping = false;
@@ -236,6 +236,29 @@ var Main = (function(){
 
 	Main.prototype.update = function() {
 
+		//fps
+		var currentFPS = Math.round(ticker.getMeasuredFPS()*10)/10;
+		$('#fps').html(currentFPS);
+
+		if (currentFPS < 30) {
+			$('#fps').addClass('veryLow');			
+		}else if(currentFPS < 40){
+			$('#fps').addClass('midLow');
+		}else if(currentFPS < 50){	
+			$('#fps').addClass('low');
+		}else{
+			$('#fps').removeClass('veryLow').removeClass('low').removeClass('midLow');
+		}
+		
+		//	Space to shoot
+		if(keys[32]){
+
+			console.log('space');
+			if (debugKeyboardControl && startScreen) {
+				this.startGame();
+			}
+		}
+
 		if (timer.isRunning || preventGameFromStopping) {
 
 			this.cleanMeteorites();
@@ -251,6 +274,7 @@ var Main = (function(){
 			}
 
 			backgroundPos += (backgroundSpeed*gameSpeedFactor);
+			backgroundPos = Math.round(backgroundPos*10)/10;
 
 			$('body').css('background-position-y', (backgroundPos/2)+'px');
 			$('#container').css('background-position-y', (backgroundPos)+'px');
@@ -273,9 +297,8 @@ var Main = (function(){
 			if(keys[39]  && debugKeyboardControl) {
 				spaceShip.destinationPosition += (2 * reverseFactor);
 			}
-
-			//	Space to shoot
-			if (keys[32] || spaceShip.shootMode) {
+			
+			if (spaceShip.shootMode) {
 
 				if (spaceShip.capableToFly && spaceShip.shootMode) {
 					if (!bulletFired) {

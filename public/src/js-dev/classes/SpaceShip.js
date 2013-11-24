@@ -395,9 +395,11 @@ var SpaceShip = (function(){
 			}
 
 			flameFlickerTimer++;
+
+			var backgroundPos = Math.round((this.ship.x/26)*10)/10;
 			
-			$('body').css('background-position-x', (this.ship.x/26)+'px');
-			$('#container').css('background-position-x', (this.ship.x/13)+'px');
+			$('body').css('background-position-x', (backgroundPos)+'px');
+			$('#container').css('background-position-x', (backgroundPos*2)+'px');
 		}else{
 
 			if (this.ship.y < $('#cnvs').height() + 100 ){
