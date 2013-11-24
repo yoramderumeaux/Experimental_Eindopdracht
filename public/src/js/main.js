@@ -310,7 +310,7 @@ var Main = (function(){
 			var self = this;
 			score.updateScore(250);
 
-			powerupProgress.beginShootProgress(5000);
+			powerupProgress.beginShootProgress(4700);
 
 			setTimeout(function(){
 				self.togglePowerupShoot(false);
@@ -527,7 +527,7 @@ var Main = (function(){
 				for (var m = 0; m < powerups.length; m++) {
 					powerups[m].velY = 0.1;
 
-					if (!powerUpActive) {
+					if (!powerUpActive && spaceShip.capableToFly) {
 
 						if(CollisionDetection.checkCollisionCenterAnchor(spaceShip.ship, powerups[m].powerup) === 'hit'){
 							// Ship crashed into a powerup
