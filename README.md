@@ -7,7 +7,6 @@ Our HTML5 based game in combination with NodeJS for the socket connection with o
 ## To-do's
 ------------------
 - eindscherm met jouw score + hoogste score van de dag (cookie);
-- jump to restart
 - bulllet update in bullet class please
 - Geluidje voor tijdens de reverse
 - Show text on endScreen

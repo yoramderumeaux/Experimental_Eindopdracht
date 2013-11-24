@@ -10,7 +10,7 @@ var EndScreen = (function(){
 		this.endScore = endScore;
 		this.init();
 
-		$(document).on('click', this.restartGame);
+		//$(document).on('click', this.restartGame);
 
 		this.waiting = setInterval(this.showStartscreen, 10000);
 	}
@@ -35,7 +35,7 @@ var EndScreen = (function(){
 		this.line.y = 130;
 		this.line.shadow = new createjs.Shadow('#00ADEE', 0, 0, 10);
 
-		this.scoreText = new createjs.Text(this.endScore, '50px ralewayLight', '#FFFFFF');
+		this.scoreText = new createjs.Text(this.endScore, '50px menschWeb', '#FFFFFF');
 		this.scoreText.x = (canvasWidth - this.text.getBounds().width)/2;
 		this.scoreText.y = (canvasHeight - this.text.getBounds().height)/2;
 
@@ -56,6 +56,8 @@ var EndScreen = (function(){
 
 	EndScreen.prototype.restartGame = function(e) {
 		var self = this;
+		$(document).off('click', this.restartGame);
+		console.log(e.currentTarget);
 		bean.fire(this, 'startGame');
 	};
 

@@ -102,7 +102,7 @@ var EndScreen = (function(){
 		this.endScore = endScore;
 		this.init();
 
-		$(document).on('click', this.restartGame);
+		//$(document).on('click', this.restartGame);
 
 		this.waiting = setInterval(this.showStartscreen, 10000);
 	}
@@ -127,7 +127,7 @@ var EndScreen = (function(){
 		this.line.y = 130;
 		this.line.shadow = new createjs.Shadow('#00ADEE', 0, 0, 10);
 
-		this.scoreText = new createjs.Text(this.endScore, '50px ralewayLight', '#FFFFFF');
+		this.scoreText = new createjs.Text(this.endScore, '50px menschWeb', '#FFFFFF');
 		this.scoreText.x = (canvasWidth - this.text.getBounds().width)/2;
 		this.scoreText.y = (canvasHeight - this.text.getBounds().height)/2;
 
@@ -148,6 +148,8 @@ var EndScreen = (function(){
 
 	EndScreen.prototype.restartGame = function(e) {
 		var self = this;
+		$(document).off('click', this.restartGame);
+		console.log(e.currentTarget);
 		bean.fire(this, 'startGame');
 	};
 
@@ -216,8 +218,8 @@ var Main = (function(){
 
 		// sound init
 		sound = new Sound();
-		sound.playBackgroundMusic("BackgroundMusic_EXD");
-		//sound.playBackgroundMusic("backgroundmusictest");
+		//sound.playBackgroundMusic("BackgroundMusic_EXD");
+		sound.playBackgroundMusic("backgroundmusictest");
 		sound.playRocketSound("rocket");
 
 		// spaceShip init
@@ -409,6 +411,13 @@ var Main = (function(){
 
 			console.log('space');
 			if (debugKeyboardControl && startScreen) {
+				this.startGame();
+			}
+		}	
+
+		if (keys[82]) {
+			if ((endScreen || startScreen) && !timer.isRunning) {
+				console.log('restart game');
 				this.startGame();
 			}
 		}
@@ -654,6 +663,7 @@ var Main = (function(){
 
 		// Call EndScreen and clear object from screen
 		//spaceShip.ship.alpha = 0;
+		$('#score').hide();
 		endScreen = new EndScreen(endScore);
 		bean.on(endScreen, 'startGame', this.startGame);
 		bean.on(endScreen, 'showStartScreen', this.showStartScreen);
@@ -662,6 +672,8 @@ var Main = (function(){
 	};
 
 	Main.prototype.startGame = function(){
+
+		$('#score').show();
 
 		bean.off(startScreen, 'startGame', this.startGame);
 		bean.off(endScreen, 'startGame', this.startGame);
@@ -695,6 +707,8 @@ var Main = (function(){
 	};
 
 	Main.prototype.showStartScreen = function(){
+
+		$('#score').hide();
 
 		bean.off(endScreen, 'showStartScreen', this.showStartScreen);
 
@@ -1899,10 +1913,12 @@ var StartScreen = (function(){
 	function StartScreen() {
 		_.bindAll(this);
 		this.init();
-		$(document).on('click', this.restartGame);
+		//$(document).on('click', this.restartGame);
 	}
 
 	StartScreen.prototype.init = function() {
+
+		$('#score').hide();
 
 		canvasWidth = $('#cnvs').width() +5;
 		canvasHeight = $('#cnvs').height()+5;
@@ -2051,6 +2067,7 @@ var StartScreen = (function(){
 
 	StartScreen.prototype.restartGame = function(e) {
 		var self = this;
+		$(document).off('click', this.restartGame);
 		bean.fire(this, 'startGame');
 	};
 
@@ -2070,6 +2087,7 @@ var Timer = (function(){
 		this.isRunning = false;
 		this.timer = this.timerValue;
 		numberOfEvents = Math.floor(this.timerValue/10);
+
 		//$('#timer p').html(this.timer);
 	}
 
@@ -2080,6 +2098,7 @@ var Timer = (function(){
 		eventTimer = 1;
 		this.update();
 		myTimer =  setInterval(this.update, 1000);
+
 	};
 
 	Timer.prototype.stop = function() {

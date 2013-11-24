@@ -8,10 +8,12 @@ var StartScreen = (function(){
 	function StartScreen() {
 		_.bindAll(this);
 		this.init();
-		$(document).on('click', this.restartGame);
+		//$(document).on('click', this.restartGame);
 	}
 
 	StartScreen.prototype.init = function() {
+
+		$('#score').hide();
 
 		canvasWidth = $('#cnvs').width() +5;
 		canvasHeight = $('#cnvs').height()+5;
@@ -160,6 +162,7 @@ var StartScreen = (function(){
 
 	StartScreen.prototype.restartGame = function(e) {
 		var self = this;
+		$(document).off('click', this.restartGame);
 		bean.fire(this, 'startGame');
 	};
 

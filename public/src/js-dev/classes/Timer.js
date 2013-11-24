@@ -10,6 +10,7 @@ var Timer = (function(){
 		this.isRunning = false;
 		this.timer = this.timerValue;
 		numberOfEvents = Math.floor(this.timerValue/10);
+
 		//$('#timer p').html(this.timer);
 	}
 
@@ -20,6 +21,7 @@ var Timer = (function(){
 		eventTimer = 1;
 		this.update();
 		myTimer =  setInterval(this.update, 1000);
+
 	};
 
 	Timer.prototype.stop = function() {

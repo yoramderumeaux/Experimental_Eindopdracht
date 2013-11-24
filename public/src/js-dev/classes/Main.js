@@ -59,8 +59,8 @@ var Main = (function(){
 
 		// sound init
 		sound = new Sound();
-		sound.playBackgroundMusic("BackgroundMusic_EXD");
-		//sound.playBackgroundMusic("backgroundmusictest");
+		//sound.playBackgroundMusic("BackgroundMusic_EXD");
+		sound.playBackgroundMusic("backgroundmusictest");
 		sound.playRocketSound("rocket");
 
 		// spaceShip init
@@ -252,6 +252,13 @@ var Main = (function(){
 
 			console.log('space');
 			if (debugKeyboardControl && startScreen) {
+				this.startGame();
+			}
+		}	
+
+		if (keys[82]) {
+			if ((endScreen || startScreen) && !timer.isRunning) {
+				console.log('restart game');
 				this.startGame();
 			}
 		}
@@ -497,6 +504,7 @@ var Main = (function(){
 
 		// Call EndScreen and clear object from screen
 		//spaceShip.ship.alpha = 0;
+		$('#score').hide();
 		endScreen = new EndScreen(endScore);
 		bean.on(endScreen, 'startGame', this.startGame);
 		bean.on(endScreen, 'showStartScreen', this.showStartScreen);
@@ -505,6 +513,8 @@ var Main = (function(){
 	};
 
 	Main.prototype.startGame = function(){
+
+		$('#score').show();
 
 		bean.off(startScreen, 'startGame', this.startGame);
 		bean.off(endScreen, 'startGame', this.startGame);
@@ -538,6 +548,8 @@ var Main = (function(){
 	};
 
 	Main.prototype.showStartScreen = function(){
+
+		$('#score').hide();
 
 		bean.off(endScreen, 'showStartScreen', this.showStartScreen);
 
