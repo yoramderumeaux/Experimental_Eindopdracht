@@ -171,7 +171,7 @@ var Main = (function(){
 	var meteoriteTimerValue = defaultMeteoriteTimerValue;
 	var defaultPowerupTimerValue = 2000;
 	var powerupTimerValue = defaultPowerupTimerValue;
-	var debugKeyboardControl = true;
+	var debugKeyboardControl = false;
 	var bulletCounter = 0;
 	var reversedControls = false;
 	var preventGameFromStopping = false;
@@ -658,13 +658,11 @@ var Main = (function(){
 	};
 
 	Main.prototype.restartGame = function() {
-		console.log('RESTART');
-		stage.removeChild(endScreen.endContainer);
-		bean.off(endScreen, 'restartGame', this.restartGame);
-		endScreen.endContainer = null;
-		console.log(meteorites.length);
+		// stage.removeChild(endScreen.endContainer);
+		// bean.off(endScreen, 'restartGame', this.restartGame);
+		// endScreen.endContainer = null;
 
-		this.startGame();
+		// this.startGame();
 	};
 
 	Main.prototype.startGame = function(){
@@ -672,6 +670,11 @@ var Main = (function(){
 		if (startScreen) {
 			stage.removeChild(startScreen.startContainer);
 			startScreen = null;	
+		}
+
+		if (endScreen) {
+			stage.removeChild(endScreen.endContainer);
+			endScreen.endContainer = null;
 		}
 		
 		stage.addChild(spaceShip.ship);
