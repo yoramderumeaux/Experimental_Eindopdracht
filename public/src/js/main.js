@@ -252,6 +252,7 @@ var Main = (function(){
 		stage.addChild(startScreen.startContainer);
 
 		//this.startGame();
+		sound.toggleMute();
 	};
 
 	Main.prototype.togglePowerUpWarp = function(enablePowerUp){
@@ -739,26 +740,26 @@ var Main = (function(){
 		// var date = new Date();
 		// date = date.getHours() + ':' + date.getMinutes() + ':' + date.getSeconds();		
 		// console.log('[MAIN] add meteorite ' + date);
-		if (Math.round(Math.random()*3) > 0 || 1 === 1) {
-			var randomX = Math.random()*($('#cnvs').width());
+		
+		var randomX = Math.random()*($('#cnvs').width());
 
-			meteorite = new Meteorite(randomX, -100);
+		meteorite = new Meteorite(randomX, -100);
 
-			meteorite.speedFactor = gameSpeedFactor;
+		meteorite.speedFactor = gameSpeedFactor;
 
-			meteorite.init();
+		meteorite.init();
 
-			if (spaceShip.warpSpeed) {
-				meteorite.enableWarpSpeed = true;
+		if (spaceShip.warpSpeed) {
+			meteorite.enableWarpSpeed = true;
 
-			}else{
-				meteorite.enableWarpSpeed = false;
-				spaceShip.shipImmune = false;
-			}
-
-			meteorites.push(meteorite);
-			stage.addChild(meteorite.meteorite);
+		}else{
+			meteorite.enableWarpSpeed = false;
+			spaceShip.shipImmune = false;
 		}
+
+		meteorites.push(meteorite);
+		stage.addChild(meteorite.meteorite);
+		
 	};
 
 	Main.prototype.speedUpGame = function(){
@@ -1875,10 +1876,16 @@ var StartScreen = (function(){
 		this.line.y = 130;
 		this.line.shadow = new createjs.Shadow('#00ADEE', 0, 0, 10);
 
+		this.leunText = new createjs.Text('Leun links en rechts om je raket te besturen', '18px ralewayLight', '#FFFFFF');
+		this.leunText.x = (canvasWidth - this.leunText.getBounds().width)/2;
+		this.leunText.y = 300;
+
+		var yOffset = -50;
+		var canvasPerc = (canvasHeight*0.68);
 
 		this.verzamelText = new createjs.Text('Verzamel', '18px ralewayLight', '#FFFFFF');
 		this.verzamelText.x = 60;
-		this.verzamelText.y = 520;
+		this.verzamelText.y = canvasPerc + yOffset;
 
 		this.verzamelLine = new createjs.Shape();
 		this.verzamelLine.graphics.beginStroke('#ffffff');
@@ -1886,12 +1893,12 @@ var StartScreen = (function(){
 		this.verzamelLine.graphics.moveTo(0,0);
 		this.verzamelLine.graphics.lineTo(canvasWidth*0.33, 0);
 		this.verzamelLine.x = 60;
-		this.verzamelLine.y = 550;
+		this.verzamelLine.y = canvasPerc +30 + yOffset;
 		this.verzamelLine.shadow = new createjs.Shadow('#00ADEE', 0, 0, 10);
 
 		this.ontwijkText = new createjs.Text('Ontwijk', '18px ralewayLight', '#FFFFFF');
 		this.ontwijkText.x = canvasWidth - 60 - this.ontwijkText.getBounds().width;
-		this.ontwijkText.y = 520;
+		this.ontwijkText.y = canvasPerc+ yOffset;
 
 		this.ontwijkLine = new createjs.Shape();
 		this.ontwijkLine.graphics.beginStroke('#ffffff');
@@ -1899,36 +1906,36 @@ var StartScreen = (function(){
 		this.ontwijkLine.graphics.moveTo(0,0);
 		this.ontwijkLine.graphics.lineTo(canvasWidth*0.33, 0);
 		this.ontwijkLine.x = canvasWidth - 60 - canvasWidth*0.33;
-		this.ontwijkLine.y = 550;
+		this.ontwijkLine.y = canvasPerc + 30 + yOffset;
 		this.ontwijkLine.shadow = new createjs.Shadow('#00ADEE', 0, 0, 10);
 
 		//afbeeldingen hier!
 		var warpPowerup = new Powerup();
 		warpPowerup.init('warp');
 		warpPowerup.powerup.x = 60+25;
-		warpPowerup.powerup.y = 600;
+		warpPowerup.powerup.y = canvasPerc + 80 + yOffset;
 		this.startContainer.addChild(warpPowerup.powerup);
 
 		var shootPowerup = new Powerup();
 		shootPowerup.init('shoot');
 		shootPowerup.powerup.x = 60+25+75;
-		shootPowerup.powerup.y = 600;
+		shootPowerup.powerup.y = canvasPerc + 80+ yOffset;
 		this.startContainer.addChild(shootPowerup.powerup);
 
 		var reversePowerup = new Powerup();
 		reversePowerup.init('reverse');
 		reversePowerup.powerup.x = canvasWidth - 60 - 25 - 75;
-		reversePowerup.powerup.y = 600;
+		reversePowerup.powerup.y = canvasPerc + 80+ yOffset;
 		this.startContainer.addChild(reversePowerup.powerup);
 
 		var meteorite = new Meteorite();
 		meteorite.init();
 		meteorite.meteorite.x = canvasWidth - 60 - 25;
-		meteorite.meteorite.y = 600;
+		meteorite.meteorite.y = canvasPerc+80+ yOffset;
 		this.startContainer.addChild(meteorite.meteorite);
 
 		this.jumpText = new createjs.Text('Spring om te beginnen', '25px ralewayLight', '#FFFFFF');		
-		this.jumpText.y = 250;
+		this.jumpText.y = canvasHeight - 80;
 		this.jumpText.x = (canvasWidth - this.jumpText.getBounds().width)/2;
 
 		this.startContainer.x = 0;
@@ -1936,6 +1943,7 @@ var StartScreen = (function(){
 		this.startContainer.addChild(this.text);
 		this.startContainer.addChild(this.jumpText);
 		this.startContainer.addChild(this.line);
+		this.startContainer.addChild(this.leunText);
 		this.startContainer.addChild(this.verzamelText);
 		this.startContainer.addChild(this.verzamelLine);
 		this.startContainer.addChild(this.ontwijkText);

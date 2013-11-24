@@ -123,6 +123,7 @@ var Main = (function(){
 		stage.addChild(startScreen.startContainer);
 
 		//this.startGame();
+		sound.toggleMute();
 	};
 
 	Main.prototype.togglePowerUpWarp = function(enablePowerUp){
@@ -610,26 +611,26 @@ var Main = (function(){
 		// var date = new Date();
 		// date = date.getHours() + ':' + date.getMinutes() + ':' + date.getSeconds();		
 		// console.log('[MAIN] add meteorite ' + date);
-		if (Math.round(Math.random()*3) > 0 || 1 === 1) {
-			var randomX = Math.random()*($('#cnvs').width());
+		
+		var randomX = Math.random()*($('#cnvs').width());
 
-			meteorite = new Meteorite(randomX, -100);
+		meteorite = new Meteorite(randomX, -100);
 
-			meteorite.speedFactor = gameSpeedFactor;
+		meteorite.speedFactor = gameSpeedFactor;
 
-			meteorite.init();
+		meteorite.init();
 
-			if (spaceShip.warpSpeed) {
-				meteorite.enableWarpSpeed = true;
+		if (spaceShip.warpSpeed) {
+			meteorite.enableWarpSpeed = true;
 
-			}else{
-				meteorite.enableWarpSpeed = false;
-				spaceShip.shipImmune = false;
-			}
-
-			meteorites.push(meteorite);
-			stage.addChild(meteorite.meteorite);
+		}else{
+			meteorite.enableWarpSpeed = false;
+			spaceShip.shipImmune = false;
 		}
+
+		meteorites.push(meteorite);
+		stage.addChild(meteorite.meteorite);
+		
 	};
 
 	Main.prototype.speedUpGame = function(){
