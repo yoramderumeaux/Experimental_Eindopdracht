@@ -64,7 +64,7 @@ var rightSensorBottomVal = 0;
 var leftJumpLog = [];
 var rightJumpLog = [];
 var jumpThreshold = 30;
-var jumpIntervalTime = 500; //ms
+var jumpIntervalTime = 750; //ms
 
 var horizontalPosition = 50;
 var emitIntervalTime = 1000/10;
