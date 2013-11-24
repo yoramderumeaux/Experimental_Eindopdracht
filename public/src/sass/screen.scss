@@ -41,6 +41,26 @@ body.connected {
 		top: 10px;
 		color: #9f9;
 		font-size: 4em;
+
+		embed{
+			width: 40px;
+			height: 40px;
+			@include opacity(0.6);
+
+			&:hover{
+				@include opacity(1);
+			}	
+		}
+
+		&.unmuted{
+			.unmute{display: block;}
+			.mute{display: none;}
+		}
+
+		&.muted{
+			.unmute{display: none;}
+			.mute{display: block;}
+		}
 	}
 	
 	background-image: url('../images/starryBackgroundBlur.png');

@@ -71,6 +71,22 @@ article, aside, details, figcaption, figure, footer, header, hgroup, menu, nav, 
   font-style: normal;
 }
 
+@font-face {
+  font-family: "CFSpaceship";
+  src: url("../fonts/cfspaceship-regular-webfont.eot");
+  src: url("../fonts/cfspaceship-regular-webfont.eot?#iefix") format("embedded-opentype"), url("../fonts/cfspaceship-regular-webfont.woff") format("woff"), url("../fonts/cfspaceship-regular-webfont.ttf") format("truetype"), url("../fonts/cfspaceship-regular-webfont.svg#../fonts/cfspaceship-regular-webfont") format("svg");
+  font-weight: normal;
+  font-style: normal;
+}
+
+@font-face {
+  font-family: "ralewayLight";
+  src: url("../fonts/raleway-light-webfont.eot");
+  src: url("../fonts/raleway-light-webfont.eot?#iefix") format("embedded-opentype"), url("../fonts/raleway-light-webfont.woff") format("woff"), url("../fonts/raleway-light-webfont.ttf") format("truetype"), url("../fonts/raleway-light-webfont.svg#../fonts/raleway-light-webfont") format("svg");
+  font-weight: normal;
+  font-style: normal;
+}
+
 /* line 10, ../sass/screen.scss */
 html, body {
   background-color: #000000;
@@ -112,7 +128,35 @@ body.connected #mute {
   color: #9f9;
   font-size: 4em;
 }
-/* line 48, ../sass/screen.scss */
+/* line 45, ../sass/screen.scss */
+body.connected #mute embed {
+  width: 40px;
+  height: 40px;
+  filter: progid:DXImageTransform.Microsoft.Alpha(Opacity=60);
+  opacity: 0.6;
+}
+/* line 50, ../sass/screen.scss */
+body.connected #mute embed:hover {
+  filter: progid:DXImageTransform.Microsoft.Alpha(Opacity=100);
+  opacity: 1;
+}
+/* line 56, ../sass/screen.scss */
+body.connected #mute.unmuted .unmute {
+  display: block;
+}
+/* line 57, ../sass/screen.scss */
+body.connected #mute.unmuted .mute {
+  display: none;
+}
+/* line 61, ../sass/screen.scss */
+body.connected #mute.muted .unmute {
+  display: none;
+}
+/* line 62, ../sass/screen.scss */
+body.connected #mute.muted .mute {
+  display: block;
+}
+/* line 68, ../sass/screen.scss */
 body.connected #container {
   display: block;
   width: 100%;
@@ -121,7 +165,7 @@ body.connected #container {
   background-position-x: 40px;
   background-position-y: 20px;
 }
-/* line 56, ../sass/screen.scss */
+/* line 76, ../sass/screen.scss */
 body.connected #container #fps {
   position: absolute;
   right: 10px;
@@ -130,22 +174,22 @@ body.connected #container #fps {
   font-family: monospace;
   font-size: 3em;
 }
-/* line 64, ../sass/screen.scss */
+/* line 84, ../sass/screen.scss */
 body.connected #container #fps.veryLow {
   color: #f00;
   font-weight: bold;
 }
-/* line 69, ../sass/screen.scss */
+/* line 89, ../sass/screen.scss */
 body.connected #container #fps.low {
   color: #ff0;
   font-weight: bold;
 }
-/* line 74, ../sass/screen.scss */
+/* line 94, ../sass/screen.scss */
 body.connected #container #fps.midLow {
   color: #f90;
   font-weight: bold;
 }
-/* line 80, ../sass/screen.scss */
+/* line 100, ../sass/screen.scss */
 body.connected #container #timer {
   display: block;
   color: #fff;
@@ -153,7 +197,7 @@ body.connected #container #timer {
   top: 25%;
   left: 50%;
 }
-/* line 87, ../sass/screen.scss */
+/* line 107, ../sass/screen.scss */
 body.connected #container #timer p {
   display: block;
   position: relative;
@@ -168,7 +212,7 @@ body.connected #container #timer p {
   -ms-user-select: none;
   cursor: default;
 }
-/* line 103, ../sass/screen.scss */
+/* line 123, ../sass/screen.scss */
 body.connected #container #score {
   position: absolute;
   top: 10px;
@@ -178,12 +222,12 @@ body.connected #container #score {
   font-family: monospace;
   text-transform: uppercase;
 }
-/* line 112, ../sass/screen.scss */
+/* line 132, ../sass/screen.scss */
 body.connected #container #score #scoreValue {
   color: #eeeeee;
   font-size: 2em;
 }
-/* line 118, ../sass/screen.scss */
+/* line 138, ../sass/screen.scss */
 body.connected #container #cnvs {
   display: block;
   margin: 0 auto 0 auto;

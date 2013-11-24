@@ -21,7 +21,7 @@ var Main = (function(){
 	var meteoriteTimerValue = defaultMeteoriteTimerValue;
 	var defaultPowerupTimerValue = 2000;
 	var powerupTimerValue = defaultPowerupTimerValue;
-	var debugKeyboardControl = true;
+	var debugKeyboardControl = false;
 	var bulletCounter = 0;
 	var reversedControls = false;
 	var preventGameFromStopping = false;
@@ -58,8 +58,8 @@ var Main = (function(){
 
 		// sound init
 		sound = new Sound();
-		//sound.playBackgroundMusic("BackgroundMusic_EXD");
-		sound.playBackgroundMusic("backgroundmusictest");
+		sound.playBackgroundMusic("BackgroundMusic_EXD");
+		//sound.playBackgroundMusic("backgroundmusictest");
 		sound.playRocketSound("rocket");
 
 		// spaceShip init
@@ -121,7 +121,6 @@ var Main = (function(){
 
 		startScreen = new StartScreen();
 		stage.addChild(startScreen.startContainer);
-		stage.update();
 
 		//this.startGame();
 	};
@@ -276,8 +275,10 @@ var Main = (function(){
 			backgroundPos += (backgroundSpeed*gameSpeedFactor);
 			backgroundPos = Math.round(backgroundPos*10)/10;
 
-			$('body').css('background-position-y', (backgroundPos/2)+'px');
-			$('#container').css('background-position-y', (backgroundPos)+'px');
+			//console.log(backgroundPos);
+
+			//$('body').css('background-position-y', (backgroundPos/2)+'px');
+			//$('#container').css('background-position-y', (backgroundPos)+'px');
 
 			// Use arrows as debug controls
 			// Check if reverse powerup is taken and reverse the controls
@@ -446,8 +447,10 @@ var Main = (function(){
 
 			spaceShip.update();
 			powerupProgress.update();
-			stage.update();
+			
 		}
+
+		stage.update();
 	
 	};
 
@@ -491,6 +494,7 @@ var Main = (function(){
 
 		score.reset();
 		spaceShip.reset();
+		sound.changeRocketVolume(0);
 		powerupProgress.reset();
 
 		// Call EndScreen and clear object from screen
@@ -498,8 +502,6 @@ var Main = (function(){
 		endScreen = new EndScreen(endScore);
 		bean.on(endScreen, 'restartGame', this.restartGame);
 		stage.addChild(endScreen.endContainer);
-
-		stage.update();
 
 		//ssetTimeout(this.startGame, 500);
 	};

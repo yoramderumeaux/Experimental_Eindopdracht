@@ -22,9 +22,25 @@ var Powerup = (function(){
 		this.collected = false;
 	}
 
-	Powerup.prototype.init = function() {	
+	Powerup.prototype.init = function(type) {	
 		this.speed = (30+ Math.round(Math.random()*30)) * this.speedFactor;
-		this.randomNumber = Math.floor(Math.random()*types.length);
+		if (!type) {
+			this.randomNumber = Math.floor(Math.random()*types.length);	
+		}else{
+			console.log(type);
+			switch(type){
+				case 'warp':
+				this.randomNumber = 1;
+				break;
+				case 'shoot':
+				this.randomNumber = 0;
+				break;
+				case 'reverse':
+				this.randomNumber = 2;
+				break;
+			}
+		}
+		
 		//this.randomNumber = 1;
 		this.type = types[this.randomNumber];
 		this.drawPowerup();

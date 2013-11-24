@@ -14,5 +14,6 @@ Our HTML5 based game in combination with NodeJS for the socket connection with o
 - betere random voor meteorieten
 - Geluidje voor tijdens de reverse
 - Show text on endScreen
+- sterren bewegen in menu!
 
 ## Tijd over

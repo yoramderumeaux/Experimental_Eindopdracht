@@ -52,7 +52,7 @@ var Sound = (function(){
 
 	Sound.prototype.playRocketSound = function(soundName) {
 		this.rocketSound = new buzz.sound('../sound/' + soundName);
-		this.rocketSound.setVolume(50);
+		this.rocketSound.setVolume(0);
 		this.rocketSound.loop();
 		this.rocketSound.play();
 

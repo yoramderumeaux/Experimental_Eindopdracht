@@ -89,6 +89,8 @@ var Meteorite = (function(){
 		this.meteorite.graphics.setStrokeStyle(3);
 		if(enableFill) {this.meteorite.graphics.beginFill('rgba(206, 75,29,0.1)');}
 
+		
+
 		var randomMeteorite = meteoriteShapes[Math.round(Math.random()*2)];
 
 		var shapeWidthMin = 10000;

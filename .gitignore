@@ -2,3 +2,7 @@ public/.sass-cache
 public/.sass-cache/298127284396f1f688655d6b8a7129485a67680d/screen.scssc
 
 public/.sass-cache/298127284396f1f688655d6b8a7129485a67680d/screen.scssc
+
+*.scssc
+
+public/.sass-cache/298127284396f1f688655d6b8a7129485a67680d/_webfonts.scssc
