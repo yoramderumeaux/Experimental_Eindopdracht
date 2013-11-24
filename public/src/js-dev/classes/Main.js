@@ -119,12 +119,8 @@ var Main = (function(){
 		ticker = createjs.Ticker;
 		ticker.setFPS(60);
 		ticker.addEventListener('tick', this.update);
-
-		startScreen = new StartScreen();
-		stage.addChild(startScreen.startContainer);
-
-		//this.startGame();
-		sound.toggleMute();
+		
+		this.showStartScreen();
 	};
 
 	Main.prototype.togglePowerUpWarp = function(enablePowerUp){
@@ -502,21 +498,17 @@ var Main = (function(){
 		// Call EndScreen and clear object from screen
 		//spaceShip.ship.alpha = 0;
 		endScreen = new EndScreen(endScore);
-		bean.on(endScreen, 'restartGame', this.restartGame);
+		bean.on(endScreen, 'startGame', this.startGame);
+		bean.on(endScreen, 'showStartScreen', this.showStartScreen);
+		
 		stage.addChild(endScreen.endContainer);
-
-		//ssetTimeout(this.startGame, 500);
-	};
-
-	Main.prototype.restartGame = function() {
-		// stage.removeChild(endScreen.endContainer);
-		// bean.off(endScreen, 'restartGame', this.restartGame);
-		// endScreen.endContainer = null;
-
-		// this.startGame();
 	};
 
 	Main.prototype.startGame = function(){
+
+		bean.off(startScreen, 'startGame', this.startGame);
+		bean.off(endScreen, 'startGame', this.startGame);
+		bean.off(endScreen, 'showStartScreen', this.showStartScreen);
 
 		if (startScreen) {
 			stage.removeChild(startScreen.startContainer);
@@ -537,11 +529,27 @@ var Main = (function(){
 		timer.start();
 		spaceShip.ship.alpha = 1;
 		this.toggleMeteoriteTimer(true);
+		var self = this;
 		setTimeout(function() {
-			this.togglePowerupTimer(true);
+			self.togglePowerupTimer(true);
 		}, 5000);
 
 		console.log(meteorites);
+	};
+
+	Main.prototype.showStartScreen = function(){
+
+		bean.off(endScreen, 'showStartScreen', this.showStartScreen);
+
+		if (endScreen) {
+			stage.removeChild(endScreen.endContainer);
+			endScreen.endContainer = null;
+		}
+
+		startScreen = new StartScreen();
+		stage.addChild(startScreen.startContainer);
+
+		bean.on(startScreen, 'startGame', this.startGame);
 	};
 
 	Main.prototype.toggleMeteoriteTimer = function(bool){

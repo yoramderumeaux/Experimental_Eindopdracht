@@ -3,13 +3,16 @@ var EndScreen = (function(){
 	var canvasWidth = 0;
 	var canvasHeight = 0;
 
+
 	function EndScreen(endScore) {
 		_.bindAll(this);
 		
 		this.endScore = endScore;
 		this.init();
 
-		//$(document).on('click', this.restartGame);
+		$(document).on('click', this.restartGame);
+
+		this.waiting = setInterval(this.showStartscreen, 10000);
 	}
 
 	EndScreen.prototype.init = function() {
@@ -44,11 +47,18 @@ var EndScreen = (function(){
 		this.endContainer.addChild(this.line);
 		this.endContainer.addChild(this.jumpText);
 		this.endContainer.addChild(this.scoreText);
+
+
+	};
+
+	EndScreen.prototype.showStartscreen = function(){
+		clearInterval(this.waiting);
+		bean.fire(this, 'showStartScreen');
 	};
 
 	EndScreen.prototype.restartGame = function(e) {
 		var self = this;
-		bean.fire(this, 'restartGame');
+		bean.fire(this, 'startGame');
 	};
 
 	return EndScreen;

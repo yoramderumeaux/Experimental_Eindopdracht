@@ -8,6 +8,7 @@ var StartScreen = (function(){
 	function StartScreen() {
 		_.bindAll(this);
 		this.init();
+		$(document).on('click', this.restartGame);
 	}
 
 	StartScreen.prototype.init = function() {
@@ -155,6 +156,11 @@ var StartScreen = (function(){
 		this.startContainer.addChild(this.warpImage);
 		this.startContainer.addChild(this.ventjeContainer);
 
+	};
+
+	StartScreen.prototype.restartGame = function(e) {
+		var self = this;
+		bean.fire(this, 'startGame');
 	};
 
 	return StartScreen;

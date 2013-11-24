@@ -132,8 +132,8 @@ body.connected #mute {
 body.connected #mute img {
   width: 40px;
   height: 40px;
-  filter: progid:DXImageTransform.Microsoft.Alpha(Opacity=60);
-  opacity: 0.6;
+  filter: progid:DXImageTransform.Microsoft.Alpha(Opacity=30);
+  opacity: 0.3;
 }
 /* line 50, ../sass/screen.scss */
 body.connected #mute img:hover {

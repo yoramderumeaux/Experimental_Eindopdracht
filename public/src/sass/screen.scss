@@ -45,7 +45,7 @@ body.connected {
 		img{
 			width: 40px;
 			height: 40px;
-			@include opacity(0.6);
+			@include opacity(0.3);
 
 			&:hover{
 				@include opacity(1);
