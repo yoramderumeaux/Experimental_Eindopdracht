@@ -138,9 +138,7 @@ var EndScreen = (function(){
 		this.endContainer.addChild(this.text);
 		this.endContainer.addChild(this.line);
 		this.endContainer.addChild(this.jumpText);
-		this.endContainer.addChild(this.scoreText);
-
-
+		this.endContainer.addChild(this.scoreText);	
 	};
 
 	EndScreen.prototype.showStartscreen = function(){
