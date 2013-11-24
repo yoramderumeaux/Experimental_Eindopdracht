@@ -129,14 +129,14 @@ body.connected #mute {
   font-size: 4em;
 }
 /* line 45, ../sass/screen.scss */
-body.connected #mute embed {
+body.connected #mute img {
   width: 40px;
   height: 40px;
   filter: progid:DXImageTransform.Microsoft.Alpha(Opacity=60);
   opacity: 0.6;
 }
 /* line 50, ../sass/screen.scss */
-body.connected #mute embed:hover {
+body.connected #mute img:hover {
   filter: progid:DXImageTransform.Microsoft.Alpha(Opacity=100);
   opacity: 1;
 }

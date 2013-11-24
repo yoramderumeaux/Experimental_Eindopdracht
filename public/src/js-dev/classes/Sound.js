@@ -2,6 +2,8 @@
 
 var Sound = (function(){
 
+	var muted = false;
+
 	function Sound() {
 		_.bindAll(this);
 		this.init();
@@ -14,15 +16,31 @@ var Sound = (function(){
 	};
 
 	Sound.prototype.toggleMute = function(){
-		for (var i = 0; i < buzz.sounds.length; i++) {
+		console.log('toggle mute');
+		/*for (var i = 0; i < buzz.sounds.length; i++) {
 			buzz.sounds[i].toggleMute();
+		}*/	
+		muted = !muted;
+
+		if (muted) {
+			$('#mute').removeClass('unmuted').addClass('muted');
+			buzz.all().mute();	
+		}else{
+			$('#mute').removeClass('muted').addClass('unmuted');
+			buzz.all().unmute();	
 		}
+		
 	};
 
 	Sound.prototype.playEffectWithVolume = function(soundName, volume) {
 		//buzz.defaults.loop = false;
 		var effectSound = new buzz.sound('../sound/' + soundName);
-		effectSound.setVolume(volume);
+		if (!muted) {
+			effectSound.setVolume(volume);	
+		}else{
+			effectSound.setVolume(0);	
+		}
+		
 		effectSound.play();
 	};
 
@@ -47,7 +65,13 @@ var Sound = (function(){
 
 	Sound.prototype.changeRocketVolume = function(value){
 		var soundVolume = Math.round(Math.abs(value));
-		this.rocketSound.setVolume(20 + (soundVolume*8));
+
+		if (!muted) {
+			this.rocketSound.setVolume(20 + (soundVolume*8));
+		}else{
+			this.rocketSound.setVolume(0);
+		}
+		
 	};
 
 	Sound.prototype.playRocketSound = function(soundName) {
