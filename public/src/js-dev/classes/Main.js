@@ -537,7 +537,9 @@ var Main = (function(){
 		timer.start();
 		spaceShip.ship.alpha = 1;
 		this.toggleMeteoriteTimer(true);
-		this.togglePowerupTimer(true);
+		setTimeout(function() {
+			this.togglePowerupTimer(true);
+		}, 5000);
 
 		console.log(meteorites);
 	};
