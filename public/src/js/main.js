@@ -138,6 +138,7 @@ var Main = (function(){
 	var socketConnection;
 	var score;
 	var collisionDetection;
+	var lastMeteorXPos = -200;
 	var enableNewMeteorites = true;
 	var backgroundPos = 0;
 	var bulletFired = false;
@@ -150,7 +151,7 @@ var Main = (function(){
 	var meteoriteTimerValue = defaultMeteoriteTimerValue;
 	var defaultPowerupTimerValue = 2000;
 	var powerupTimerValue = defaultPowerupTimerValue;
-	var debugKeyboardControl = false;
+	var debugKeyboardControl = true;
 	var bulletCounter = 0;
 	var reversedControls = false;
 	var preventGameFromStopping = false;
@@ -743,22 +744,25 @@ var Main = (function(){
 		
 		var randomX = Math.random()*($('#cnvs').width());
 
-		meteorite = new Meteorite(randomX, -100);
+		if( Math.abs(randomX - lastMeteorXPos) > 100 ) {
+			lastMeteorXPos = randomX;
+			meteorite = new Meteorite(randomX, -100);
+			meteorite.speedFactor = gameSpeedFactor;
+			meteorite.init();
 
-		meteorite.speedFactor = gameSpeedFactor;
+			if (spaceShip.warpSpeed) {
+				meteorite.enableWarpSpeed = true;
 
-		meteorite.init();
+			}else{
+				meteorite.enableWarpSpeed = false;
+				spaceShip.shipImmune = false;
+			}
 
-		if (spaceShip.warpSpeed) {
-			meteorite.enableWarpSpeed = true;
-
-		}else{
-			meteorite.enableWarpSpeed = false;
-			spaceShip.shipImmune = false;
+			meteorites.push(meteorite);
+			stage.addChild(meteorite.meteorite);
+		}else {
+			this.newMeteorite();
 		}
-
-		meteorites.push(meteorite);
-		stage.addChild(meteorite.meteorite);
 		
 	};
 
