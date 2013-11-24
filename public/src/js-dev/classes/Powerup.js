@@ -41,7 +41,6 @@ var Powerup = (function(){
 			}
 		}
 		
-		//this.randomNumber = 1;
 		this.type = types[this.randomNumber];
 		this.drawPowerup();
 	};

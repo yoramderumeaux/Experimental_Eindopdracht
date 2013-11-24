@@ -22,6 +22,9 @@ var EndScreen = (function(){
 
 		this.endContainer = new createjs.Container();
 
+		this.backgroundImage = new createjs.Bitmap('images/blueBG.png');
+		this.backgroundImage.alpha = 0.3;
+
 		this.text = new createjs.Text('space evader', '48px CFSpaceship', '#FFFFFF');
 		this.text.x = (canvasWidth - this.text.getBounds().width)/2;
 		this.text.y = 70;
@@ -43,6 +46,7 @@ var EndScreen = (function(){
 		this.jumpText.y = canvasHeight - 80;
 		this.jumpText.x = (canvasWidth - this.jumpText.getBounds().width)/2;
 
+		this.endContainer.addChild(this.backgroundImage);
 		this.endContainer.addChild(this.text);
 		this.endContainer.addChild(this.line);
 		this.endContainer.addChild(this.jumpText);

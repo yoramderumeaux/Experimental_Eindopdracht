@@ -20,6 +20,11 @@ var StartScreen = (function(){
 
 		this.startContainer = new createjs.Container();
 
+		this.backgroundImage = new createjs.Bitmap('images/blueBG.png');
+		this.backgroundImage.alpha = 0.3;
+		//this.backgroundImage.scaleX = this.backgroundImage.scaleY = 3;
+
+
 		this.text = new createjs.Text('space evader', '48px CFSpaceship', '#FFFFFF');
 		this.text.x = (canvasWidth - this.text.getBounds().width)/2;
 		this.text.y = 70;
@@ -71,25 +76,24 @@ var StartScreen = (function(){
 		warpPowerup.init('warp');
 		warpPowerup.powerup.x = 60+25;
 		warpPowerup.powerup.y = canvasPerc + 80 + yOffset;
-		this.startContainer.addChild(warpPowerup.powerup);
+		
 
 		var shootPowerup = new Powerup();
 		shootPowerup.init('shoot');
 		shootPowerup.powerup.x = 60+25+75;
 		shootPowerup.powerup.y = canvasPerc + 80+ yOffset;
-		this.startContainer.addChild(shootPowerup.powerup);
+		
 
 		var reversePowerup = new Powerup();
 		reversePowerup.init('reverse');
 		reversePowerup.powerup.x = canvasWidth - 60 - 25 - 75;
 		reversePowerup.powerup.y = canvasPerc + 80+ yOffset;
-		this.startContainer.addChild(reversePowerup.powerup);
+
 
 		var meteorite = new Meteorite();
 		meteorite.init();
 		meteorite.meteorite.x = canvasWidth - 60 - 25;
 		meteorite.meteorite.y = canvasPerc+80+ yOffset;
-		this.startContainer.addChild(meteorite.meteorite);
 
 		this.jumpText = new createjs.Text('Spring om te beginnen', '25px ralewayLight', '#FFFFFF');		
 		this.jumpText.y = canvasHeight - 80;
@@ -148,6 +152,11 @@ var StartScreen = (function(){
 
 		this.startContainer.x = 0;
 		this.startContainer.y = 0;
+		this.startContainer.addChild(this.backgroundImage);
+		this.startContainer.addChild(warpPowerup.powerup);
+		this.startContainer.addChild(shootPowerup.powerup);
+		this.startContainer.addChild(meteorite.meteorite);
+		this.startContainer.addChild(reversePowerup.powerup);
 		this.startContainer.addChild(this.text);
 		this.startContainer.addChild(this.jumpText);
 		this.startContainer.addChild(this.line);

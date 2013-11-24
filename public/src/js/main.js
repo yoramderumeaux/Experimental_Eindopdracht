@@ -114,6 +114,9 @@ var EndScreen = (function(){
 
 		this.endContainer = new createjs.Container();
 
+		this.backgroundImage = new createjs.Bitmap('images/blueBG.png');
+		this.backgroundImage.alpha = 0.3;
+
 		this.text = new createjs.Text('space evader', '48px CFSpaceship', '#FFFFFF');
 		this.text.x = (canvasWidth - this.text.getBounds().width)/2;
 		this.text.y = 70;
@@ -135,6 +138,7 @@ var EndScreen = (function(){
 		this.jumpText.y = canvasHeight - 80;
 		this.jumpText.x = (canvasWidth - this.jumpText.getBounds().width)/2;
 
+		this.endContainer.addChild(this.backgroundImage);
 		this.endContainer.addChild(this.text);
 		this.endContainer.addChild(this.line);
 		this.endContainer.addChild(this.jumpText);
@@ -181,7 +185,7 @@ var Main = (function(){
 	var meteoriteTimerValue = defaultMeteoriteTimerValue;
 	var defaultPowerupTimerValue = 2000;
 	var powerupTimerValue = defaultPowerupTimerValue;
-	var debugKeyboardControl = false;
+	var debugKeyboardControl = true;
 	var bulletCounter = 0;
 	var reversedControls = false;
 	var preventGameFromStopping = false;
@@ -335,6 +339,7 @@ var Main = (function(){
 			spaceShip.shootMode = true;
 
 			var self = this;
+			bulletCounter = 0;
 			score.updateScore(250);
 
 			powerupProgress.beginShootProgress(4700);
@@ -436,13 +441,13 @@ var Main = (function(){
 				backgroundSpeed += (5 - backgroundSpeed) * 0.05;
 			}
 
-			backgroundPos += (backgroundSpeed*gameSpeedFactor);
-			backgroundPos = Math.round(backgroundPos*10)/10;
+			// backgroundPos += (backgroundSpeed*gameSpeedFactor);
+			// backgroundPos = Math.round(backgroundPos*10)/10;
 
 			//console.log(backgroundPos);
 
-			$('body').css('background-position-y', (backgroundPos/2)+'px');
-			$('#container').css('background-position-y', (backgroundPos)+'px');
+			// $('body').css('background-position-y', (backgroundPos/2)+'px');
+			// $('#container').css('background-position-y', (backgroundPos)+'px');
 
 			// Use arrows as debug controls
 			// Check if reverse powerup is taken and reverse the controls
@@ -542,7 +547,7 @@ var Main = (function(){
 						if(CollisionDetection.checkCollisionCenterAnchor(bullets[l].bullet, meteorites[i].meteorite) === 'hit'){
 							// A bullet hit a meteorite
 							if (meteorites[i].canDoDamage) {
-								meteorites[i].gotShot();
+								meteorites[i].gotShot(true);
 								score.updateScore(100);
 								sound.playEffectWithVolume('Explosion', 30);
 
@@ -601,6 +606,8 @@ var Main = (function(){
 					}
 				}
 			}
+
+
 			
 			
 			if (spaceShip.capableToFly) {
@@ -613,6 +620,11 @@ var Main = (function(){
 			powerupProgress.update();
 			
 		}
+
+		backgroundPos += (backgroundSpeed*gameSpeedFactor);
+			backgroundPos = Math.round(backgroundPos*10)/10;
+		$('body').css('background-position-y', (backgroundPos/2)+'px');
+		$('#container').css('background-position-y', (backgroundPos)+'px');
 
 		stage.update();
 	
@@ -914,29 +926,35 @@ var Meteorite = (function(){
 		this.removeMe = false;
 		this.canDoDamage = true;
 		this.readyToRemove = false;
+		this.forPoints = false;
 		//this.gravity = 3.8;
 	}
 
 	Meteorite.prototype.init = function() {
 		this.speed = (10+ Math.round(Math.random()*10)) * this.speedFactor;
 
-		this.meteorite = new createjs.Shape();
+		this.meteorite = new createjs.Container();
+		this.meteoriteLines = new createjs.Shape();
 		this.meteorite.x = this.x;
 		this.meteorite.y = this.y;
 
 		this.drawMeteorite();
 	};
 
-	Meteorite.prototype.gotShot = function(){
+	Meteorite.prototype.gotShot = function(forPoints){
 		this.removeMe = true;
 		this.canDoDamage = false;
+
+		if (forPoints) {
+			this.forPoints = true;
+		}
 	};
 
 	Meteorite.prototype.drawMeteorite = function() {
 
-		this.meteorite.graphics.beginStroke('#fcf5bf');
-		this.meteorite.graphics.setStrokeStyle(3);
-		if(enableFill) {this.meteorite.graphics.beginFill('rgba(206, 75,29,0.1)');}
+		this.meteoriteLines.graphics.beginStroke('#fcf5bf');
+		this.meteoriteLines.graphics.setStrokeStyle(3);
+		if(enableFill) {this.meteoriteLines.graphics.beginFill('rgba(206, 75,29,0.1)');}
 
 		
 
@@ -964,21 +982,29 @@ var Meteorite = (function(){
 
 		for (var j = 0; j < randomMeteorite.length; j++) {
 			if (j === 0){
-				this.meteorite.graphics.moveTo(randomMeteorite[j][0] - horizontalOffset, randomMeteorite[j][1] - verticalOffset);	
+				this.meteoriteLines.graphics.moveTo(randomMeteorite[j][0] - horizontalOffset, randomMeteorite[j][1] - verticalOffset);	
 			}else{
-				this.meteorite.graphics.lineTo(randomMeteorite[j][0] - horizontalOffset, randomMeteorite[j][1] - verticalOffset);	
+				this.meteoriteLines.graphics.lineTo(randomMeteorite[j][0] - horizontalOffset, randomMeteorite[j][1] - verticalOffset);	
 			}
 		}
 		
-		if(enableFill) {this.meteorite.graphics.endFill();}
-		this.meteorite.graphics.endStroke();
+		if(enableFill) {this.meteoriteLines.graphics.endFill();}
+
+		this.meteoriteLines.graphics.endStroke();
 
 		// debug circles
 		// this.meteorite.graphics.beginFill('rgba(255,0,0,0.5)');
 		// this.meteorite.graphics.drawCircle(0,0, 27.5);
 		// this.meteorite.graphics.endFill();
 
-		this.meteorite.shadow = new createjs.Shadow('#ce4b1d', 0, 0, 5);
+		this.meteoriteLines.shadow = new createjs.Shadow('#ce4b1d', 0, 0, 5);
+		this.meteorite.addChild(this.meteoriteLines);
+
+		this.text = new createjs.Text('+100', '20px ralewayLight', '#fcf5bf');
+		this.text.alpha = 0;
+		this.text.regX = this.text.getBounds().width / 2;
+		this.text.regY = this.text.getBounds().height / 2;
+		this.meteorite.addChild(this.text);
 	};
 
 	Meteorite.prototype.update = function() {
@@ -992,16 +1018,24 @@ var Meteorite = (function(){
 		this.y += this.velY * (this.speed * (1 + this.currentWarpSpeed *30));
 		this.meteorite.y = this.y;
 		this.meteorite.rotation += (this.rotationDirection * (this.speed)/40);
+		this.text.rotation = -this.meteorite.rotation;
 		//this.meteorite.rotation += 30;
 		this.velY *= this.gravity;
 
 		if (this.removeMe) {
+			if (this.forPoints) {
+				this.text.alpha = 1;
+				this.text.x += 1;
+				this.text.scaleX = this.text.scaleY += (10 - this.text.scaleX) * 0.1;
+			}
 			this.meteorite.scaleX = this.meteorite.scaleY += (0 - this.meteorite.scaleX) * 0.1;
 
 			if (this.meteorite.scaleX < 0.05) {
 				this.readyToRemove = true;
 			}
 		}
+
+
 
 		//this.meteorite.y = this.y = 200;
 	};
@@ -1054,7 +1088,6 @@ var Powerup = (function(){
 			}
 		}
 		
-		//this.randomNumber = 1;
 		this.type = types[this.randomNumber];
 		this.drawPowerup();
 	};
@@ -1925,6 +1958,11 @@ var StartScreen = (function(){
 
 		this.startContainer = new createjs.Container();
 
+		this.backgroundImage = new createjs.Bitmap('images/blueBG.png');
+		this.backgroundImage.alpha = 0.3;
+		//this.backgroundImage.scaleX = this.backgroundImage.scaleY = 3;
+
+
 		this.text = new createjs.Text('space evader', '48px CFSpaceship', '#FFFFFF');
 		this.text.x = (canvasWidth - this.text.getBounds().width)/2;
 		this.text.y = 70;
@@ -1976,25 +2014,24 @@ var StartScreen = (function(){
 		warpPowerup.init('warp');
 		warpPowerup.powerup.x = 60+25;
 		warpPowerup.powerup.y = canvasPerc + 80 + yOffset;
-		this.startContainer.addChild(warpPowerup.powerup);
+		
 
 		var shootPowerup = new Powerup();
 		shootPowerup.init('shoot');
 		shootPowerup.powerup.x = 60+25+75;
 		shootPowerup.powerup.y = canvasPerc + 80+ yOffset;
-		this.startContainer.addChild(shootPowerup.powerup);
+		
 
 		var reversePowerup = new Powerup();
 		reversePowerup.init('reverse');
 		reversePowerup.powerup.x = canvasWidth - 60 - 25 - 75;
 		reversePowerup.powerup.y = canvasPerc + 80+ yOffset;
-		this.startContainer.addChild(reversePowerup.powerup);
+
 
 		var meteorite = new Meteorite();
 		meteorite.init();
 		meteorite.meteorite.x = canvasWidth - 60 - 25;
 		meteorite.meteorite.y = canvasPerc+80+ yOffset;
-		this.startContainer.addChild(meteorite.meteorite);
 
 		this.jumpText = new createjs.Text('Spring om te beginnen', '25px ralewayLight', '#FFFFFF');		
 		this.jumpText.y = canvasHeight - 80;
@@ -2053,6 +2090,11 @@ var StartScreen = (function(){
 
 		this.startContainer.x = 0;
 		this.startContainer.y = 0;
+		this.startContainer.addChild(this.backgroundImage);
+		this.startContainer.addChild(warpPowerup.powerup);
+		this.startContainer.addChild(shootPowerup.powerup);
+		this.startContainer.addChild(meteorite.meteorite);
+		this.startContainer.addChild(reversePowerup.powerup);
 		this.startContainer.addChild(this.text);
 		this.startContainer.addChild(this.jumpText);
 		this.startContainer.addChild(this.line);

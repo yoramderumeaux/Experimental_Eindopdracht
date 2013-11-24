@@ -22,7 +22,7 @@ var Main = (function(){
 	var meteoriteTimerValue = defaultMeteoriteTimerValue;
 	var defaultPowerupTimerValue = 2000;
 	var powerupTimerValue = defaultPowerupTimerValue;
-	var debugKeyboardControl = false;
+	var debugKeyboardControl = true;
 	var bulletCounter = 0;
 	var reversedControls = false;
 	var preventGameFromStopping = false;
@@ -176,6 +176,7 @@ var Main = (function(){
 			spaceShip.shootMode = true;
 
 			var self = this;
+			bulletCounter = 0;
 			score.updateScore(250);
 
 			powerupProgress.beginShootProgress(4700);
@@ -277,13 +278,13 @@ var Main = (function(){
 				backgroundSpeed += (5 - backgroundSpeed) * 0.05;
 			}
 
-			backgroundPos += (backgroundSpeed*gameSpeedFactor);
-			backgroundPos = Math.round(backgroundPos*10)/10;
+			// backgroundPos += (backgroundSpeed*gameSpeedFactor);
+			// backgroundPos = Math.round(backgroundPos*10)/10;
 
 			//console.log(backgroundPos);
 
-			$('body').css('background-position-y', (backgroundPos/2)+'px');
-			$('#container').css('background-position-y', (backgroundPos)+'px');
+			// $('body').css('background-position-y', (backgroundPos/2)+'px');
+			// $('#container').css('background-position-y', (backgroundPos)+'px');
 
 			// Use arrows as debug controls
 			// Check if reverse powerup is taken and reverse the controls
@@ -383,7 +384,7 @@ var Main = (function(){
 						if(CollisionDetection.checkCollisionCenterAnchor(bullets[l].bullet, meteorites[i].meteorite) === 'hit'){
 							// A bullet hit a meteorite
 							if (meteorites[i].canDoDamage) {
-								meteorites[i].gotShot();
+								meteorites[i].gotShot(true);
 								score.updateScore(100);
 								sound.playEffectWithVolume('Explosion', 30);
 
@@ -442,6 +443,8 @@ var Main = (function(){
 					}
 				}
 			}
+
+
 			
 			
 			if (spaceShip.capableToFly) {
@@ -454,6 +457,11 @@ var Main = (function(){
 			powerupProgress.update();
 			
 		}
+
+		backgroundPos += (backgroundSpeed*gameSpeedFactor);
+			backgroundPos = Math.round(backgroundPos*10)/10;
+		$('body').css('background-position-y', (backgroundPos/2)+'px');
+		$('#container').css('background-position-y', (backgroundPos)+'px');
 
 		stage.update();
 	

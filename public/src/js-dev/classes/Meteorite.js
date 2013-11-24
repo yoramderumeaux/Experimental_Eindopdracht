@@ -65,29 +65,35 @@ var Meteorite = (function(){
 		this.removeMe = false;
 		this.canDoDamage = true;
 		this.readyToRemove = false;
+		this.forPoints = false;
 		//this.gravity = 3.8;
 	}
 
 	Meteorite.prototype.init = function() {
 		this.speed = (10+ Math.round(Math.random()*10)) * this.speedFactor;
 
-		this.meteorite = new createjs.Shape();
+		this.meteorite = new createjs.Container();
+		this.meteoriteLines = new createjs.Shape();
 		this.meteorite.x = this.x;
 		this.meteorite.y = this.y;
 
 		this.drawMeteorite();
 	};
 
-	Meteorite.prototype.gotShot = function(){
+	Meteorite.prototype.gotShot = function(forPoints){
 		this.removeMe = true;
 		this.canDoDamage = false;
+
+		if (forPoints) {
+			this.forPoints = true;
+		}
 	};
 
 	Meteorite.prototype.drawMeteorite = function() {
 
-		this.meteorite.graphics.beginStroke('#fcf5bf');
-		this.meteorite.graphics.setStrokeStyle(3);
-		if(enableFill) {this.meteorite.graphics.beginFill('rgba(206, 75,29,0.1)');}
+		this.meteoriteLines.graphics.beginStroke('#fcf5bf');
+		this.meteoriteLines.graphics.setStrokeStyle(3);
+		if(enableFill) {this.meteoriteLines.graphics.beginFill('rgba(206, 75,29,0.1)');}
 
 		
 
@@ -115,21 +121,29 @@ var Meteorite = (function(){
 
 		for (var j = 0; j < randomMeteorite.length; j++) {
 			if (j === 0){
-				this.meteorite.graphics.moveTo(randomMeteorite[j][0] - horizontalOffset, randomMeteorite[j][1] - verticalOffset);	
+				this.meteoriteLines.graphics.moveTo(randomMeteorite[j][0] - horizontalOffset, randomMeteorite[j][1] - verticalOffset);	
 			}else{
-				this.meteorite.graphics.lineTo(randomMeteorite[j][0] - horizontalOffset, randomMeteorite[j][1] - verticalOffset);	
+				this.meteoriteLines.graphics.lineTo(randomMeteorite[j][0] - horizontalOffset, randomMeteorite[j][1] - verticalOffset);	
 			}
 		}
 		
-		if(enableFill) {this.meteorite.graphics.endFill();}
-		this.meteorite.graphics.endStroke();
+		if(enableFill) {this.meteoriteLines.graphics.endFill();}
+
+		this.meteoriteLines.graphics.endStroke();
 
 		// debug circles
 		// this.meteorite.graphics.beginFill('rgba(255,0,0,0.5)');
 		// this.meteorite.graphics.drawCircle(0,0, 27.5);
 		// this.meteorite.graphics.endFill();
 
-		this.meteorite.shadow = new createjs.Shadow('#ce4b1d', 0, 0, 5);
+		this.meteoriteLines.shadow = new createjs.Shadow('#ce4b1d', 0, 0, 5);
+		this.meteorite.addChild(this.meteoriteLines);
+
+		this.text = new createjs.Text('+100', '20px ralewayLight', '#fcf5bf');
+		this.text.alpha = 0;
+		this.text.regX = this.text.getBounds().width / 2;
+		this.text.regY = this.text.getBounds().height / 2;
+		this.meteorite.addChild(this.text);
 	};
 
 	Meteorite.prototype.update = function() {
@@ -143,16 +157,24 @@ var Meteorite = (function(){
 		this.y += this.velY * (this.speed * (1 + this.currentWarpSpeed *30));
 		this.meteorite.y = this.y;
 		this.meteorite.rotation += (this.rotationDirection * (this.speed)/40);
+		this.text.rotation = -this.meteorite.rotation;
 		//this.meteorite.rotation += 30;
 		this.velY *= this.gravity;
 
 		if (this.removeMe) {
+			if (this.forPoints) {
+				this.text.alpha = 1;
+				this.text.x += 1;
+				this.text.scaleX = this.text.scaleY += (10 - this.text.scaleX) * 0.1;
+			}
 			this.meteorite.scaleX = this.meteorite.scaleY += (0 - this.meteorite.scaleX) * 0.1;
 
 			if (this.meteorite.scaleX < 0.05) {
 				this.readyToRemove = true;
 			}
 		}
+
+
 
 		//this.meteorite.y = this.y = 200;
 	};
