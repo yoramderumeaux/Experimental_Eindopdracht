@@ -214,7 +214,7 @@ var Main = (function(){
 
 	Main.prototype.jumpHandler = function(){
 		// Jump detected
-		if (startScreen) {
+		if (startScreen || endScreen) {
 			this.startGame();	
 		}
 		
