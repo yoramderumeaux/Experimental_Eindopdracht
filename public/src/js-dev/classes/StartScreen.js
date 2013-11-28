@@ -21,7 +21,7 @@ var StartScreen = (function(){
 		this.startContainer = new createjs.Container();
 
 		this.backgroundImage = new createjs.Bitmap('images/blueBG.png');
-		this.backgroundImage.alpha = 0.3;
+		this.backgroundImage.alpha = 0.25;
 		//this.backgroundImage.scaleX = this.backgroundImage.scaleY = 3;
 
 

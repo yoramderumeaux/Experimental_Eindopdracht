@@ -22,7 +22,7 @@ var Main = (function(){
 	var meteoriteTimerValue = defaultMeteoriteTimerValue;
 	var defaultPowerupTimerValue = 2000;
 	var powerupTimerValue = defaultPowerupTimerValue;
-	var debugKeyboardControl = true;
+	var debugKeyboardControl = false;
 	var bulletCounter = 0;
 	var reversedControls = false;
 	var preventGameFromStopping = false;
@@ -137,6 +137,7 @@ var Main = (function(){
 			}
 			
 			sound.playEffectWithVolume('WarpSpeed', 100);
+			
 
 			// clear timer and restart faster
 			clearInterval(meteorTimer);
@@ -211,11 +212,14 @@ var Main = (function(){
 
 	Main.prototype.jumpHandler = function(){
 		// Jump detected
+
+
 		if (startScreen || endScreen) {
+			console.log('jump met bean');
 			this.startGame();	
 		}
 		
-		console.log('jump met bean');
+		
 	};
 
 	Main.prototype.speedUpMeteoriteTimer = function(){
@@ -369,7 +373,7 @@ var Main = (function(){
 						if(CollisionDetection.checkCollisionCenterAnchor(spaceShip.ship, meteorites[i].meteorite) === 'hit'){
 							// Ship crashed into a meteorite
 							
-							if (meteorites[i].canDoDamage) {
+							if (meteorites[i].canDoDamage && spaceShip.capableToFly) {
 								console.log('[MAIN] stop score');
 								sound.playEffectWithVolume('crashImpact', 100);
 								score.enableScoreEdit = false;
@@ -530,12 +534,14 @@ var Main = (function(){
 
 		if (startScreen) {
 			stage.removeChild(startScreen.startContainer);
-			startScreen = null;	
+			startScreen.startContainer = null;
+			startScreen = null;
 		}
 
 		if (endScreen) {
 			stage.removeChild(endScreen.endContainer);
 			endScreen.endContainer = null;
+			endScreen = null;
 		}
 		
 		stage.addChild(spaceShip.ship);
@@ -564,6 +570,7 @@ var Main = (function(){
 		if (endScreen) {
 			stage.removeChild(endScreen.endContainer);
 			endScreen.endContainer = null;
+			endScreen = null;
 		}
 
 		startScreen = new StartScreen();

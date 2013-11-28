@@ -63,8 +63,8 @@ var rightSensorBottomVal = 0;
 
 var leftJumpLog = [];
 var rightJumpLog = [];
-var jumpThreshold = 30;
-var jumpIntervalTime = 750; //ms
+var jumpThreshold = 80;
+var jumpIntervalTime = 1000; //ms
 
 var horizontalPosition = 50;
 var emitIntervalTime = 1000/10;
@@ -126,7 +126,7 @@ function checkForJump(){
 			minRight = Math.min(minRight, rightJumpLog[i]);		
 		};
 
-		var minVal = 5;
+		var minVal = 20; //als hij geen jump detecteerd --> verhogen
 		if (maxLeft - minLeft > jumpThreshold && maxRight - minRight > jumpThreshold && minLeft < minVal && minRight < minVal) {		
 			console.log('jump detected');
 			emitSocket('jump', true);	
@@ -239,7 +239,7 @@ function calculatePosition(){
 		}
 	};
 
-	console.log(horizontalPosition);
+	//console.log(horizontalPosition);
 	//emitSocket('horizontalPosition', horizontalPosition);
 
 }

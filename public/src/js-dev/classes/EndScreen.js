@@ -23,7 +23,7 @@ var EndScreen = (function(){
 		this.endContainer = new createjs.Container();
 
 		this.backgroundImage = new createjs.Bitmap('images/blueBG.png');
-		this.backgroundImage.alpha = 0.3;
+		this.backgroundImage.alpha = 0.25;
 
 		this.text = new createjs.Text('space evader', '48px CFSpaceship', '#FFFFFF');
 		this.text.x = (canvasWidth - this.text.getBounds().width)/2;

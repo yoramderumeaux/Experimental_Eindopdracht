@@ -115,7 +115,7 @@ var EndScreen = (function(){
 		this.endContainer = new createjs.Container();
 
 		this.backgroundImage = new createjs.Bitmap('images/blueBG.png');
-		this.backgroundImage.alpha = 0.3;
+		this.backgroundImage.alpha = 0.25;
 
 		this.text = new createjs.Text('space evader', '48px CFSpaceship', '#FFFFFF');
 		this.text.x = (canvasWidth - this.text.getBounds().width)/2;
@@ -185,7 +185,7 @@ var Main = (function(){
 	var meteoriteTimerValue = defaultMeteoriteTimerValue;
 	var defaultPowerupTimerValue = 2000;
 	var powerupTimerValue = defaultPowerupTimerValue;
-	var debugKeyboardControl = true;
+	var debugKeyboardControl = false;
 	var bulletCounter = 0;
 	var reversedControls = false;
 	var preventGameFromStopping = false;
@@ -300,6 +300,7 @@ var Main = (function(){
 			}
 			
 			sound.playEffectWithVolume('WarpSpeed', 100);
+			
 
 			// clear timer and restart faster
 			clearInterval(meteorTimer);
@@ -374,11 +375,14 @@ var Main = (function(){
 
 	Main.prototype.jumpHandler = function(){
 		// Jump detected
+
+
 		if (startScreen || endScreen) {
+			console.log('jump met bean');
 			this.startGame();	
 		}
 		
-		console.log('jump met bean');
+		
 	};
 
 	Main.prototype.speedUpMeteoriteTimer = function(){
@@ -532,7 +536,7 @@ var Main = (function(){
 						if(CollisionDetection.checkCollisionCenterAnchor(spaceShip.ship, meteorites[i].meteorite) === 'hit'){
 							// Ship crashed into a meteorite
 							
-							if (meteorites[i].canDoDamage) {
+							if (meteorites[i].canDoDamage && spaceShip.capableToFly) {
 								console.log('[MAIN] stop score');
 								sound.playEffectWithVolume('crashImpact', 100);
 								score.enableScoreEdit = false;
@@ -693,12 +697,14 @@ var Main = (function(){
 
 		if (startScreen) {
 			stage.removeChild(startScreen.startContainer);
-			startScreen = null;	
+			startScreen.startContainer = null;
+			startScreen = null;
 		}
 
 		if (endScreen) {
 			stage.removeChild(endScreen.endContainer);
 			endScreen.endContainer = null;
+			endScreen = null;
 		}
 		
 		stage.addChild(spaceShip.ship);
@@ -727,6 +733,7 @@ var Main = (function(){
 		if (endScreen) {
 			stage.removeChild(endScreen.endContainer);
 			endScreen.endContainer = null;
+			endScreen = null;
 		}
 
 		startScreen = new StartScreen();
@@ -1959,7 +1966,7 @@ var StartScreen = (function(){
 		this.startContainer = new createjs.Container();
 
 		this.backgroundImage = new createjs.Bitmap('images/blueBG.png');
-		this.backgroundImage.alpha = 0.3;
+		this.backgroundImage.alpha = 0.25;
 		//this.backgroundImage.scaleX = this.backgroundImage.scaleY = 3;
 
 
