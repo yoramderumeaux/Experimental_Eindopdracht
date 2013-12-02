@@ -22,7 +22,7 @@ var Main = (function(){
 	var meteoriteTimerValue = defaultMeteoriteTimerValue;
 	var defaultPowerupTimerValue = 2000;
 	var powerupTimerValue = defaultPowerupTimerValue;
-	var debugKeyboardControl = false;
+	var debugKeyboardControl = true;
 	var bulletCounter = 0;
 	var reversedControls = false;
 	var preventGameFromStopping = false;
@@ -121,6 +121,7 @@ var Main = (function(){
 		ticker.addEventListener('tick', this.update);
 		
 		this.showStartScreen();
+		sound.toggleMute();
 	};
 
 	Main.prototype.togglePowerUpWarp = function(enablePowerUp){
@@ -192,6 +193,44 @@ var Main = (function(){
 		}
 	};
 
+	Main.prototype.togglePowerupSmaller = function(enablePowerUp){
+		if (enablePowerUp) {
+			spaceShip.smallerMode = true;
+
+			var self = this;
+			score.updateScore(250);
+
+			powerupProgress.beginSmallerProgress(4700);
+
+			setTimeout(function(){
+				self.togglePowerupSmaller(false);
+			}, 5000);
+
+		}else{
+			powerUpActive = false;
+			spaceShip.smallerMode = false;
+		}
+	};
+
+	Main.prototype.togglePowerupBigger = function(enablePowerUp){
+		if (enablePowerUp) {
+			spaceShip.biggerMode = true;
+
+			var self = this;
+			score.updateScore(250);
+
+			powerupProgress.beginBiggerProgress(4700);
+
+			setTimeout(function(){
+				self.togglePowerupBigger(false);
+			}, 5000);
+
+		}else{
+			powerUpActive = false;
+			spaceShip.biggerMode = false;
+		}
+	};
+
 	Main.prototype.togglePowerUpReverse = function(enablePowerUp) {
 		if (enablePowerUp) {
 			var self = this;
@@ -254,14 +293,13 @@ var Main = (function(){
 		
 		//	Space to shoot
 		if(keys[32]){
-
-			console.log('space');
-			if (debugKeyboardControl && startScreen) {
+			if (debugKeyboardControl && (startScreen || endScreen)) {
 				this.startGame();
 			}
 		}	
 
 		if (keys[82]) {
+
 			if ((endScreen || startScreen) && !timer.isRunning) {
 				console.log('restart game');
 				this.startGame();
@@ -427,10 +465,15 @@ var Main = (function(){
 								break;
 								case 'shoot':
 									this.togglePowerupShoot(true);
-									//powerUpActive = false;
 								break;
 								case 'reverse':
 									this.togglePowerUpReverse(true);
+								break;
+								case 'bigger':
+									this.togglePowerupBigger(true);
+								break;
+								case 'smaller':
+									this.togglePowerupSmaller(true);
 								break;
 							}
 						}
@@ -468,7 +511,6 @@ var Main = (function(){
 		$('#container').css('background-position-y', (backgroundPos)+'px');
 
 		stage.update();
-	
 	};
 
 	Main.prototype.stopGame = function(){

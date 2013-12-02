@@ -2,9 +2,9 @@ var Powerup = (function(){
 
 	var x;
 	var y;
-	var types = ['shoot', 'warp', 'reverse'];
-	var primaryColor = ['#aef69d', '#00d2ff', '#e75f5f'];
-	var shadowColor = ['#1bf43f', '#005c70', '#db2020'];
+	var types = ['shoot', 'warp', 'reverse', 'smaller', 'bigger'];
+	var primaryColor = ['#aef69d', '#00d2ff', '#e75f5f', '#fff448', '#AE81FF'];
+	var shadowColor = ['#1bf43f', '#005c70', '#db2020', '#fff665', '#8542ff'];
 
 	function Powerup(x, y) {
 		_.bindAll(this);
@@ -25,7 +25,7 @@ var Powerup = (function(){
 	Powerup.prototype.init = function(type) {	
 		this.speed = (30+ Math.round(Math.random()*30)) * this.speedFactor;
 		if (!type) {
-			this.randomNumber = Math.floor(Math.random()*types.length);	
+			this.randomNumber = Math.floor(Math.random()*types.length);
 		}else{
 			console.log(type);
 			switch(type){
@@ -37,6 +37,12 @@ var Powerup = (function(){
 				break;
 				case 'reverse':
 				this.randomNumber = 2;
+				break;
+				case 'smaller':
+				this.randomNumber = 3;
+				break;
+				case 'bigger':
+				this.randomNumber = 4;
 				break;
 			}
 		}
@@ -119,7 +125,30 @@ var Powerup = (function(){
 			arrowLines.graphics.lineTo(6, 9);
 
 			this.powerup.addChild(arrowLines);
-		}	
+
+		}else if(this.type === 'smaller') {
+			var resizer = new createjs.Shape();
+			resizer.graphics.beginStroke(primaryColor[this.randomNumber]);
+			resizer.graphics.setStrokeStyle(1);
+			resizer.graphics.drawRect(-10, -10, 20, 20);
+			resizer.graphics.setStrokeStyle(7);
+			resizer.graphics.drawRect(-2, -2, 4, 4);
+
+			this.powerup.addChild(resizer);
+
+		}else if(this.type === 'bigger') {
+			var resizerBig = new createjs.Shape();
+			resizerBig.graphics.beginStroke(primaryColor[this.randomNumber]);
+
+			resizerBig.graphics.setStrokeStyle(3);
+			resizerBig.graphics.drawRect(-10, -10, 20, 20);
+			resizerBig.graphics.setStrokeStyle(1);
+			resizerBig.graphics.drawRect(-2, -2, 4, 4);
+
+			this.powerup.addChild(resizerBig);
+		}		
+
+
 	};
 
 	Powerup.prototype.update = function() {

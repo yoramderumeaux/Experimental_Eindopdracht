@@ -185,7 +185,7 @@ var Main = (function(){
 	var meteoriteTimerValue = defaultMeteoriteTimerValue;
 	var defaultPowerupTimerValue = 2000;
 	var powerupTimerValue = defaultPowerupTimerValue;
-	var debugKeyboardControl = false;
+	var debugKeyboardControl = true;
 	var bulletCounter = 0;
 	var reversedControls = false;
 	var preventGameFromStopping = false;
@@ -284,6 +284,7 @@ var Main = (function(){
 		ticker.addEventListener('tick', this.update);
 		
 		this.showStartScreen();
+		sound.toggleMute();
 	};
 
 	Main.prototype.togglePowerUpWarp = function(enablePowerUp){
@@ -355,6 +356,44 @@ var Main = (function(){
 		}
 	};
 
+	Main.prototype.togglePowerupSmaller = function(enablePowerUp){
+		if (enablePowerUp) {
+			spaceShip.smallerMode = true;
+
+			var self = this;
+			score.updateScore(250);
+
+			powerupProgress.beginSmallerProgress(4700);
+
+			setTimeout(function(){
+				self.togglePowerupSmaller(false);
+			}, 5000);
+
+		}else{
+			powerUpActive = false;
+			spaceShip.smallerMode = false;
+		}
+	};
+
+	Main.prototype.togglePowerupBigger = function(enablePowerUp){
+		if (enablePowerUp) {
+			spaceShip.biggerMode = true;
+
+			var self = this;
+			score.updateScore(250);
+
+			powerupProgress.beginBiggerProgress(4700);
+
+			setTimeout(function(){
+				self.togglePowerupBigger(false);
+			}, 5000);
+
+		}else{
+			powerUpActive = false;
+			spaceShip.biggerMode = false;
+		}
+	};
+
 	Main.prototype.togglePowerUpReverse = function(enablePowerUp) {
 		if (enablePowerUp) {
 			var self = this;
@@ -417,14 +456,13 @@ var Main = (function(){
 		
 		//	Space to shoot
 		if(keys[32]){
-
-			console.log('space');
-			if (debugKeyboardControl && startScreen) {
+			if (debugKeyboardControl && (startScreen || endScreen)) {
 				this.startGame();
 			}
 		}	
 
 		if (keys[82]) {
+
 			if ((endScreen || startScreen) && !timer.isRunning) {
 				console.log('restart game');
 				this.startGame();
@@ -590,10 +628,15 @@ var Main = (function(){
 								break;
 								case 'shoot':
 									this.togglePowerupShoot(true);
-									//powerUpActive = false;
 								break;
 								case 'reverse':
 									this.togglePowerUpReverse(true);
+								break;
+								case 'bigger':
+									this.togglePowerupBigger(true);
+								break;
+								case 'smaller':
+									this.togglePowerupSmaller(true);
 								break;
 							}
 						}
@@ -631,7 +674,6 @@ var Main = (function(){
 		$('#container').css('background-position-y', (backgroundPos)+'px');
 
 		stage.update();
-	
 	};
 
 	Main.prototype.stopGame = function(){
@@ -1056,9 +1098,9 @@ var Powerup = (function(){
 
 	var x;
 	var y;
-	var types = ['shoot', 'warp', 'reverse'];
-	var primaryColor = ['#aef69d', '#00d2ff', '#e75f5f'];
-	var shadowColor = ['#1bf43f', '#005c70', '#db2020'];
+	var types = ['shoot', 'warp', 'reverse', 'smaller', 'bigger'];
+	var primaryColor = ['#aef69d', '#00d2ff', '#e75f5f', '#fff448', '#AE81FF'];
+	var shadowColor = ['#1bf43f', '#005c70', '#db2020', '#fff665', '#8542ff'];
 
 	function Powerup(x, y) {
 		_.bindAll(this);
@@ -1079,7 +1121,7 @@ var Powerup = (function(){
 	Powerup.prototype.init = function(type) {	
 		this.speed = (30+ Math.round(Math.random()*30)) * this.speedFactor;
 		if (!type) {
-			this.randomNumber = Math.floor(Math.random()*types.length);	
+			this.randomNumber = Math.floor(Math.random()*types.length);
 		}else{
 			console.log(type);
 			switch(type){
@@ -1091,6 +1133,12 @@ var Powerup = (function(){
 				break;
 				case 'reverse':
 				this.randomNumber = 2;
+				break;
+				case 'smaller':
+				this.randomNumber = 3;
+				break;
+				case 'bigger':
+				this.randomNumber = 4;
 				break;
 			}
 		}
@@ -1173,7 +1221,30 @@ var Powerup = (function(){
 			arrowLines.graphics.lineTo(6, 9);
 
 			this.powerup.addChild(arrowLines);
-		}	
+
+		}else if(this.type === 'smaller') {
+			var resizer = new createjs.Shape();
+			resizer.graphics.beginStroke(primaryColor[this.randomNumber]);
+			resizer.graphics.setStrokeStyle(1);
+			resizer.graphics.drawRect(-10, -10, 20, 20);
+			resizer.graphics.setStrokeStyle(7);
+			resizer.graphics.drawRect(-2, -2, 4, 4);
+
+			this.powerup.addChild(resizer);
+
+		}else if(this.type === 'bigger') {
+			var resizerBig = new createjs.Shape();
+			resizerBig.graphics.beginStroke(primaryColor[this.randomNumber]);
+
+			resizerBig.graphics.setStrokeStyle(3);
+			resizerBig.graphics.drawRect(-10, -10, 20, 20);
+			resizerBig.graphics.setStrokeStyle(1);
+			resizerBig.graphics.drawRect(-2, -2, 4, 4);
+
+			this.powerup.addChild(resizerBig);
+		}		
+
+
 	};
 
 	Powerup.prototype.update = function() {
@@ -1202,8 +1273,6 @@ var Powerup = (function(){
 	return Powerup;
 
 })();
-
-
 
 var PowerupProgress = (function(){
 
@@ -1251,6 +1320,24 @@ var PowerupProgress = (function(){
 		this.redprogressSlider.graphics.beginFill('#e75f5f');
 		this.redprogressSlider.graphics.drawRect(0,0,canvasWidth,progressBarHeight);
 
+		this.yellowprogressSlider = new createjs.Shape();
+		this.yellowprogressSlider.y = 0;
+		this.yellowprogressSlider.x = - canvasWidth;
+		this.yellowprogressSlider.graphics.beginFill('#fff448');
+		this.yellowprogressSlider.graphics.drawRect(0,0,canvasWidth,progressBarHeight);
+
+		this.purpleprogressSlider = new createjs.Shape();
+		this.purpleprogressSlider.y = 0;
+		this.purpleprogressSlider.x = - canvasWidth;
+		this.purpleprogressSlider.graphics.beginFill('#AE81FF');
+		this.purpleprogressSlider.graphics.drawRect(0,0,canvasWidth,progressBarHeight);
+
+		this.redprogressSlider = new createjs.Shape();
+		this.redprogressSlider.y = 0;
+		this.redprogressSlider.x = - canvasWidth;
+		this.redprogressSlider.graphics.beginFill('#e75f5f');
+		this.redprogressSlider.graphics.drawRect(0,0,canvasWidth,progressBarHeight);
+
 		this.greenprogressbar = new createjs.Shape();
 		this.greenprogressbar.x = this.x;
 		this.greenprogressbar.y = 0;
@@ -1267,6 +1354,24 @@ var PowerupProgress = (function(){
 		this.blueprogressbar.graphics.drawRect(0,0,canvasWidth,progressBarHeight);
 		this.blueprogressbar.shadow = new createjs.Shadow('#005c70', 0, 0, 10);	
 
+		//kleuren nog aanpassen
+		this.yellowprogressbar = new createjs.Shape();
+		this.yellowprogressbar.x = this.x;
+		this.yellowprogressbar.y = 0;
+		this.yellowprogressbar.graphics.beginFill('rgba(0, 92, 112, 0.2)');
+		this.yellowprogressbar.graphics.beginStroke('#fff448');
+		this.yellowprogressbar.graphics.drawRect(0,0,canvasWidth,progressBarHeight);
+		this.yellowprogressbar.shadow = new createjs.Shadow('#fff665', 0, 0, 10);
+
+		//kleuren nog aanpassnen
+		this.purpleprogressbar = new createjs.Shape();
+		this.purpleprogressbar.x = this.x;
+		this.purpleprogressbar.y = 0;
+		this.purpleprogressbar.graphics.beginFill('rgba(0, 92, 112, 0.2)');
+		this.purpleprogressbar.graphics.beginStroke('#AE81FF');
+		this.purpleprogressbar.graphics.drawRect(0,0,canvasWidth,progressBarHeight);
+		this.purpleprogressbar.shadow = new createjs.Shadow('#8542ff', 0, 0, 10);	
+
 		this.redprogressbar = new createjs.Shape();
 		this.redprogressbar.x = this.x;
 		this.redprogressbar.y = 0;
@@ -1278,8 +1383,12 @@ var PowerupProgress = (function(){
 		this.powerupProgress.addChild(this.greenprogressSlider);
 		this.powerupProgress.addChild(this.blueprogressSlider);
 		this.powerupProgress.addChild(this.redprogressSlider);
+		this.powerupProgress.addChild(this.yellowprogressSlider);
+		this.powerupProgress.addChild(this.purpleprogressSlider);
 		this.powerupProgress.addChild(this.greenprogressbar);
 		this.powerupProgress.addChild(this.blueprogressbar);
+		this.powerupProgress.addChild(this.yellowprogressbar);
+		this.powerupProgress.addChild(this.purpleprogressbar);
 		this.powerupProgress.addChild(this.redprogressbar);
 	};
 
@@ -1287,6 +1396,8 @@ var PowerupProgress = (function(){
 		this.greenprogressbar.alpha = this.greenprogressSlider.alpha = 1;
 		this.blueprogressbar.alpha = this.blueprogressSlider.alpha = 0;
 		this.redprogressbar.alpha = this.redprogressSlider.alpha = 0;
+		this.yellowprogressbar.alpha = this.yellowprogressSlider.alpha = 0;
+		this.purpleprogressbar.alpha = this.purpleprogressSlider.alpha = 0;
 		this.startTimer(time);
 	};
 
@@ -1294,6 +1405,8 @@ var PowerupProgress = (function(){
 		this.greenprogressbar.alpha = this.greenprogressSlider.alpha = 0;
 		this.blueprogressbar.alpha = this.blueprogressSlider.alpha = 1;
 		this.redprogressbar.alpha = this.redprogressSlider.alpha = 0;
+		this.yellowprogressbar.alpha = this.yellowprogressSlider.alpha = 0;
+		this.purpleprogressbar.alpha = this.purpleprogressSlider.alpha = 0;
 		this.startTimer(time);
 	};
 
@@ -1301,6 +1414,26 @@ var PowerupProgress = (function(){
 		this.greenprogressbar.alpha = this.greenprogressSlider.alpha = 0;
 		this.blueprogressbar.alpha = this.blueprogressSlider.alpha = 0;
 		this.redprogressbar.alpha = this.redprogressSlider.alpha = 1;
+		this.yellowprogressbar.alpha = this.yellowprogressSlider.alpha = 0;
+		this.purpleprogressbar.alpha = this.purpleprogressSlider.alpha = 0;
+		this.startTimer(time);
+	};
+
+	PowerupProgress.prototype.beginSmallerProgress = function(time){
+		this.greenprogressbar.alpha = this.greenprogressSlider.alpha = 0;
+		this.blueprogressbar.alpha = this.blueprogressSlider.alpha = 0;
+		this.redprogressbar.alpha = this.redprogressSlider.alpha = 0;
+		this.yellowprogressbar.alpha = this.yellowprogressSlider.alpha = 1;
+		this.purpleprogressbar.alpha = this.purpleprogressSlider.alpha = 0;
+		this.startTimer(time);
+	};
+
+	PowerupProgress.prototype.beginBiggerProgress = function(time){
+		this.greenprogressbar.alpha = this.greenprogressSlider.alpha = 0;
+		this.blueprogressbar.alpha = this.blueprogressSlider.alpha = 0;
+		this.redprogressbar.alpha = this.redprogressSlider.alpha = 0;
+		this.yellowprogressbar.alpha = this.yellowprogressSlider.alpha = 0;
+		this.purpleprogressbar.alpha = this.purpleprogressSlider.alpha = 1;
 		this.startTimer(time);
 	};
 
@@ -1309,7 +1442,7 @@ var PowerupProgress = (function(){
 		this.timerValue = Math.round(time/milisec);
 		this.currentTimerValue = 0;
 		var self = this;
-		self.greenprogressSlider.x = self.blueprogressSlider.x = self.redprogressSlider.x = - canvasWidth;
+		self.greenprogressSlider.x = self.blueprogressSlider.x = self.redprogressSlider.x = self.yellowprogressSlider.x = self.purpleprogressSlider.x = - canvasWidth;
 
 		this.timer = setInterval(function(){
 
@@ -1318,7 +1451,7 @@ var PowerupProgress = (function(){
 				self.hideProgressBar = true;
 				
 			}else{
-				self.greenprogressSlider.x = self.blueprogressSlider.x = self.redprogressSlider.x = - canvasWidth + (canvasWidth* (self.currentTimerValue/self.timerValue));
+				self.greenprogressSlider.x = self.blueprogressSlider.x = self.redprogressSlider.x = self.yellowprogressSlider.x = self.purpleprogressSlider.x = - canvasWidth + (canvasWidth* (self.currentTimerValue/self.timerValue));
 				self.currentTimerValue ++;				
 			}
 
@@ -1654,6 +1787,8 @@ var SpaceShip = (function(){
 		this.shipImmune = false;
 		this.warpSpeed = false;
 		this.shootMode = false;
+		this.smallerMode = false;
+		this.biggerMode = false;
 		this.capableToFly = true;
 		this.init();
 	}
@@ -1916,6 +2051,21 @@ var SpaceShip = (function(){
 				this.cannon.scaleX = this.cannon.scaleY += (0-this.cannon.scaleX)*0.2;
 			}
 
+			if (this.smallerMode) {
+				this.ship.scaleX = this.ship.scaleY += (0.3-this.ship.scaleX)*0.05;
+			}else{
+				this.ship.scaleX = this.ship.scaleY += (1-this.ship.scaleX)*0.05;
+			}
+
+			if (this.biggerMode) {
+				this.ship.scaleX = this.ship.scaleY += (1.8 - this.ship.scaleX)*0.05;
+			}else{
+				this.ship.scaleX = this.ship.scaleY += (1-this.ship.scaleX)*0.05;
+			}
+
+			this.ship.width = 60 * this.ship.scaleX;
+			this.ship.height = 60 * this.ship.scaleY;
+
 			flameFlickerTimer++;
 
 			var backgroundPos = Math.round((this.ship.x/26)*10)/10;
@@ -2027,13 +2177,21 @@ var StartScreen = (function(){
 		shootPowerup.init('shoot');
 		shootPowerup.powerup.x = 60+25+75;
 		shootPowerup.powerup.y = canvasPerc + 80+ yOffset;
-		
+
+		var smallerPowerup = new Powerup();
+		smallerPowerup.init('smaller');
+		smallerPowerup.powerup.x = 60+25+75+75;
+		smallerPowerup.powerup.y = canvasPerc + 80+ yOffset;
 
 		var reversePowerup = new Powerup();
 		reversePowerup.init('reverse');
 		reversePowerup.powerup.x = canvasWidth - 60 - 25 - 75;
 		reversePowerup.powerup.y = canvasPerc + 80+ yOffset;
 
+		var biggerPowerup = new Powerup();
+		biggerPowerup.init('bigger');
+		biggerPowerup.powerup.x = canvasWidth - 60 - 25 - 75 - 75;
+		biggerPowerup.powerup.y = canvasPerc + 80+ yOffset;
 
 		var meteorite = new Meteorite();
 		meteorite.init();
@@ -2100,6 +2258,8 @@ var StartScreen = (function(){
 		this.startContainer.addChild(this.backgroundImage);
 		this.startContainer.addChild(warpPowerup.powerup);
 		this.startContainer.addChild(shootPowerup.powerup);
+		this.startContainer.addChild(smallerPowerup.powerup);
+		this.startContainer.addChild(biggerPowerup.powerup);
 		this.startContainer.addChild(meteorite.meteorite);
 		this.startContainer.addChild(reversePowerup.powerup);
 		this.startContainer.addChild(this.text);

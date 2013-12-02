@@ -132,6 +132,8 @@ var SpaceShip = (function(){
 		this.shipImmune = false;
 		this.warpSpeed = false;
 		this.shootMode = false;
+		this.smallerMode = false;
+		this.biggerMode = false;
 		this.capableToFly = true;
 		this.init();
 	}
@@ -393,6 +395,21 @@ var SpaceShip = (function(){
 			}else{
 				this.cannon.scaleX = this.cannon.scaleY += (0-this.cannon.scaleX)*0.2;
 			}
+
+			if (this.smallerMode) {
+				this.ship.scaleX = this.ship.scaleY += (0.3-this.ship.scaleX)*0.05;
+			}else{
+				this.ship.scaleX = this.ship.scaleY += (1-this.ship.scaleX)*0.05;
+			}
+
+			if (this.biggerMode) {
+				this.ship.scaleX = this.ship.scaleY += (1.8 - this.ship.scaleX)*0.05;
+			}else{
+				this.ship.scaleX = this.ship.scaleY += (1-this.ship.scaleX)*0.05;
+			}
+
+			this.ship.width = 60 * this.ship.scaleX;
+			this.ship.height = 60 * this.ship.scaleY;
 
 			flameFlickerTimer++;
 

@@ -82,13 +82,21 @@ var StartScreen = (function(){
 		shootPowerup.init('shoot');
 		shootPowerup.powerup.x = 60+25+75;
 		shootPowerup.powerup.y = canvasPerc + 80+ yOffset;
-		
+
+		var smallerPowerup = new Powerup();
+		smallerPowerup.init('smaller');
+		smallerPowerup.powerup.x = 60+25+75+75;
+		smallerPowerup.powerup.y = canvasPerc + 80+ yOffset;
 
 		var reversePowerup = new Powerup();
 		reversePowerup.init('reverse');
 		reversePowerup.powerup.x = canvasWidth - 60 - 25 - 75;
 		reversePowerup.powerup.y = canvasPerc + 80+ yOffset;
 
+		var biggerPowerup = new Powerup();
+		biggerPowerup.init('bigger');
+		biggerPowerup.powerup.x = canvasWidth - 60 - 25 - 75 - 75;
+		biggerPowerup.powerup.y = canvasPerc + 80+ yOffset;
 
 		var meteorite = new Meteorite();
 		meteorite.init();
@@ -155,6 +163,8 @@ var StartScreen = (function(){
 		this.startContainer.addChild(this.backgroundImage);
 		this.startContainer.addChild(warpPowerup.powerup);
 		this.startContainer.addChild(shootPowerup.powerup);
+		this.startContainer.addChild(smallerPowerup.powerup);
+		this.startContainer.addChild(biggerPowerup.powerup);
 		this.startContainer.addChild(meteorite.meteorite);
 		this.startContainer.addChild(reversePowerup.powerup);
 		this.startContainer.addChild(this.text);
