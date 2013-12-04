@@ -22,13 +22,16 @@ var Main = (function(){
 	var meteoriteTimerValue = defaultMeteoriteTimerValue;
 	var defaultPowerupTimerValue = 2000;
 	var powerupTimerValue = defaultPowerupTimerValue;
-	var debugKeyboardControl = true;
+	var debugKeyboardControl = false;
 	var bulletCounter = 0;
 	var reversedControls = false;
 	var preventGameFromStopping = false;
-	var weigthFactor = 1.1;
+	var weightFactor = 0.1; // 0 voor "zware mensen" hoger voor kleine kindjes
 	var died = true;
 	var powerupHistory = [];
+	var nobodyIsPlaying = true;
+	var getWeightTimer;
+	var measuredWeights = [];
 
 	var bullets = [];
 	var powerups = [];
@@ -92,9 +95,8 @@ var Main = (function(){
 			sound.toggleMute();			
 		});
 
-		bean.on(socketConnection, 'horizontalPosition', function(data){
-
-			data = data + ((data - 50) * weigthFactor );
+		bean.on(socketConnection, 'horizontalPosition', function(data){		
+			data = data + ((data - 50) * weightFactor );
 			data = Math.min(100, data);
 			data = Math.max(0, data);
 
@@ -116,6 +118,13 @@ var Main = (function(){
 
 		bean.on(timer, 'secondPast', this.speedUpGame);
 
+		bean.on(socketConnection, 'weightReceived', function(data){
+			measuredWeights.push(data);
+			if (measuredWeights.length > 3) {
+				measuredWeights.shift();
+			}
+		});
+
 		bean.on(timer, 'speedUpMeteorites', this.speedUpMeteoriteTimer);
 
 		// StageTicker
@@ -124,10 +133,16 @@ var Main = (function(){
 		ticker.addEventListener('tick', this.update);
 		
 		this.showStartScreen();
+
+		getWeightTimer = setInterval(function(){
+			if(nobodyIsPlaying){
+				socketConnection.askForWeight();	
+			}			
+		}, 500); 
 		//endScreen = new EndScreen(300);
 		//stage.addChild(endScreen.endContainer);
 
-		sound.toggleMute();
+		//sound.toggleMute();
 	};
 
 	Main.prototype.togglePowerUpWarp = function(enablePowerUp){
@@ -265,14 +280,36 @@ var Main = (function(){
 
 	Main.prototype.jumpHandler = function(){
 		// Jump detected
-
-
 		if (startScreen || endScreen) {
-			console.log('jump met bean');
+			this.calculateWeightFactor();
 			this.startGame();	
 		}
-		
-		
+	};
+
+	Main.prototype.calculateWeightFactor = function(){
+
+		//from sample points = (75, 0.1)(30, 3)
+		//we get this function y = -0.0644x	+4.93333
+
+		if (measuredWeights[1]) {
+			console.log(measuredWeights);
+			var averageMeasuredWeight = 0;
+
+			for (var i = 0; i < measuredWeights.length; i++) {
+				averageMeasuredWeight = Math.max(averageMeasuredWeight, measuredWeights[1]);
+			}
+
+			console.log(averageMeasuredWeight);
+			//averageMeasuredWeight = Math.round(averageMeasuredWeight/measuredWeights.length);
+
+			weightFactor = (-0.0644*measuredWeights[1]) + 4.933;
+			weightFactor = Math.round(weightFactor*1000)/1000;
+			weightFactor = Math.max(0.05, weightFactor);
+			console.log(weightFactor);
+
+		}else{
+			weightFactor = 1;
+		}
 	};
 
 	Main.prototype.speedUpMeteoriteTimer = function(){
@@ -321,6 +358,8 @@ var Main = (function(){
 		}
 
 		if (timer.isRunning || preventGameFromStopping) {
+
+			nobodyIsPlaying = false;
 
 			this.cleanMeteorites();
 			this.cleanPowerUps();
@@ -505,9 +544,6 @@ var Main = (function(){
 				}
 			}
 
-
-			
-			
 			if (spaceShip.capableToFly) {
 				sound.changeRocketVolume(spaceShip.ship.rotation);	
 			}else{
@@ -517,6 +553,8 @@ var Main = (function(){
 			spaceShip.update();
 			powerupProgress.update();
 			
+		}else{
+			nobodyIsPlaying = true;
 		}
 
 		backgroundPos += (backgroundSpeed*gameSpeedFactor);

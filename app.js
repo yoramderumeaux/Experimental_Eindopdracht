@@ -28,6 +28,8 @@ io.sockets.on('connection', function(socket){
 	clientIDs.push(socket.id);
 	console.log(clientIDs.length + ' user(s) connected');
 
+	socket.on('askForWeight', sendWeight);
+
 	socket.on('disconnect', function () {
 		clientIDs.splice(clientIDs.indexOf(this.id), 1);
 		console.log(clientIDs.length + ' user(s) remaining');
@@ -48,17 +50,17 @@ var dataLed = 3;
 var activeLed = 2;
 
 var leftSensorTopMin = 740;
-var leftSensorTopMax = 50;
+var leftSensorTopMax = 100;
 var leftSensorTopVal = 0;
 var leftSensorBottomMin = 562;
-var leftSensorBottomMax = 50; //max 1023
+var leftSensorBottomMax = 100; //max 1023
 var leftSensorBottomVal = 0;
 
 var rightSensorTopMin = 750;
-var rightSensorTopMax = 150; //max 1023
+var rightSensorTopMax = 100; //max 1023
 var rightSensorTopVal = 0;
 var rightSensorBottomMin = 748;
-var rightSensorBottomMax = 150; //max 1023
+var rightSensorBottomMax = 100; //max 1023
 var rightSensorBottomVal = 0;
 
 var leftJumpLog = [];
@@ -67,7 +69,16 @@ var jumpThreshold = 80;
 var jumpIntervalTime = 1000; //ms
 
 var horizontalPosition = 50;
-var emitIntervalTime = 1000/10;
+var emitIntervalTime = 1000/15;
+
+var leftTopSensorSetup = true;
+var leftBottomSensorSetup = true;
+var rightTopSensorSetup = true;
+var rightBottomSensorSetup = true;
+var completedSetup = false;
+
+var weights = [];
+var averageWeight = 50;
 
 var board = new firmata.Board(path, function(err){
 	if(err){ 
@@ -97,6 +108,7 @@ var board = new firmata.Board(path, function(err){
 
 	setInterval(checkForJump, jumpIntervalTime);
 	setInterval(emitPosition, emitIntervalTime);
+	setInterval(calculateWeight, 100);
 
 	board.analogRead(leftSensorTopPin, readLeftTopButton);
 	board.analogRead(leftSensorBottomPin, readLeftBottomButton);
@@ -126,7 +138,7 @@ function checkForJump(){
 			minRight = Math.min(minRight, rightJumpLog[i]);		
 		};
 
-		var minVal = 20; //als hij geen jump detecteerd --> verhogen
+		var minVal = 40; //als hij geen jump detecteerd --> verhogen
 		if (maxLeft - minLeft > jumpThreshold && maxRight - minRight > jumpThreshold && minLeft < minVal && minRight < minVal) {		
 			console.log('jump detected');
 			emitSocket('jump', true);	
@@ -142,6 +154,12 @@ function checkForJump(){
 
 function readLeftTopButton(data){
 	//console.log('[SENSOR LEFT TOP]: ' + data);
+
+	if (leftTopSensorSetup) {
+		leftTopSensorSetup = false;
+		leftSensorTopMin = data;
+	}
+
 	if (Math.abs(data - leftSensorTopVal) > 2) {
 		leftSensorTopVal = data;
 		calculatePosition();
@@ -150,6 +168,11 @@ function readLeftTopButton(data){
 
 function readLeftBottomButton(data){
 	//console.log('[SENSOR LEFT BOTTOM]: ' + data);
+	if (leftBottomSensorSetup) {
+		leftBottomSensorSetup = false;
+		leftSensorBottomMin = data;
+	}
+
 	if (Math.abs(data - leftSensorBottomVal) > 2) {
 		leftSensorBottomVal = data;
 		calculatePosition();
@@ -158,6 +181,11 @@ function readLeftBottomButton(data){
 
 function readRightTopButton(data){
 	//console.log('[SENSOR RIGHT TOP]: ' + data);
+	if (rightTopSensorSetup) {
+		rightTopSensorSetup = false;
+		rightSensorTopMin = data;
+	}
+
 	if ( Math.abs(data - rightSensorTopVal) > 2) {
 		rightSensorTopVal = data;			
 		calculatePosition();
@@ -166,6 +194,11 @@ function readRightTopButton(data){
 
 function readRightBottomButton(data){
 	//console.log('[SENSOR RIGHT BOTTOM]: ' + data);
+	if (rightBottomSensorSetup) {
+		rightBottomSensorSetup = false;
+		rightSensorBottomMin = data;
+	}
+
 	if ( Math.abs(data - rightSensorBottomVal) > 2) {
 		rightSensorBottomVal = data;			
 		calculatePosition();
@@ -191,6 +224,10 @@ function emitSocket(type, value){
 				//io.sockets.emit('jump', value);
 				gameClient.emit('jump', value);
 			break;
+
+			case 'weight':
+				gameClient.emit('weight', value);
+			break;
 		}
 		
 	}else{
@@ -199,6 +236,11 @@ function emitSocket(type, value){
 }
 
 function calculatePosition(){
+
+	if (!completedSetup && !rightTopSensorSetup && !rightBottomSensorSetup && !leftTopSensorSetup && !leftBottomSensorSetup) {
+		completedSetup = true;
+		console.log(rightSensorTopMin, rightSensorBottomMin, leftSensorTopMin, leftSensorBottomMin);
+	}
 
 	var leftSensorMax = leftSensorTopMax;
 	var rightSensorMax = rightSensorTopMax;
@@ -239,11 +281,42 @@ function calculatePosition(){
 		}
 	};
 
-	console.log(horizontalPosition);
+	//console.log(horizontalPosition);
 	//emitSocket('horizontalPosition', horizontalPosition);
+}
 
+function calculateWeight(){
+	var totalSensor = leftSensorTopVal + leftSensorBottomVal + rightSensorTopVal + rightSensorBottomVal;
+	var weight = 150 - Math.round(totalSensor / 1300 * 70);
+	weight = Math.max(20, weight);
+	weights.push(weight);
+
+	if (weights.length > 8) {
+		weights.shift();
+	}
+
+	var averageWeightBuffer = 0;
+	for (var i = 0; i < weights.length; i++) {
+		averageWeightBuffer += weights[i];	
+	}
+
+	averageWeight = Math.round(averageWeightBuffer/ weights.length);
+	console.log(averageWeight);
+}
+
+function sendWeight(){
+	if (completedSetup) {
+		//console.log(horizontalPosition);
+		//console.log('please calculate weight');
+		console.log(averageWeight);
+		emitSocket('weight', averageWeight);
+
+	}else{
+		return false;
+	}
 }
 
 function emitPosition(){
+	//console.log(horizontalPosition);
 	emitSocket('horizontalPosition', horizontalPosition);
 }
