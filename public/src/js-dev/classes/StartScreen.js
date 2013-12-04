@@ -76,32 +76,38 @@ var StartScreen = (function(){
 		warpPowerup.init('warp');
 		warpPowerup.powerup.x = 60+25;
 		warpPowerup.powerup.y = canvasPerc + 80 + yOffset;
+		warpPowerup.powerup.scaleX = warpPowerup.powerup.scaleY = 0.75;
 		
 
 		var shootPowerup = new Powerup();
 		shootPowerup.init('shoot');
-		shootPowerup.powerup.x = 60+25+75;
+		shootPowerup.powerup.x = 60+25+60;
 		shootPowerup.powerup.y = canvasPerc + 80+ yOffset;
+		shootPowerup.powerup.scaleX = shootPowerup.powerup.scaleY = 0.75;
 
 		var smallerPowerup = new Powerup();
 		smallerPowerup.init('smaller');
-		smallerPowerup.powerup.x = 60+25+75+75;
+		smallerPowerup.powerup.x = 60+25+60+60;
 		smallerPowerup.powerup.y = canvasPerc + 80+ yOffset;
+		smallerPowerup.powerup.scaleX = smallerPowerup.powerup.scaleY = 0.75;
 
 		var reversePowerup = new Powerup();
 		reversePowerup.init('reverse');
-		reversePowerup.powerup.x = canvasWidth - 60 - 25 - 75;
+		reversePowerup.powerup.x = canvasWidth - 60 - 25 - 60;
 		reversePowerup.powerup.y = canvasPerc + 80+ yOffset;
+		reversePowerup.powerup.scaleX = reversePowerup.powerup.scaleY = 0.75;
 
 		var biggerPowerup = new Powerup();
 		biggerPowerup.init('bigger');
-		biggerPowerup.powerup.x = canvasWidth - 60 - 25 - 75 - 75;
+		biggerPowerup.powerup.x = canvasWidth - 60 - 25 - 60 - 60;
 		biggerPowerup.powerup.y = canvasPerc + 80+ yOffset;
+		biggerPowerup.powerup.scaleX = biggerPowerup.powerup.scaleY = 0.75;
 
 		var meteorite = new Meteorite();
 		meteorite.init();
 		meteorite.meteorite.x = canvasWidth - 60 - 25;
 		meteorite.meteorite.y = canvasPerc+80+ yOffset;
+		meteorite.meteorite.scaleX = meteorite.meteorite.scaleY = 0.75;
 
 		this.jumpText = new createjs.Text('Spring om te beginnen', '25px ralewayLight', '#FFFFFF');		
 		this.jumpText.y = canvasHeight - 80;

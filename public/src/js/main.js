@@ -132,13 +132,13 @@ var EndScreen = (function(){
 		this.line.shadow = new createjs.Shadow('#00ADEE', 0, 0, 10);
 
 		if(this.died) {
-			this.congratsText = new createjs.Text('Jammer, je haalde het net niet!', '25px ralewayLight', '#E75F5F');
+			this.congratsText = new createjs.Text('Jammer, je haalde het net niet!', '30px ralewayLight', '#E75F5F');
 			this.congratsText.x = (canvasWidth - this.congratsText.getBounds().width)/2;
-			this.congratsText.y = ((canvasHeight - this.congratsText.getBounds().height)/2) - 50;
+			this.congratsText.y = ((canvasHeight - this.congratsText.getBounds().height)/2) - 100;
 		}else {
-			this.congratsText = new createjs.Text('Proficiat! Je haalde het einde!', '25px ralewayLight', '#63DF76');
+			this.congratsText = new createjs.Text('Proficiat! Je haalde het einde!', '30px ralewayLight', '#63DF76');
 			this.congratsText.x = (canvasWidth - this.congratsText.getBounds().width)/2;
-			this.congratsText.y = ((canvasHeight - this.congratsText.getBounds().height)/2) - 50;
+			this.congratsText.y = ((canvasHeight - this.congratsText.getBounds().height)/2) - 100;
 		}
 
 		this.text2 = new createjs.Text('Je behaalde een score van', '25px ralewayLight', '#FFFFFF');
@@ -2198,32 +2198,38 @@ var StartScreen = (function(){
 		warpPowerup.init('warp');
 		warpPowerup.powerup.x = 60+25;
 		warpPowerup.powerup.y = canvasPerc + 80 + yOffset;
+		warpPowerup.powerup.scaleX = warpPowerup.powerup.scaleY = 0.75;
 		
 
 		var shootPowerup = new Powerup();
 		shootPowerup.init('shoot');
-		shootPowerup.powerup.x = 60+25+75;
+		shootPowerup.powerup.x = 60+25+60;
 		shootPowerup.powerup.y = canvasPerc + 80+ yOffset;
+		shootPowerup.powerup.scaleX = shootPowerup.powerup.scaleY = 0.75;
 
 		var smallerPowerup = new Powerup();
 		smallerPowerup.init('smaller');
-		smallerPowerup.powerup.x = 60+25+75+75;
+		smallerPowerup.powerup.x = 60+25+60+60;
 		smallerPowerup.powerup.y = canvasPerc + 80+ yOffset;
+		smallerPowerup.powerup.scaleX = smallerPowerup.powerup.scaleY = 0.75;
 
 		var reversePowerup = new Powerup();
 		reversePowerup.init('reverse');
-		reversePowerup.powerup.x = canvasWidth - 60 - 25 - 75;
+		reversePowerup.powerup.x = canvasWidth - 60 - 25 - 60;
 		reversePowerup.powerup.y = canvasPerc + 80+ yOffset;
+		reversePowerup.powerup.scaleX = reversePowerup.powerup.scaleY = 0.75;
 
 		var biggerPowerup = new Powerup();
 		biggerPowerup.init('bigger');
-		biggerPowerup.powerup.x = canvasWidth - 60 - 25 - 75 - 75;
+		biggerPowerup.powerup.x = canvasWidth - 60 - 25 - 60 - 60;
 		biggerPowerup.powerup.y = canvasPerc + 80+ yOffset;
+		biggerPowerup.powerup.scaleX = biggerPowerup.powerup.scaleY = 0.75;
 
 		var meteorite = new Meteorite();
 		meteorite.init();
 		meteorite.meteorite.x = canvasWidth - 60 - 25;
 		meteorite.meteorite.y = canvasPerc+80+ yOffset;
+		meteorite.meteorite.scaleX = meteorite.meteorite.scaleY = 0.75;
 
 		this.jumpText = new createjs.Text('Spring om te beginnen', '25px ralewayLight', '#FFFFFF');		
 		this.jumpText.y = canvasHeight - 80;

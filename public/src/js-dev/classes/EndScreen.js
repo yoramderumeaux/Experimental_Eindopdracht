@@ -40,13 +40,13 @@ var EndScreen = (function(){
 		this.line.shadow = new createjs.Shadow('#00ADEE', 0, 0, 10);
 
 		if(this.died) {
-			this.congratsText = new createjs.Text('Jammer, je haalde het net niet!', '25px ralewayLight', '#E75F5F');
+			this.congratsText = new createjs.Text('Jammer, je haalde het net niet!', '30px ralewayLight', '#E75F5F');
 			this.congratsText.x = (canvasWidth - this.congratsText.getBounds().width)/2;
-			this.congratsText.y = ((canvasHeight - this.congratsText.getBounds().height)/2) - 50;
+			this.congratsText.y = ((canvasHeight - this.congratsText.getBounds().height)/2) - 100;
 		}else {
-			this.congratsText = new createjs.Text('Proficiat! Je haalde het einde!', '25px ralewayLight', '#63DF76');
+			this.congratsText = new createjs.Text('Proficiat! Je haalde het einde!', '30px ralewayLight', '#63DF76');
 			this.congratsText.x = (canvasWidth - this.congratsText.getBounds().width)/2;
-			this.congratsText.y = ((canvasHeight - this.congratsText.getBounds().height)/2) - 50;
+			this.congratsText.y = ((canvasHeight - this.congratsText.getBounds().height)/2) - 100;
 		}
 
 		this.text2 = new createjs.Text('Je behaalde een score van', '25px ralewayLight', '#FFFFFF');
