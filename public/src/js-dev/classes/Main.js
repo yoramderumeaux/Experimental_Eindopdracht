@@ -140,6 +140,7 @@ var Main = (function(){
 			console.log(timer.timer);
 
 			if (timer.timer < 4) {
+				died = false;
 				preventGameFromStopping = true;	
 			}
 			
@@ -171,6 +172,7 @@ var Main = (function(){
 			spaceShip.warpSpeed = false;
 
 			if( preventGameFromStopping ) {
+
 				setTimeout(function(){
 					preventGameFromStopping = false;
 					self.stopGame();

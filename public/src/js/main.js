@@ -345,6 +345,7 @@ var Main = (function(){
 			console.log(timer.timer);
 
 			if (timer.timer < 4) {
+				died = false;
 				preventGameFromStopping = true;	
 			}
 			
@@ -376,6 +377,7 @@ var Main = (function(){
 			spaceShip.warpSpeed = false;
 
 			if( preventGameFromStopping ) {
+
 				setTimeout(function(){
 					preventGameFromStopping = false;
 					self.stopGame();
@@ -1202,6 +1204,7 @@ var Powerup = (function(){
 		if ($.isNumeric(type)) {
 			//this.randomNumber = Math.floor(Math.random()*types.length);
 			this.randomNumber = type;
+			this.randomNumber = 1;
 		}else{
 			switch(type){
 				case 'warp':
