@@ -386,6 +386,8 @@ var Main = (function(){
 
 			powerupProgress.beginSmallerProgress(4700);
 
+			sound.playEffectWithVolume('Smaller', 70);
+
 			setTimeout(function(){
 				self.togglePowerupSmaller(false);
 			}, 5000);
@@ -404,6 +406,8 @@ var Main = (function(){
 			score.updateScore(250);
 
 			powerupProgress.beginBiggerProgress(4700);
+
+			sound.playEffectWithVolume('Bigger', 70);
 
 			setTimeout(function(){
 				self.togglePowerupBigger(false);
