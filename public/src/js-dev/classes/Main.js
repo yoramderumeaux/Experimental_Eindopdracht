@@ -729,9 +729,6 @@ var Main = (function(){
 	};
 
 	Main.prototype.newMeteorite = function() {
-		// var date = new Date();
-		// date = date.getHours() + ':' + date.getMinutes() + ':' + date.getSeconds();		
-		// console.log('[MAIN] add meteorite ' + date);
 		
 		var randomX = 30 + Math.round(Math.random()*($('#cnvs').width()-60));
 

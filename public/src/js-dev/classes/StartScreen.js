@@ -24,7 +24,6 @@ var StartScreen = (function(){
 		this.backgroundImage.alpha = 0.25;
 		//this.backgroundImage.scaleX = this.backgroundImage.scaleY = 3;
 
-
 		this.text = new createjs.Text('space evader', '48px CFSpaceship', '#FFFFFF');
 		this.text.x = (canvasWidth - this.text.getBounds().width)/2;
 		this.text.y = 70;
@@ -110,7 +109,7 @@ var StartScreen = (function(){
 		meteorite.meteorite.scaleX = meteorite.meteorite.scaleY = 0.75;
 
 		this.jumpText = new createjs.Text('Spring om te beginnen', '25px ralewayLight', '#FFFFFF');		
-		this.jumpText.y = canvasHeight - 80;
+		this.jumpText.y = canvasHeight - 60;
 		this.jumpText.x = (canvasWidth - this.jumpText.getBounds().width)/2;
 
 		this.ventjeContainer = new createjs.Container();
@@ -157,6 +156,55 @@ var StartScreen = (function(){
 		this.ventje2.x = 250;
 		this.ventje2.scaleX *= -1;
 
+		var jumpOffset = 20;
+		this.jump = new createjs.Shape();
+		this.jump.x = 0;
+		this.jump.y = 0;
+		this.jump.graphics.beginStroke('#00d2ff');
+		this.jump.graphics.setStrokeStyle(3);
+		this.jump.graphics.moveTo(0,104);
+		this.jump.graphics.lineTo(97,104);
+		this.jump.graphics.lineTo(77,84);
+		this.jump.graphics.lineTo(20,84);
+		this.jump.graphics.lineTo(0,104);
+		this.jump.graphics.endStroke();
+		this.jump.graphics.beginStroke('#ffffff');
+		this.jump.graphics.moveTo(29,94-jumpOffset);
+		this.jump.graphics.lineTo(37,77-jumpOffset);
+		this.jump.graphics.lineTo(50,63-jumpOffset);
+		this.jump.graphics.lineTo(62,77-jumpOffset);
+		this.jump.graphics.lineTo(69,94-jumpOffset);
+		this.jump.graphics.moveTo(50,63-jumpOffset);
+		this.jump.graphics.lineTo(50,29-jumpOffset);
+		//this.jump.graphics.lineTo(37,23);
+		this.jump.graphics.moveTo(27,32-jumpOffset);
+		this.jump.graphics.lineTo(36,41-jumpOffset);
+		this.jump.graphics.lineTo(50,41-jumpOffset);
+		this.jump.graphics.lineTo(64,41-jumpOffset);
+		this.jump.graphics.lineTo(73,32-jumpOffset);
+
+		this.jump.graphics.endStroke();
+		this.jump.graphics.beginStroke('#fff448');
+
+		this.jump.graphics.moveTo(37,77+25-jumpOffset);
+		this.jump.graphics.lineTo(50,63+25-jumpOffset);
+		this.jump.graphics.lineTo(62,77+25-jumpOffset);
+
+		this.jump.graphics.moveTo(37,77+35-jumpOffset);
+		this.jump.graphics.lineTo(50,63+35-jumpOffset);
+		this.jump.graphics.lineTo(62,77+35-jumpOffset);
+
+		// this.jump.graphics.lineTo(56,25);
+		// this.jump.graphics.lineTo(56,11);
+		this.jump.graphics.endFill();
+		this.jump.graphics.beginStroke('#ffffff');
+		this.jump.graphics.drawCircle(50, 17-jumpOffset, 12);
+		this.jump.graphics.endFill();
+		this.jump.x = (canvasWidth / 2)-(35*this.jump.scaleX);
+		this.jump.y = this.jumpText.y - 80;
+		this.jump.shadow = new createjs.Shadow('#00ADEE', 0, 0, 10);
+		this.jump.scaleX = this.jump.scaleY = 0.7;
+
 		this.ventjeContainer.addChild(this.ventje);
 		this.ventjeContainer.addChild(this.ventje2);
 		this.ventjeContainer.addChild(this.leunText);
@@ -181,6 +229,7 @@ var StartScreen = (function(){
 		this.startContainer.addChild(this.ontwijkText);
 		this.startContainer.addChild(this.ontwijkLine);
 		this.startContainer.addChild(this.warpImage);
+		this.startContainer.addChild(this.jump);
 		this.startContainer.addChild(this.ventjeContainer);
 
 	};

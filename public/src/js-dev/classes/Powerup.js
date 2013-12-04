@@ -130,9 +130,9 @@ var Powerup = (function(){
 		}else if(this.type === 'smaller') {
 			var resizer = new createjs.Shape();
 			resizer.graphics.beginStroke(primaryColor[this.randomNumber]);
-			resizer.graphics.setStrokeStyle(1);
+			resizer.graphics.setStrokeStyle(3);
 			resizer.graphics.drawRect(-10, -10, 20, 20);
-			resizer.graphics.setStrokeStyle(7);
+			resizer.graphics.setStrokeStyle(1);
 			resizer.graphics.drawRect(-2, -2, 4, 4);
 
 			this.powerup.addChild(resizer);
@@ -141,9 +141,9 @@ var Powerup = (function(){
 			var resizerBig = new createjs.Shape();
 			resizerBig.graphics.beginStroke(primaryColor[this.randomNumber]);
 
-			resizerBig.graphics.setStrokeStyle(3);
-			resizerBig.graphics.drawRect(-10, -10, 20, 20);
 			resizerBig.graphics.setStrokeStyle(1);
+			resizerBig.graphics.drawRect(-10, -10, 20, 20);
+			resizerBig.graphics.setStrokeStyle(7);
 			resizerBig.graphics.drawRect(-2, -2, 4, 4);
 
 			this.powerup.addChild(resizerBig);

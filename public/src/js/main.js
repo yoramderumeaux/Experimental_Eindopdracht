@@ -934,9 +934,6 @@ var Main = (function(){
 	};
 
 	Main.prototype.newMeteorite = function() {
-		// var date = new Date();
-		// date = date.getHours() + ':' + date.getMinutes() + ':' + date.getSeconds();		
-		// console.log('[MAIN] add meteorite ' + date);
 		
 		var randomX = 30 + Math.round(Math.random()*($('#cnvs').width()-60));
 
@@ -1306,9 +1303,9 @@ var Powerup = (function(){
 		}else if(this.type === 'smaller') {
 			var resizer = new createjs.Shape();
 			resizer.graphics.beginStroke(primaryColor[this.randomNumber]);
-			resizer.graphics.setStrokeStyle(1);
+			resizer.graphics.setStrokeStyle(3);
 			resizer.graphics.drawRect(-10, -10, 20, 20);
-			resizer.graphics.setStrokeStyle(7);
+			resizer.graphics.setStrokeStyle(1);
 			resizer.graphics.drawRect(-2, -2, 4, 4);
 
 			this.powerup.addChild(resizer);
@@ -1317,9 +1314,9 @@ var Powerup = (function(){
 			var resizerBig = new createjs.Shape();
 			resizerBig.graphics.beginStroke(primaryColor[this.randomNumber]);
 
-			resizerBig.graphics.setStrokeStyle(3);
-			resizerBig.graphics.drawRect(-10, -10, 20, 20);
 			resizerBig.graphics.setStrokeStyle(1);
+			resizerBig.graphics.drawRect(-10, -10, 20, 20);
+			resizerBig.graphics.setStrokeStyle(7);
 			resizerBig.graphics.drawRect(-2, -2, 4, 4);
 
 			this.powerup.addChild(resizerBig);
@@ -2190,15 +2187,15 @@ var SpaceShip = (function(){
 			}
 
 			if (this.smallerMode) {
-				this.ship.scaleX = this.ship.scaleY += (0.3-this.ship.scaleX)*0.05;
+				this.ship.scaleX = this.ship.scaleY += (0.3-this.ship.scaleX)*0.015;
 			}else{
-				this.ship.scaleX = this.ship.scaleY += (1-this.ship.scaleX)*0.05;
+				this.ship.scaleX = this.ship.scaleY += (1-this.ship.scaleX)*0.015;
 			}
 
 			if (this.biggerMode) {
-				this.ship.scaleX = this.ship.scaleY += (1.8 - this.ship.scaleX)*0.05;
+				this.ship.scaleX = this.ship.scaleY += (1.8 - this.ship.scaleX)*0.015;
 			}else{
-				this.ship.scaleX = this.ship.scaleY += (1-this.ship.scaleX)*0.05;
+				this.ship.scaleX = this.ship.scaleY += (1-this.ship.scaleX)*0.015;
 			}
 
 			this.ship.width = 60 * this.ship.scaleX;
@@ -2256,7 +2253,6 @@ var StartScreen = (function(){
 		this.backgroundImage = new createjs.Bitmap('images/blueBG.png');
 		this.backgroundImage.alpha = 0.25;
 		//this.backgroundImage.scaleX = this.backgroundImage.scaleY = 3;
-
 
 		this.text = new createjs.Text('space evader', '48px CFSpaceship', '#FFFFFF');
 		this.text.x = (canvasWidth - this.text.getBounds().width)/2;
@@ -2343,7 +2339,7 @@ var StartScreen = (function(){
 		meteorite.meteorite.scaleX = meteorite.meteorite.scaleY = 0.75;
 
 		this.jumpText = new createjs.Text('Spring om te beginnen', '25px ralewayLight', '#FFFFFF');		
-		this.jumpText.y = canvasHeight - 80;
+		this.jumpText.y = canvasHeight - 60;
 		this.jumpText.x = (canvasWidth - this.jumpText.getBounds().width)/2;
 
 		this.ventjeContainer = new createjs.Container();
@@ -2390,6 +2386,55 @@ var StartScreen = (function(){
 		this.ventje2.x = 250;
 		this.ventje2.scaleX *= -1;
 
+		var jumpOffset = 20;
+		this.jump = new createjs.Shape();
+		this.jump.x = 0;
+		this.jump.y = 0;
+		this.jump.graphics.beginStroke('#00d2ff');
+		this.jump.graphics.setStrokeStyle(3);
+		this.jump.graphics.moveTo(0,104);
+		this.jump.graphics.lineTo(97,104);
+		this.jump.graphics.lineTo(77,84);
+		this.jump.graphics.lineTo(20,84);
+		this.jump.graphics.lineTo(0,104);
+		this.jump.graphics.endStroke();
+		this.jump.graphics.beginStroke('#ffffff');
+		this.jump.graphics.moveTo(29,94-jumpOffset);
+		this.jump.graphics.lineTo(37,77-jumpOffset);
+		this.jump.graphics.lineTo(50,63-jumpOffset);
+		this.jump.graphics.lineTo(62,77-jumpOffset);
+		this.jump.graphics.lineTo(69,94-jumpOffset);
+		this.jump.graphics.moveTo(50,63-jumpOffset);
+		this.jump.graphics.lineTo(50,29-jumpOffset);
+		//this.jump.graphics.lineTo(37,23);
+		this.jump.graphics.moveTo(27,32-jumpOffset);
+		this.jump.graphics.lineTo(36,41-jumpOffset);
+		this.jump.graphics.lineTo(50,41-jumpOffset);
+		this.jump.graphics.lineTo(64,41-jumpOffset);
+		this.jump.graphics.lineTo(73,32-jumpOffset);
+
+		this.jump.graphics.endStroke();
+		this.jump.graphics.beginStroke('#fff448');
+
+		this.jump.graphics.moveTo(37,77+25-jumpOffset);
+		this.jump.graphics.lineTo(50,63+25-jumpOffset);
+		this.jump.graphics.lineTo(62,77+25-jumpOffset);
+
+		this.jump.graphics.moveTo(37,77+35-jumpOffset);
+		this.jump.graphics.lineTo(50,63+35-jumpOffset);
+		this.jump.graphics.lineTo(62,77+35-jumpOffset);
+
+		// this.jump.graphics.lineTo(56,25);
+		// this.jump.graphics.lineTo(56,11);
+		this.jump.graphics.endFill();
+		this.jump.graphics.beginStroke('#ffffff');
+		this.jump.graphics.drawCircle(50, 17-jumpOffset, 12);
+		this.jump.graphics.endFill();
+		this.jump.x = (canvasWidth / 2)-(35*this.jump.scaleX);
+		this.jump.y = this.jumpText.y - 80;
+		this.jump.shadow = new createjs.Shadow('#00ADEE', 0, 0, 10);
+		this.jump.scaleX = this.jump.scaleY = 0.7;
+
 		this.ventjeContainer.addChild(this.ventje);
 		this.ventjeContainer.addChild(this.ventje2);
 		this.ventjeContainer.addChild(this.leunText);
@@ -2414,6 +2459,7 @@ var StartScreen = (function(){
 		this.startContainer.addChild(this.ontwijkText);
 		this.startContainer.addChild(this.ontwijkLine);
 		this.startContainer.addChild(this.warpImage);
+		this.startContainer.addChild(this.jump);
 		this.startContainer.addChild(this.ventjeContainer);
 
 	};

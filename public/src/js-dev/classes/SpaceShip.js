@@ -454,15 +454,15 @@ var SpaceShip = (function(){
 			}
 
 			if (this.smallerMode) {
-				this.ship.scaleX = this.ship.scaleY += (0.3-this.ship.scaleX)*0.05;
+				this.ship.scaleX = this.ship.scaleY += (0.3-this.ship.scaleX)*0.015;
 			}else{
-				this.ship.scaleX = this.ship.scaleY += (1-this.ship.scaleX)*0.05;
+				this.ship.scaleX = this.ship.scaleY += (1-this.ship.scaleX)*0.015;
 			}
 
 			if (this.biggerMode) {
-				this.ship.scaleX = this.ship.scaleY += (1.8 - this.ship.scaleX)*0.05;
+				this.ship.scaleX = this.ship.scaleY += (1.8 - this.ship.scaleX)*0.015;
 			}else{
-				this.ship.scaleX = this.ship.scaleY += (1-this.ship.scaleX)*0.05;
+				this.ship.scaleX = this.ship.scaleY += (1-this.ship.scaleX)*0.015;
 			}
 
 			this.ship.width = 60 * this.ship.scaleX;
