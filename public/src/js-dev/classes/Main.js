@@ -27,6 +27,7 @@ var Main = (function(){
 	var reversedControls = false;
 	var preventGameFromStopping = false;
 	var weigthFactor = 1.1;
+	var died = true;
 
 	var bullets = [];
 	var powerups = [];
@@ -107,6 +108,7 @@ var Main = (function(){
 
 		bean.on(timer, 'endTimer', function(){
 			if( !preventGameFromStopping ) {
+				died = false;
 				self.stopGame();	
 			}
 		});
@@ -121,6 +123,9 @@ var Main = (function(){
 		ticker.addEventListener('tick', this.update);
 		
 		this.showStartScreen();
+		//endScreen = new EndScreen(300);
+		//stage.addChild(endScreen.endContainer);
+
 		sound.toggleMute();
 	};
 
@@ -559,11 +564,13 @@ var Main = (function(){
 		// Call EndScreen and clear object from screen
 		//spaceShip.ship.alpha = 0;
 		$('#score').hide();
-		endScreen = new EndScreen(endScore);
+		endScreen = new EndScreen(endScore, died);
 		bean.on(endScreen, 'startGame', this.startGame);
 		bean.on(endScreen, 'showStartScreen', this.showStartScreen);
 		
 		stage.addChild(endScreen.endContainer);
+
+		died = true;
 	};
 
 	Main.prototype.startGame = function(){

@@ -96,10 +96,11 @@ var EndScreen = (function(){
 	var canvasHeight = 0;
 
 
-	function EndScreen(endScore) {
+	function EndScreen(endScore, died) {
 		_.bindAll(this);
 		
 		this.endScore = endScore;
+		this.died = died;
 		this.init();
 
 		//$(document).on('click', this.restartGame);
@@ -130,9 +131,23 @@ var EndScreen = (function(){
 		this.line.y = 130;
 		this.line.shadow = new createjs.Shadow('#00ADEE', 0, 0, 10);
 
+		if(this.died) {
+			this.congratsText = new createjs.Text('Jammer, je haalde het net niet!', '25px ralewayLight', '#E75F5F');
+			this.congratsText.x = (canvasWidth - this.congratsText.getBounds().width)/2;
+			this.congratsText.y = ((canvasHeight - this.congratsText.getBounds().height)/2) - 50;
+		}else {
+			this.congratsText = new createjs.Text('Proficiat! Je haalde het einde!', '25px ralewayLight', '#63DF76');
+			this.congratsText.x = (canvasWidth - this.congratsText.getBounds().width)/2;
+			this.congratsText.y = ((canvasHeight - this.congratsText.getBounds().height)/2) - 50;
+		}
+
+		this.text2 = new createjs.Text('Je behaalde een score van', '25px ralewayLight', '#FFFFFF');
+		this.text2.x = (canvasWidth - this.text2.getBounds().width)/2;
+		this.text2.y = ((canvasHeight - this.text2.getBounds().height)/2) + 30;
+
 		this.scoreText = new createjs.Text(this.endScore, '50px menschWeb', '#FFFFFF');
-		this.scoreText.x = (canvasWidth - this.text.getBounds().width)/2;
-		this.scoreText.y = (canvasHeight - this.text.getBounds().height)/2;
+		this.scoreText.x = (canvasWidth - this.scoreText.getBounds().width)/2;
+		this.scoreText.y = ((canvasHeight - this.scoreText.getBounds().height)/2) + 100;
 
 		this.jumpText = new createjs.Text('Spring om te beginnen', '25px ralewayLight', '#FFFFFF');		
 		this.jumpText.y = canvasHeight - 80;
@@ -140,6 +155,8 @@ var EndScreen = (function(){
 
 		this.endContainer.addChild(this.backgroundImage);
 		this.endContainer.addChild(this.text);
+		this.endContainer.addChild(this.text2);
+		this.endContainer.addChild(this.congratsText);
 		this.endContainer.addChild(this.line);
 		this.endContainer.addChild(this.jumpText);
 		this.endContainer.addChild(this.scoreText);	
@@ -153,7 +170,6 @@ var EndScreen = (function(){
 	EndScreen.prototype.restartGame = function(e) {
 		var self = this;
 		$(document).off('click', this.restartGame);
-		console.log(e.currentTarget);
 		bean.fire(this, 'startGame');
 	};
 
@@ -190,6 +206,7 @@ var Main = (function(){
 	var reversedControls = false;
 	var preventGameFromStopping = false;
 	var weigthFactor = 1.1;
+	var died = true;
 
 	var bullets = [];
 	var powerups = [];
@@ -270,6 +287,7 @@ var Main = (function(){
 
 		bean.on(timer, 'endTimer', function(){
 			if( !preventGameFromStopping ) {
+				died = false;
 				self.stopGame();	
 			}
 		});
@@ -284,6 +302,9 @@ var Main = (function(){
 		ticker.addEventListener('tick', this.update);
 		
 		this.showStartScreen();
+		//endScreen = new EndScreen(300);
+		//stage.addChild(endScreen.endContainer);
+
 		sound.toggleMute();
 	};
 
@@ -722,11 +743,13 @@ var Main = (function(){
 		// Call EndScreen and clear object from screen
 		//spaceShip.ship.alpha = 0;
 		$('#score').hide();
-		endScreen = new EndScreen(endScore);
+		endScreen = new EndScreen(endScore, died);
 		bean.on(endScreen, 'startGame', this.startGame);
 		bean.on(endScreen, 'showStartScreen', this.showStartScreen);
 		
 		stage.addChild(endScreen.endContainer);
+
+		died = true;
 	};
 
 	Main.prototype.startGame = function(){
