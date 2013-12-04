@@ -938,7 +938,7 @@ var Main = (function(){
 		// date = date.getHours() + ':' + date.getMinutes() + ':' + date.getSeconds();		
 		// console.log('[MAIN] add meteorite ' + date);
 		
-		var randomX = Math.random()*($('#cnvs').width());
+		var randomX = 30 + Math.round(Math.random()*($('#cnvs').width()-60));
 
 		if( Math.abs(randomX - lastMeteorXPos) > 100 ) {
 			lastMeteorXPos = randomX;
