@@ -2,7 +2,6 @@ var Powerup = (function(){
 
 	var x;
 	var y;
-	var types = ['shoot', 'warp', 'reverse', 'smaller', 'bigger'];
 	var primaryColor = ['#aef69d', '#00d2ff', '#e75f5f', '#fff448', '#AE81FF'];
 	var shadowColor = ['#1bf43f', '#005c70', '#db2020', '#fff665', '#8542ff'];
 
@@ -13,6 +12,7 @@ var Powerup = (function(){
 		this.velY = 0;
 		this.speed = 30;
 		this.speedFactor = 1;
+		this.types = ['shoot', 'warp', 'reverse', 'smaller', 'bigger'];
 		this.enableWarpSpeed = false;
 		this.warpSpeedTarget = 30;
 		this.currentWarpSpeed = 0;
@@ -20,14 +20,15 @@ var Powerup = (function(){
 		this.removeMe = false;
 		this.readyToRemove = false;
 		this.collected = false;
+		this.randomNumber = 0;
 	}
 
 	Powerup.prototype.init = function(type) {	
 		this.speed = (30+ Math.round(Math.random()*30)) * this.speedFactor;
-		if (!type) {
-			this.randomNumber = Math.floor(Math.random()*types.length);
+		if ($.isNumeric(type)) {
+			//this.randomNumber = Math.floor(Math.random()*types.length);
+			this.randomNumber = type;
 		}else{
-			console.log(type);
 			switch(type){
 				case 'warp':
 				this.randomNumber = 1;
@@ -47,7 +48,7 @@ var Powerup = (function(){
 			}
 		}
 		
-		this.type = types[this.randomNumber];
+		this.type = this.types[this.randomNumber];
 		this.drawPowerup();
 	};
 

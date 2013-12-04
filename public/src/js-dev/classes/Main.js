@@ -28,6 +28,7 @@ var Main = (function(){
 	var preventGameFromStopping = false;
 	var weigthFactor = 1.1;
 	var died = true;
+	var powerupHistory = [];
 
 	var bullets = [];
 	var powerups = [];
@@ -247,6 +248,8 @@ var Main = (function(){
 
 			reversedControls = true;
 			powerupProgress.beginReverseProgress(4000);
+
+			sound.playEffectWithVolume('reverse', 70);
 
 			setTimeout(function(){
 				self.togglePowerUpReverse(false);
@@ -695,7 +698,29 @@ var Main = (function(){
 			// console.log('[MAIN] add powerup ' + date);
 			var randomX = Math.random()*($('#cnvs').width());
 			powerup = new Powerup(randomX, -100);
-			powerup.init();
+
+			var uniquePowerup = false;
+			var randomPowerupIndex = 0;
+
+			while(!uniquePowerup){
+				uniquePowerup = true;
+				randomPowerupIndex = Math.floor(Math.random()*powerup.types.length);
+				
+				for (var i = 0; i < powerupHistory.length; i++) {
+					if (powerupHistory[i] === randomPowerupIndex) {
+						uniquePowerup = false;
+					}
+				}
+			}
+
+			powerupHistory.push(randomPowerupIndex);
+
+			var numberOfUniquePowerupSequence = 3;
+			if (powerupHistory.length > numberOfUniquePowerupSequence) {
+				powerupHistory.shift();
+			}
+
+			powerup.init(randomPowerupIndex);
 			stage.addChild(powerup.powerup);
 			powerups.push(powerup);
 		}

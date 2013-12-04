@@ -119,7 +119,7 @@ var SpaceShip = (function(){
 		[96*bigFlameFactor,38*bigFlameFactor]	
 	];
 
-	function SpaceShip(x, y){
+	function SpaceShip(x, y, dead, crack){
 		_.bindAll(this);
 		this.x = x;
 		this.y = y;
@@ -135,6 +135,8 @@ var SpaceShip = (function(){
 		this.smallerMode = false;
 		this.biggerMode = false;
 		this.capableToFly = true;
+		this.dead = dead;
+		this.crack = crack;
 		this.init();
 	}
 
@@ -144,7 +146,18 @@ var SpaceShip = (function(){
 		this.ship.x = this.x;
 		this.ship.y = this.y;
 		
-		this.drawFlames();
+		if (!this.dead) {
+			this.drawFlames();
+		}else{
+			if (this.crack) {
+				this.drawCrack();
+			}else{
+				this.drawWinningStripes();
+			}
+		}
+
+		
+		
 		this.drawWindow();		
 		this.drawCannon();
 		this.drawWings();
@@ -229,6 +242,50 @@ var SpaceShip = (function(){
 
 		this.ship.addChild(this.bigFlame);
 		this.ship.addChild(this.smallFlame);
+	};
+
+	SpaceShip.prototype.drawWinningStripes = function(){
+		var crack = new createjs.Shape();
+		
+		crack.graphics.beginStroke('#00d2ff');
+		crack.graphics.setStrokeStyle(2);
+		crack.graphics.moveTo(-35, 10);
+		crack.graphics.lineTo(-85, 0);
+		crack.graphics.moveTo(35, 10);
+		crack.graphics.lineTo(85, 0);
+		
+		crack.graphics.beginStroke('#fff448');
+		crack.graphics.moveTo(-30, 0);
+		crack.graphics.lineTo(-65, -20);
+		crack.graphics.moveTo(30, 0);
+		crack.graphics.lineTo(65, -20);
+
+		crack.graphics.beginStroke('#00d2ff');
+		crack.graphics.moveTo(-23, -10);
+		crack.graphics.lineTo(-40, -30);
+		crack.graphics.moveTo(23, -10);
+		crack.graphics.lineTo(40, -30);
+
+		crack.graphics.beginStroke('#fff448');
+		crack.graphics.moveTo(-15, -23);
+		crack.graphics.lineTo(-18, -30);
+		crack.graphics.moveTo(15, -23);
+		crack.graphics.lineTo(18, -30);
+
+		this.ship.addChild(crack);
+		crack.shadow = new createjs.Shadow('#00ADEE', 0, 0, 10);
+	};
+
+	SpaceShip.prototype.drawCrack = function() {
+		var crack = new createjs.Shape();
+		crack.graphics.beginStroke('#ffffff');
+		crack.graphics.setStrokeStyle(2);
+		crack.graphics.moveTo(12, 12);
+		crack.graphics.lineTo(2,5);
+		crack.graphics.lineTo(4,12);
+		crack.graphics.lineTo(-6,8);
+		this.ship.addChild(crack);
+		crack.shadow = new createjs.Shadow('#00ADEE', 0, 0, 10);
 	};
 
 	SpaceShip.prototype.drawWings = function(){

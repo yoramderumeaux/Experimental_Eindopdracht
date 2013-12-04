@@ -1,3 +1,5 @@
+/* globals SpaceShip:true */
+
 var EndScreen = (function(){
 
 	var canvasWidth = 0;
@@ -39,21 +41,41 @@ var EndScreen = (function(){
 		this.line.y = 130;
 		this.line.shadow = new createjs.Shadow('#00ADEE', 0, 0, 10);
 
+		var spaceShip = null;
+		var endIcon = new createjs.Container();
+		var decorLines = new createjs.Shape();
+
 		if(this.died) {
 			this.congratsText = new createjs.Text('Jammer, je haalde het net niet!', '30px ralewayLight', '#E75F5F');
-			this.congratsText.x = (canvasWidth - this.congratsText.getBounds().width)/2;
-			this.congratsText.y = ((canvasHeight - this.congratsText.getBounds().height)/2) - 100;
+			// this.congratsText.x = (canvasWidth - this.congratsText.getBounds().width)/2;
+			// this.congratsText.y = ((canvasHeight - this.congratsText.getBounds().height)/2) - 190;
+
+			spaceShip = new SpaceShip(0,0, true, true);
+			spaceShip.ship.rotation = -111;
+			spaceShip.ship.scaleX = spaceShip.ship.scaleY = 1.5;
+
+			endIcon.x = canvasWidth/2;
+			endIcon.y = this.congratsText.y + 120;
 		}else {
 			this.congratsText = new createjs.Text('Proficiat! Je haalde het einde!', '30px ralewayLight', '#63DF76');
-			this.congratsText.x = (canvasWidth - this.congratsText.getBounds().width)/2;
-			this.congratsText.y = ((canvasHeight - this.congratsText.getBounds().height)/2) - 100;
+			
+
+			spaceShip = new SpaceShip(0,0, true, false);
+			spaceShip.ship.scaleX = spaceShip.ship.scaleY = 1.5;
 		}
+
+		this.congratsText.x = (canvasWidth - this.congratsText.getBounds().width)/2;
+		this.congratsText.y = ((canvasHeight - this.congratsText.getBounds().height)/2) - 190;
+
+		endIcon.x = canvasWidth/2;
+		endIcon.y = this.congratsText.y + 120;
+		endIcon.addChild(spaceShip.ship);
 
 		this.text2 = new createjs.Text('Je behaalde een score van', '25px ralewayLight', '#FFFFFF');
 		this.text2.x = (canvasWidth - this.text2.getBounds().width)/2;
 		this.text2.y = ((canvasHeight - this.text2.getBounds().height)/2) + 30;
 
-		this.scoreText = new createjs.Text(this.endScore, '50px menschWeb', '#FFFFFF');
+		this.scoreText = new createjs.Text(this.endScore, '65px menschWeb', '#FFFFFF');
 		this.scoreText.x = (canvasWidth - this.scoreText.getBounds().width)/2;
 		this.scoreText.y = ((canvasHeight - this.scoreText.getBounds().height)/2) + 100;
 
@@ -68,6 +90,10 @@ var EndScreen = (function(){
 		this.endContainer.addChild(this.line);
 		this.endContainer.addChild(this.jumpText);
 		this.endContainer.addChild(this.scoreText);	
+
+		if (spaceShip) {
+			this.endContainer.addChild(endIcon);
+		}
 	};
 
 	EndScreen.prototype.showStartscreen = function(){

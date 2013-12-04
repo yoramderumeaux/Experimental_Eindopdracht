@@ -90,6 +90,8 @@ var CollisionDetection = (function(){
 
 })();
 
+/* globals SpaceShip:true */
+
 var EndScreen = (function(){
 
 	var canvasWidth = 0;
@@ -131,21 +133,41 @@ var EndScreen = (function(){
 		this.line.y = 130;
 		this.line.shadow = new createjs.Shadow('#00ADEE', 0, 0, 10);
 
+		var spaceShip = null;
+		var endIcon = new createjs.Container();
+		var decorLines = new createjs.Shape();
+
 		if(this.died) {
 			this.congratsText = new createjs.Text('Jammer, je haalde het net niet!', '30px ralewayLight', '#E75F5F');
-			this.congratsText.x = (canvasWidth - this.congratsText.getBounds().width)/2;
-			this.congratsText.y = ((canvasHeight - this.congratsText.getBounds().height)/2) - 100;
+			// this.congratsText.x = (canvasWidth - this.congratsText.getBounds().width)/2;
+			// this.congratsText.y = ((canvasHeight - this.congratsText.getBounds().height)/2) - 190;
+
+			spaceShip = new SpaceShip(0,0, true, true);
+			spaceShip.ship.rotation = -111;
+			spaceShip.ship.scaleX = spaceShip.ship.scaleY = 1.5;
+
+			endIcon.x = canvasWidth/2;
+			endIcon.y = this.congratsText.y + 120;
 		}else {
 			this.congratsText = new createjs.Text('Proficiat! Je haalde het einde!', '30px ralewayLight', '#63DF76');
-			this.congratsText.x = (canvasWidth - this.congratsText.getBounds().width)/2;
-			this.congratsText.y = ((canvasHeight - this.congratsText.getBounds().height)/2) - 100;
+			
+
+			spaceShip = new SpaceShip(0,0, true, false);
+			spaceShip.ship.scaleX = spaceShip.ship.scaleY = 1.5;
 		}
+
+		this.congratsText.x = (canvasWidth - this.congratsText.getBounds().width)/2;
+		this.congratsText.y = ((canvasHeight - this.congratsText.getBounds().height)/2) - 190;
+
+		endIcon.x = canvasWidth/2;
+		endIcon.y = this.congratsText.y + 120;
+		endIcon.addChild(spaceShip.ship);
 
 		this.text2 = new createjs.Text('Je behaalde een score van', '25px ralewayLight', '#FFFFFF');
 		this.text2.x = (canvasWidth - this.text2.getBounds().width)/2;
 		this.text2.y = ((canvasHeight - this.text2.getBounds().height)/2) + 30;
 
-		this.scoreText = new createjs.Text(this.endScore, '50px menschWeb', '#FFFFFF');
+		this.scoreText = new createjs.Text(this.endScore, '65px menschWeb', '#FFFFFF');
 		this.scoreText.x = (canvasWidth - this.scoreText.getBounds().width)/2;
 		this.scoreText.y = ((canvasHeight - this.scoreText.getBounds().height)/2) + 100;
 
@@ -160,6 +182,10 @@ var EndScreen = (function(){
 		this.endContainer.addChild(this.line);
 		this.endContainer.addChild(this.jumpText);
 		this.endContainer.addChild(this.scoreText);	
+
+		if (spaceShip) {
+			this.endContainer.addChild(endIcon);
+		}
 	};
 
 	EndScreen.prototype.showStartscreen = function(){
@@ -207,6 +233,7 @@ var Main = (function(){
 	var preventGameFromStopping = false;
 	var weigthFactor = 1.1;
 	var died = true;
+	var powerupHistory = [];
 
 	var bullets = [];
 	var powerups = [];
@@ -426,6 +453,8 @@ var Main = (function(){
 
 			reversedControls = true;
 			powerupProgress.beginReverseProgress(4000);
+
+			sound.playEffectWithVolume('reverse', 70);
 
 			setTimeout(function(){
 				self.togglePowerUpReverse(false);
@@ -874,7 +903,29 @@ var Main = (function(){
 			// console.log('[MAIN] add powerup ' + date);
 			var randomX = Math.random()*($('#cnvs').width());
 			powerup = new Powerup(randomX, -100);
-			powerup.init();
+
+			var uniquePowerup = false;
+			var randomPowerupIndex = 0;
+
+			while(!uniquePowerup){
+				uniquePowerup = true;
+				randomPowerupIndex = Math.floor(Math.random()*powerup.types.length);
+				
+				for (var i = 0; i < powerupHistory.length; i++) {
+					if (powerupHistory[i] === randomPowerupIndex) {
+						uniquePowerup = false;
+					}
+				}
+			}
+
+			powerupHistory.push(randomPowerupIndex);
+
+			var numberOfUniquePowerupSequence = 3;
+			if (powerupHistory.length > numberOfUniquePowerupSequence) {
+				powerupHistory.shift();
+			}
+
+			powerup.init(randomPowerupIndex);
 			stage.addChild(powerup.powerup);
 			powerups.push(powerup);
 		}
@@ -1125,7 +1176,6 @@ var Powerup = (function(){
 
 	var x;
 	var y;
-	var types = ['shoot', 'warp', 'reverse', 'smaller', 'bigger'];
 	var primaryColor = ['#aef69d', '#00d2ff', '#e75f5f', '#fff448', '#AE81FF'];
 	var shadowColor = ['#1bf43f', '#005c70', '#db2020', '#fff665', '#8542ff'];
 
@@ -1136,6 +1186,7 @@ var Powerup = (function(){
 		this.velY = 0;
 		this.speed = 30;
 		this.speedFactor = 1;
+		this.types = ['shoot', 'warp', 'reverse', 'smaller', 'bigger'];
 		this.enableWarpSpeed = false;
 		this.warpSpeedTarget = 30;
 		this.currentWarpSpeed = 0;
@@ -1143,14 +1194,15 @@ var Powerup = (function(){
 		this.removeMe = false;
 		this.readyToRemove = false;
 		this.collected = false;
+		this.randomNumber = 0;
 	}
 
 	Powerup.prototype.init = function(type) {	
 		this.speed = (30+ Math.round(Math.random()*30)) * this.speedFactor;
-		if (!type) {
-			this.randomNumber = Math.floor(Math.random()*types.length);
+		if ($.isNumeric(type)) {
+			//this.randomNumber = Math.floor(Math.random()*types.length);
+			this.randomNumber = type;
 		}else{
-			console.log(type);
 			switch(type){
 				case 'warp':
 				this.randomNumber = 1;
@@ -1170,7 +1222,7 @@ var Powerup = (function(){
 			}
 		}
 		
-		this.type = types[this.randomNumber];
+		this.type = this.types[this.randomNumber];
 		this.drawPowerup();
 	};
 
@@ -1801,7 +1853,7 @@ var SpaceShip = (function(){
 		[96*bigFlameFactor,38*bigFlameFactor]	
 	];
 
-	function SpaceShip(x, y){
+	function SpaceShip(x, y, dead, crack){
 		_.bindAll(this);
 		this.x = x;
 		this.y = y;
@@ -1817,6 +1869,8 @@ var SpaceShip = (function(){
 		this.smallerMode = false;
 		this.biggerMode = false;
 		this.capableToFly = true;
+		this.dead = dead;
+		this.crack = crack;
 		this.init();
 	}
 
@@ -1826,7 +1880,18 @@ var SpaceShip = (function(){
 		this.ship.x = this.x;
 		this.ship.y = this.y;
 		
-		this.drawFlames();
+		if (!this.dead) {
+			this.drawFlames();
+		}else{
+			if (this.crack) {
+				this.drawCrack();
+			}else{
+				this.drawWinningStripes();
+			}
+		}
+
+		
+		
 		this.drawWindow();		
 		this.drawCannon();
 		this.drawWings();
@@ -1911,6 +1976,50 @@ var SpaceShip = (function(){
 
 		this.ship.addChild(this.bigFlame);
 		this.ship.addChild(this.smallFlame);
+	};
+
+	SpaceShip.prototype.drawWinningStripes = function(){
+		var crack = new createjs.Shape();
+		
+		crack.graphics.beginStroke('#00d2ff');
+		crack.graphics.setStrokeStyle(2);
+		crack.graphics.moveTo(-35, 10);
+		crack.graphics.lineTo(-85, 0);
+		crack.graphics.moveTo(35, 10);
+		crack.graphics.lineTo(85, 0);
+		
+		crack.graphics.beginStroke('#fff448');
+		crack.graphics.moveTo(-30, 0);
+		crack.graphics.lineTo(-65, -20);
+		crack.graphics.moveTo(30, 0);
+		crack.graphics.lineTo(65, -20);
+
+		crack.graphics.beginStroke('#00d2ff');
+		crack.graphics.moveTo(-23, -10);
+		crack.graphics.lineTo(-40, -30);
+		crack.graphics.moveTo(23, -10);
+		crack.graphics.lineTo(40, -30);
+
+		crack.graphics.beginStroke('#fff448');
+		crack.graphics.moveTo(-15, -23);
+		crack.graphics.lineTo(-18, -30);
+		crack.graphics.moveTo(15, -23);
+		crack.graphics.lineTo(18, -30);
+
+		this.ship.addChild(crack);
+		crack.shadow = new createjs.Shadow('#00ADEE', 0, 0, 10);
+	};
+
+	SpaceShip.prototype.drawCrack = function() {
+		var crack = new createjs.Shape();
+		crack.graphics.beginStroke('#ffffff');
+		crack.graphics.setStrokeStyle(2);
+		crack.graphics.moveTo(12, 12);
+		crack.graphics.lineTo(2,5);
+		crack.graphics.lineTo(4,12);
+		crack.graphics.lineTo(-6,8);
+		this.ship.addChild(crack);
+		crack.shadow = new createjs.Shadow('#00ADEE', 0, 0, 10);
 	};
 
 	SpaceShip.prototype.drawWings = function(){
