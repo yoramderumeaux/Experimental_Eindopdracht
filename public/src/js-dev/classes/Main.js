@@ -229,7 +229,7 @@ var Main = (function(){
 
 			powerupProgress.beginSmallerProgress(4700);
 
-			sound.playEffectWithVolume('Smaller', 70);
+			sound.playEffectWithVolume('SmallerFast', 70);
 
 			setTimeout(function(){
 				self.togglePowerupSmaller(false);
@@ -239,7 +239,7 @@ var Main = (function(){
 			powerUpActive = false;
 			spaceShip.smallerMode = false;
 			if (timer.isRunning) {
-				sound.playEffectWithVolume('Bigger', 70);
+				sound.playEffectWithVolume('BiggerFast', 70);
 			}
 		}
 	};
@@ -253,7 +253,7 @@ var Main = (function(){
 
 			powerupProgress.beginBiggerProgress(4700);
 
-			sound.playEffectWithVolume('Bigger', 70);
+			sound.playEffectWithVolume('BiggerFast', 70);
 
 			setTimeout(function(){
 				self.togglePowerupBigger(false);
@@ -262,7 +262,7 @@ var Main = (function(){
 		}else{
 
 			if (timer.isRunning) {
-				sound.playEffectWithVolume('Smaller', 70);
+				sound.playEffectWithVolume('SmallerFast', 70);
 			}
 
 			powerUpActive = false;
