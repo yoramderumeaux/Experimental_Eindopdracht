@@ -138,7 +138,7 @@ function checkForJump(){
 			minRight = Math.min(minRight, rightJumpLog[i]);		
 		};
 
-		var minVal = 40; //als hij geen jump detecteerd --> verhogen
+		var minVal = 30; //als hij geen jump detecteerd --> verhogen
 		if (maxLeft - minLeft > jumpThreshold && maxRight - minRight > jumpThreshold && minLeft < minVal && minRight < minVal) {		
 			console.log('jump detected');
 			emitSocket('jump', true);	
@@ -193,7 +193,7 @@ function readRightTopButton(data){
 }
 
 function readRightBottomButton(data){
-	//console.log('[SENSOR RIGHT BOTTOM]: ' + data);
+	console.log('[SENSOR RIGHT BOTTOM]: ' + data);
 	if (rightBottomSensorSetup) {
 		rightBottomSensorSetup = false;
 		rightSensorBottomMin = data;
@@ -280,9 +280,6 @@ function calculatePosition(){
 			visualPosition += '_';
 		}
 	};
-
-	//console.log(horizontalPosition);
-	//emitSocket('horizontalPosition', horizontalPosition);
 }
 
 function calculateWeight(){
@@ -301,22 +298,17 @@ function calculateWeight(){
 	}
 
 	averageWeight = Math.round(averageWeightBuffer/ weights.length);
-	console.log(averageWeight);
+	//console.log(averageWeight);
 }
 
 function sendWeight(){
 	if (completedSetup) {
-		//console.log(horizontalPosition);
-		//console.log('please calculate weight');
-		console.log(averageWeight);
 		emitSocket('weight', averageWeight);
-
 	}else{
 		return false;
 	}
 }
 
 function emitPosition(){
-	//console.log(horizontalPosition);
 	emitSocket('horizontalPosition', horizontalPosition);
 }

@@ -186,6 +186,10 @@ var Main = (function(){
 			meteorTimer = setInterval(this.newMeteorite, meteoriteTimerValue);
 			spaceShip.warpSpeed = false;
 
+			setTimeout(function(){
+				spaceShip.shipImmune = false;
+			}, 1300);
+
 			if( preventGameFromStopping ) {
 
 				setTimeout(function(){
@@ -234,6 +238,9 @@ var Main = (function(){
 		}else{
 			powerUpActive = false;
 			spaceShip.smallerMode = false;
+			if (timer.isRunning) {
+				sound.playEffectWithVolume('Bigger', 70);
+			}
 		}
 	};
 
@@ -253,8 +260,14 @@ var Main = (function(){
 			}, 5000);
 
 		}else{
+
+			if (timer.isRunning) {
+				sound.playEffectWithVolume('Smaller', 70);
+			}
+
 			powerUpActive = false;
 			spaceShip.biggerMode = false;
+			
 		}
 	};
 
@@ -710,7 +723,6 @@ var Main = (function(){
 
 	Main.prototype.cleanPowerUps = function(){
 
-
 		for (var i = 0; i < powerups.length; i++) {
 			//console.log(powerups[i].readyToRemove);
 			if(powerups[i].readyToRemove){
@@ -778,10 +790,9 @@ var Main = (function(){
 
 			if (spaceShip.warpSpeed) {
 				meteorite.enableWarpSpeed = true;
-
 			}else{
 				meteorite.enableWarpSpeed = false;
-				spaceShip.shipImmune = false;
+				//spaceShip.shipImmune = false;
 			}
 
 			meteorites.push(meteorite);
@@ -793,7 +804,7 @@ var Main = (function(){
 	};
 
 	Main.prototype.speedUpGame = function(){
-		gameSpeedFactor += 0.1;
+		gameSpeedFactor += 0.02;
 	};
 
 	Main.prototype.setupStage = function() {

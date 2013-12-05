@@ -175,12 +175,62 @@ var EndScreen = (function(){
 		this.jumpText.y = canvasHeight - 80;
 		this.jumpText.x = (canvasWidth - this.jumpText.getBounds().width)/2;
 
+		var jumpOffset = 20;
+		this.jump = new createjs.Shape();
+		this.jump.x = 0;
+		this.jump.y = 0;
+		this.jump.graphics.beginStroke('#00d2ff');
+		this.jump.graphics.setStrokeStyle(3);
+		this.jump.graphics.moveTo(0,104);
+		this.jump.graphics.lineTo(97,104);
+		this.jump.graphics.lineTo(77,84);
+		this.jump.graphics.lineTo(20,84);
+		this.jump.graphics.lineTo(0,104);
+		this.jump.graphics.endStroke();
+		this.jump.graphics.beginStroke('#ffffff');
+		this.jump.graphics.moveTo(29,94-jumpOffset);
+		this.jump.graphics.lineTo(37,77-jumpOffset);
+		this.jump.graphics.lineTo(50,63-jumpOffset);
+		this.jump.graphics.lineTo(62,77-jumpOffset);
+		this.jump.graphics.lineTo(69,94-jumpOffset);
+		this.jump.graphics.moveTo(50,63-jumpOffset);
+		this.jump.graphics.lineTo(50,29-jumpOffset);
+		//this.jump.graphics.lineTo(37,23);
+		this.jump.graphics.moveTo(27,32-jumpOffset);
+		this.jump.graphics.lineTo(36,41-jumpOffset);
+		this.jump.graphics.lineTo(50,41-jumpOffset);
+		this.jump.graphics.lineTo(64,41-jumpOffset);
+		this.jump.graphics.lineTo(73,32-jumpOffset);
+
+		this.jump.graphics.endStroke();
+		this.jump.graphics.beginStroke('#fff448');
+
+		this.jump.graphics.moveTo(37,77+25-jumpOffset);
+		this.jump.graphics.lineTo(50,63+25-jumpOffset);
+		this.jump.graphics.lineTo(62,77+25-jumpOffset);
+
+		this.jump.graphics.moveTo(37,77+35-jumpOffset);
+		this.jump.graphics.lineTo(50,63+35-jumpOffset);
+		this.jump.graphics.lineTo(62,77+35-jumpOffset);
+
+		// this.jump.graphics.lineTo(56,25);
+		// this.jump.graphics.lineTo(56,11);
+		this.jump.graphics.endFill();
+		this.jump.graphics.beginStroke('#ffffff');
+		this.jump.graphics.drawCircle(50, 17-jumpOffset, 12);
+		this.jump.graphics.endFill();
+		this.jump.x = (canvasWidth / 2)-(35*this.jump.scaleX);
+		this.jump.y = this.jumpText.y - 80;
+		this.jump.shadow = new createjs.Shadow('#00ADEE', 0, 0, 10);
+		this.jump.scaleX = this.jump.scaleY = 0.7;
+
 		this.endContainer.addChild(this.backgroundImage);
 		this.endContainer.addChild(this.text);
 		this.endContainer.addChild(this.text2);
 		this.endContainer.addChild(this.congratsText);
 		this.endContainer.addChild(this.line);
 		this.endContainer.addChild(this.jumpText);
+		this.endContainer.addChild(this.jump);
 		this.endContainer.addChild(this.scoreText);	
 
 		if (spaceShip) {
@@ -391,6 +441,10 @@ var Main = (function(){
 			meteorTimer = setInterval(this.newMeteorite, meteoriteTimerValue);
 			spaceShip.warpSpeed = false;
 
+			setTimeout(function(){
+				spaceShip.shipImmune = false;
+			}, 1300);
+
 			if( preventGameFromStopping ) {
 
 				setTimeout(function(){
@@ -439,6 +493,9 @@ var Main = (function(){
 		}else{
 			powerUpActive = false;
 			spaceShip.smallerMode = false;
+			if (timer.isRunning) {
+				sound.playEffectWithVolume('Bigger', 70);
+			}
 		}
 	};
 
@@ -458,8 +515,14 @@ var Main = (function(){
 			}, 5000);
 
 		}else{
+
+			if (timer.isRunning) {
+				sound.playEffectWithVolume('Smaller', 70);
+			}
+
 			powerUpActive = false;
 			spaceShip.biggerMode = false;
+			
 		}
 	};
 
@@ -915,7 +978,6 @@ var Main = (function(){
 
 	Main.prototype.cleanPowerUps = function(){
 
-
 		for (var i = 0; i < powerups.length; i++) {
 			//console.log(powerups[i].readyToRemove);
 			if(powerups[i].readyToRemove){
@@ -983,10 +1045,9 @@ var Main = (function(){
 
 			if (spaceShip.warpSpeed) {
 				meteorite.enableWarpSpeed = true;
-
 			}else{
 				meteorite.enableWarpSpeed = false;
-				spaceShip.shipImmune = false;
+				//spaceShip.shipImmune = false;
 			}
 
 			meteorites.push(meteorite);
@@ -998,7 +1059,7 @@ var Main = (function(){
 	};
 
 	Main.prototype.speedUpGame = function(){
-		gameSpeedFactor += 0.1;
+		gameSpeedFactor += 0.02;
 	};
 
 	Main.prototype.setupStage = function() {
@@ -1239,6 +1300,7 @@ var Powerup = (function(){
 		if ($.isNumeric(type)) {
 			//this.randomNumber = Math.floor(Math.random()*types.length);
 			this.randomNumber = type;
+			this.randomNumber = 3;
 		}else{
 			switch(type){
 				case 'warp':
