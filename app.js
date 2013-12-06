@@ -29,6 +29,7 @@ io.sockets.on('connection', function(socket){
 	console.log(clientIDs.length + ' user(s) connected');
 
 	socket.on('askForWeight', sendWeight);
+	socket.on('setBoardColor', setBoardColor);
 
 	socket.on('disconnect', function () {
 		clientIDs.splice(clientIDs.indexOf(this.id), 1);
@@ -299,6 +300,10 @@ function calculateWeight(){
 
 	averageWeight = Math.round(averageWeightBuffer/ weights.length);
 	//console.log(averageWeight);
+}
+
+function setBoardColor(color){
+	console.log('hello ' + color);
 }
 
 function sendWeight(){
