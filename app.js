@@ -354,7 +354,7 @@ function setBoardColor(color){
 			blueBool = false;
 
 			partyMode = true;
-		break:
+		break;
 	}
 
 	if (!redBool && !greenBool && !blueBool) {
