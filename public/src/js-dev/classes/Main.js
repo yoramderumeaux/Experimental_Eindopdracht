@@ -37,6 +37,9 @@ var Main = (function(){
 	var powerups = [];
 
 	function Main($sourceElement) {
+
+		console.log('branch test');
+
 		_.bindAll(this);
 		this.$sourceElement = $sourceElement;
 
