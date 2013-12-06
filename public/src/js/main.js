@@ -171,7 +171,7 @@ var EndScreen = (function(){
 		this.scoreText.x = (canvasWidth - this.scoreText.getBounds().width)/2;
 		this.scoreText.y = ((canvasHeight - this.scoreText.getBounds().height)/2) + 100;
 
-		this.jumpText = new createjs.Text('Spring om te beginnen', '25px ralewayLight', '#FFFFFF');		
+		this.jumpText = new createjs.Text('Spring om opnieuw te proberen', '25px ralewayLight', '#FFFFFF');		
 		this.jumpText.y = canvasHeight - 80;
 		this.jumpText.x = (canvasWidth - this.jumpText.getBounds().width)/2;
 
@@ -181,11 +181,18 @@ var EndScreen = (function(){
 		this.jump.y = 0;
 		this.jump.graphics.beginStroke('#00d2ff');
 		this.jump.graphics.setStrokeStyle(3);
-		this.jump.graphics.moveTo(0,104);
-		this.jump.graphics.lineTo(97,104);
+		this.jump.graphics.moveTo(0,97);
+		this.jump.graphics.lineTo(6,104);
+		this.jump.graphics.lineTo(48.5,100);
+
+		this.jump.graphics.lineTo(91,104);
+		this.jump.graphics.lineTo(97,97);
+
 		this.jump.graphics.lineTo(77,84);
+		this.jump.graphics.lineTo(48.5,78);
 		this.jump.graphics.lineTo(20,84);
-		this.jump.graphics.lineTo(0,104);
+		this.jump.graphics.lineTo(0,97);
+		
 		this.jump.graphics.endStroke();
 		this.jump.graphics.beginStroke('#ffffff');
 		this.jump.graphics.moveTo(29,94-jumpOffset);
@@ -277,7 +284,7 @@ var Main = (function(){
 	var meteoriteTimerValue = defaultMeteoriteTimerValue;
 	var defaultPowerupTimerValue = 2000;
 	var powerupTimerValue = defaultPowerupTimerValue;
-	var debugKeyboardControl = false;
+	var debugKeyboardControl = true;
 	var bulletCounter = 0;
 	var reversedControls = false;
 	var preventGameFromStopping = false;
@@ -394,6 +401,7 @@ var Main = (function(){
 				socketConnection.askForWeight();	
 			}			
 		}, 500); 
+
 		//endScreen = new EndScreen(300);
 		//stage.addChild(endScreen.endContainer);
 
@@ -1003,7 +1011,8 @@ var Main = (function(){
 			// var date = new Date();
 			// date = date.getHours() + ':' + date.getMinutes() + ':' + date.getSeconds();
 			// console.log('[MAIN] add powerup ' + date);
-			var randomX = Math.random()*($('#cnvs').width());
+			//var randomX = Math.random()*($('#cnvs').width());
+			var randomX = 30 + Math.round(Math.random()*($('#cnvs').width()-60));
 			powerup = new Powerup(randomX, -100);
 
 			var uniquePowerup = false;
@@ -1300,7 +1309,6 @@ var Powerup = (function(){
 		if ($.isNumeric(type)) {
 			//this.randomNumber = Math.floor(Math.random()*types.length);
 			this.randomNumber = type;
-			this.randomNumber = 4;
 		}else{
 			switch(type){
 				case 'warp':
@@ -2338,7 +2346,7 @@ var SpaceShip = (function(){
 
 })();	
 
-/*globals Powerup:true, Meteorite:true */
+/*globals Powerup:true, Meteorite:true, SpaceShip:true */
 
 var StartScreen = (function(){
 
@@ -2459,11 +2467,24 @@ var StartScreen = (function(){
 		this.ventje.y = 0;
 		this.ventje.graphics.beginStroke('#00d2ff');
 		this.ventje.graphics.setStrokeStyle(2);
-		this.ventje.graphics.moveTo(0,104);
-		this.ventje.graphics.lineTo(97,104);
+		// this.ventje.graphics.moveTo(0,104);
+		// this.ventje.graphics.lineTo(97,104);
+		// this.ventje.graphics.lineTo(77,84);
+		// this.ventje.graphics.lineTo(20,84);
+		// this.ventje.graphics.lineTo(0,104);
+
+		this.ventje.graphics.moveTo(0,97);
+		this.ventje.graphics.lineTo(6,104);
+		this.ventje.graphics.lineTo(48.5,100);
+
+		this.ventje.graphics.lineTo(91,104);
+		this.ventje.graphics.lineTo(97,97);
+
 		this.ventje.graphics.lineTo(77,84);
+		this.ventje.graphics.lineTo(48.5,78);
 		this.ventje.graphics.lineTo(20,84);
-		this.ventje.graphics.lineTo(0,104);
+		this.ventje.graphics.lineTo(0,97);
+		
 		this.ventje.graphics.endStroke();
 		this.ventje.graphics.beginStroke('#ffffff');
 		this.ventje.graphics.moveTo(39,94);
@@ -2481,7 +2502,7 @@ var StartScreen = (function(){
 		this.ventje.graphics.lineTo(56,11);
 		this.ventje.graphics.endFill();
 		//this.ventje.graphics.moveTo(100,100);
-		// this.ventje.graphics.arc(13, 80, 30, 180, -Math.PI/3);
+		//this.ventje.graphics.arc(13, 80, 30, 180, -Math.PI/3);
 
 		// this.ventje.graphics.endFill();
 		// this.ventje.graphics.arc(80, 80, 30, 180, -Math.PI/3);
@@ -2496,17 +2517,37 @@ var StartScreen = (function(){
 		this.ventje2.x = 250;
 		this.ventje2.scaleX *= -1;
 
+		var leftSpaceShip = new SpaceShip(0,0, false, false);
+		leftSpaceShip.ship.rotation = -25;
+		leftSpaceShip.ship.x = -10;
+		leftSpaceShip.ship.y = 40;
+		leftSpaceShip.ship.scaleX = leftSpaceShip.ship.scaleY = 0.8;
+
+		var rightSpaceShip = new SpaceShip(0,0,false, false);
+		rightSpaceShip.ship.rotation = 25;
+		rightSpaceShip.ship.y = 40;
+		rightSpaceShip.ship.x = 259;
+		rightSpaceShip.ship.scaleX = rightSpaceShip.ship.scaleY = 0.8;
+
 		var jumpOffset = 20;
 		this.jump = new createjs.Shape();
 		this.jump.x = 0;
 		this.jump.y = 0;
 		this.jump.graphics.beginStroke('#00d2ff');
 		this.jump.graphics.setStrokeStyle(3);
-		this.jump.graphics.moveTo(0,104);
-		this.jump.graphics.lineTo(97,104);
+
+		this.jump.graphics.moveTo(0,97);
+		this.jump.graphics.lineTo(6,104);
+		this.jump.graphics.lineTo(48.5,100);
+
+		this.jump.graphics.lineTo(91,104);
+		this.jump.graphics.lineTo(97,97);
+
 		this.jump.graphics.lineTo(77,84);
+		this.jump.graphics.lineTo(48.5,78);
 		this.jump.graphics.lineTo(20,84);
-		this.jump.graphics.lineTo(0,104);
+		this.jump.graphics.lineTo(0,97);
+
 		this.jump.graphics.endStroke();
 		this.jump.graphics.beginStroke('#ffffff');
 		this.jump.graphics.moveTo(29,94-jumpOffset);
@@ -2548,6 +2589,8 @@ var StartScreen = (function(){
 		this.ventjeContainer.addChild(this.ventje);
 		this.ventjeContainer.addChild(this.ventje2);
 		this.ventjeContainer.addChild(this.leunText);
+		this.ventjeContainer.addChild(leftSpaceShip.ship);
+		this.ventjeContainer.addChild(rightSpaceShip.ship);
 
 		this.ventjeContainer.x = (canvasWidth-250)/2;
 		this.ventjeContainer.y = canvasHeight * 0.27;

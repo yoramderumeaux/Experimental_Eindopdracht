@@ -79,7 +79,7 @@ var EndScreen = (function(){
 		this.scoreText.x = (canvasWidth - this.scoreText.getBounds().width)/2;
 		this.scoreText.y = ((canvasHeight - this.scoreText.getBounds().height)/2) + 100;
 
-		this.jumpText = new createjs.Text('Spring om te beginnen', '25px ralewayLight', '#FFFFFF');		
+		this.jumpText = new createjs.Text('Spring om opnieuw te proberen', '25px ralewayLight', '#FFFFFF');		
 		this.jumpText.y = canvasHeight - 80;
 		this.jumpText.x = (canvasWidth - this.jumpText.getBounds().width)/2;
 
@@ -89,11 +89,18 @@ var EndScreen = (function(){
 		this.jump.y = 0;
 		this.jump.graphics.beginStroke('#00d2ff');
 		this.jump.graphics.setStrokeStyle(3);
-		this.jump.graphics.moveTo(0,104);
-		this.jump.graphics.lineTo(97,104);
+		this.jump.graphics.moveTo(0,97);
+		this.jump.graphics.lineTo(6,104);
+		this.jump.graphics.lineTo(48.5,100);
+
+		this.jump.graphics.lineTo(91,104);
+		this.jump.graphics.lineTo(97,97);
+
 		this.jump.graphics.lineTo(77,84);
+		this.jump.graphics.lineTo(48.5,78);
 		this.jump.graphics.lineTo(20,84);
-		this.jump.graphics.lineTo(0,104);
+		this.jump.graphics.lineTo(0,97);
+		
 		this.jump.graphics.endStroke();
 		this.jump.graphics.beginStroke('#ffffff');
 		this.jump.graphics.moveTo(29,94-jumpOffset);

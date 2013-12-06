@@ -28,7 +28,6 @@ var Powerup = (function(){
 		if ($.isNumeric(type)) {
 			//this.randomNumber = Math.floor(Math.random()*types.length);
 			this.randomNumber = type;
-			this.randomNumber = 4;
 		}else{
 			switch(type){
 				case 'warp':

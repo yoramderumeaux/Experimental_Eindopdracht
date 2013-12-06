@@ -22,7 +22,7 @@ var Main = (function(){
 	var meteoriteTimerValue = defaultMeteoriteTimerValue;
 	var defaultPowerupTimerValue = 2000;
 	var powerupTimerValue = defaultPowerupTimerValue;
-	var debugKeyboardControl = false;
+	var debugKeyboardControl = true;
 	var bulletCounter = 0;
 	var reversedControls = false;
 	var preventGameFromStopping = false;
@@ -139,6 +139,7 @@ var Main = (function(){
 				socketConnection.askForWeight();	
 			}			
 		}, 500); 
+
 		//endScreen = new EndScreen(300);
 		//stage.addChild(endScreen.endContainer);
 
@@ -748,7 +749,8 @@ var Main = (function(){
 			// var date = new Date();
 			// date = date.getHours() + ':' + date.getMinutes() + ':' + date.getSeconds();
 			// console.log('[MAIN] add powerup ' + date);
-			var randomX = Math.random()*($('#cnvs').width());
+			//var randomX = Math.random()*($('#cnvs').width());
+			var randomX = 30 + Math.round(Math.random()*($('#cnvs').width()-60));
 			powerup = new Powerup(randomX, -100);
 
 			var uniquePowerup = false;
