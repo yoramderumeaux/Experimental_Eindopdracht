@@ -46,6 +46,7 @@ var leftSensorTopPin =  0;
 var leftSensorBottomPin = 1;
 var rightSensorTopPin = 2;
 var rightSensorBottomPin = 3;
+
 var redLedPin = 13;
 var greenLedPin = 12;
 var blueLedPin = 11;
@@ -197,7 +198,7 @@ function readRightTopButton(data){
 }
 
 function readRightBottomButton(data){
-	console.log('[SENSOR RIGHT BOTTOM]: ' + data);
+	//console.log('[SENSOR RIGHT BOTTOM]: ' + data);
 	if (rightBottomSensorSetup) {
 		rightBottomSensorSetup = false;
 		rightSensorBottomMin = data;

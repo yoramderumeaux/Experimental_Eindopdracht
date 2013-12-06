@@ -188,11 +188,11 @@ var Main = (function(){
 			// clear timer and restart at normal speed
 			powerUpActive = false;
 			clearInterval(meteorTimer);
-			socketConnection.setBoardColor('white');
 			meteorTimer = setInterval(this.newMeteorite, meteoriteTimerValue);
 			spaceShip.warpSpeed = false;
 
 			setTimeout(function(){
+				socketConnection.setBoardColor('white');
 				spaceShip.shipImmune = false;
 			}, 1300);
 
