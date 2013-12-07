@@ -47,9 +47,9 @@ var leftSensorBottomPin = 1;
 var rightSensorTopPin = 2;
 var rightSensorBottomPin = 3;
 
-var redLedPin = 13;
-var greenLedPin = 12;
-var blueLedPin = 11;
+var redLedPin = 11;
+var greenLedPin = 10;
+var blueLedPin = 9;
 
 var dataLed = 3;
 var activeLed = 2;
