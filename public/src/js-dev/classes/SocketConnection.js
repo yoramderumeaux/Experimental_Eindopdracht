@@ -3,6 +3,7 @@
 var SocketConnection = (function(){
 
 	var connectionEstablished = false;
+	var currentBoardColor = 'currentColor';
 
 	function SocketConnection() {
 		_.bindAll(this);
@@ -49,6 +50,18 @@ var SocketConnection = (function(){
 
 	SocketConnection.prototype.askForWeight = function(){
 		this.socket.emit('askForWeight');
+	};
+
+	SocketConnection.prototype.setBoardColor = function(color){
+		if (color !== currentBoardColor) {
+			console.log('set board color: ' + color);
+			this.socket.emit('setBoardColor', color);	
+		}else{
+			console.log('board is already ' + color);
+		}
+
+		currentBoardColor = color;
+		
 	};
 
 	return SocketConnection;

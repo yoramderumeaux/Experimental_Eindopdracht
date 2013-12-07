@@ -29,6 +29,7 @@ io.sockets.on('connection', function(socket){
 	console.log(clientIDs.length + ' user(s) connected');
 
 	socket.on('askForWeight', sendWeight);
+	socket.on('setBoardColor', setBoardColor);
 
 	socket.on('disconnect', function () {
 		clientIDs.splice(clientIDs.indexOf(this.id), 1);
@@ -45,6 +46,10 @@ var leftSensorTopPin =  0;
 var leftSensorBottomPin = 1;
 var rightSensorTopPin = 2;
 var rightSensorBottomPin = 3;
+
+var redLedPin = 11;
+var greenLedPin = 10;
+var blueLedPin = 9;
 
 var dataLed = 3;
 var activeLed = 2;
@@ -80,6 +85,8 @@ var completedSetup = false;
 var weights = [];
 var averageWeight = 50;
 
+var partyMode = false;
+
 var board = new firmata.Board(path, function(err){
 	if(err){ 
 		console.log(err); 	
@@ -93,11 +100,9 @@ var board = new firmata.Board(path, function(err){
 	board.pinMode(rightSensorTopPin, board.MODES.INPUT);
 	board.pinMode(rightSensorBottomPin, board.MODES.INPUT);
 
-	// Ledjes
-	board.pinMode(2, board.MODES.OUTPUT);
-	board.pinMode(3, board.MODES.OUTPUT);
-
-	var ledOn = true; 
+	board.pinMode(redLedPin, board.MODES.OUTPUT);
+	board.pinMode(greenLedPin, board.MODES.OUTPUT);
+	board.pinMode(blueLedPin, board.MODES.OUTPUT);
 
 	setInterval(function(){
 		board.digitalWrite(activeLed, board.HIGH);
@@ -193,7 +198,7 @@ function readRightTopButton(data){
 }
 
 function readRightBottomButton(data){
-	console.log('[SENSOR RIGHT BOTTOM]: ' + data);
+	//console.log('[SENSOR RIGHT BOTTOM]: ' + data);
 	if (rightBottomSensorSetup) {
 		rightBottomSensorSetup = false;
 		rightSensorBottomMin = data;
@@ -299,6 +304,81 @@ function calculateWeight(){
 
 	averageWeight = Math.round(averageWeightBuffer/ weights.length);
 	//console.log(averageWeight);
+}
+
+function setBoardColor(color){
+	console.log('hello ' + color);
+	var redBool = false;
+	var greenBool = false;
+	var blueBool = false;
+
+	switch(color){
+		case 'red':
+			redBool = true;
+			greenBool = false;
+			blueBool = false;
+		break;
+
+		case 'yellow':
+			redBool = true;
+			greenBool = true;
+			blueBool = false;
+		break;
+
+		case 'green':
+			redBool = false;
+			greenBool = true;
+			blueBool = false;
+		break;
+
+		case 'blue':
+			redBool = false;
+			greenBool = false;
+			blueBool = true;
+		break;
+
+		case 'purple':
+			redBool = true;
+			greenBool = false;
+			blueBool = true;
+		break;
+
+		case 'white':
+			redBool = true;
+			greenBool = true;
+			blueBool = true;
+		break;
+
+		case 'party':
+			redBool = false;
+			greenBool = false;
+			blueBool = false;
+
+			partyMode = true;
+		break;
+	}
+
+	if (!redBool && !greenBool && !blueBool) {
+		console.log('partyMode');
+	}else{
+		if(redBool){
+			board.digitalWrite(redLedPin, board.HIGH);
+		}else{
+			board.digitalWrite(redLedPin, board.LOW);
+		}
+
+		if(greenBool){
+			board.digitalWrite(greenLedPin, board.HIGH);
+		}else{
+			board.digitalWrite(greenLedPin, board.LOW);
+		}
+
+		if(blueBool){
+			board.digitalWrite(blueLedPin, board.HIGH);
+		}else{
+			board.digitalWrite(blueLedPin, board.LOW);
+		}
+	}
 }
 
 function sendWeight(){

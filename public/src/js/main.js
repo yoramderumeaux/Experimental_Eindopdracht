@@ -299,6 +299,7 @@ var Main = (function(){
 	var powerups = [];
 
 	function Main($sourceElement) {
+
 		_.bindAll(this);
 		this.$sourceElement = $sourceElement;
 
@@ -402,6 +403,7 @@ var Main = (function(){
 			}			
 		}, 500); 
 
+		socketConnection.setBoardColor('white');
 		//endScreen = new EndScreen(300);
 		//stage.addChild(endScreen.endContainer);
 
@@ -415,6 +417,8 @@ var Main = (function(){
 			// Play soundeffect
 			score.updateScore(250);
 
+			
+
 			console.log(timer.timer);
 
 			if (timer.timer < 4) {
@@ -423,7 +427,7 @@ var Main = (function(){
 			}
 			
 			sound.playEffectWithVolume('WarpSpeed', 100);
-			
+			socketConnection.setBoardColor('blue');
 
 			// clear timer and restart faster
 			clearInterval(meteorTimer);
@@ -450,6 +454,7 @@ var Main = (function(){
 			spaceShip.warpSpeed = false;
 
 			setTimeout(function(){
+				socketConnection.setBoardColor('white');
 				spaceShip.shipImmune = false;
 			}, 1300);
 
@@ -472,6 +477,7 @@ var Main = (function(){
 			score.updateScore(250);
 
 			powerupProgress.beginShootProgress(4700);
+			socketConnection.setBoardColor('green');
 
 			setTimeout(function(){
 				self.togglePowerupShoot(false);
@@ -480,6 +486,7 @@ var Main = (function(){
 		}else{
 			powerUpActive = false;
 			spaceShip.shootMode = false;
+			socketConnection.setBoardColor('white');
 		}
 	};
 
@@ -491,6 +498,7 @@ var Main = (function(){
 			score.updateScore(250);
 
 			powerupProgress.beginSmallerProgress(4700);
+			socketConnection.setBoardColor('yellow');
 
 			sound.playEffectWithVolume('SmallerFast', 70);
 
@@ -501,6 +509,8 @@ var Main = (function(){
 		}else{
 			powerUpActive = false;
 			spaceShip.smallerMode = false;
+			socketConnection.setBoardColor('white');
+
 			if (timer.isRunning) {
 				sound.playEffectWithVolume('BiggerFast', 70);
 			}
@@ -515,6 +525,7 @@ var Main = (function(){
 			score.updateScore(250);
 
 			powerupProgress.beginBiggerProgress(4700);
+			socketConnection.setBoardColor('purple');
 
 			sound.playEffectWithVolume('BiggerFast', 70);
 
@@ -527,6 +538,8 @@ var Main = (function(){
 			if (timer.isRunning) {
 				sound.playEffectWithVolume('SmallerFast', 70);
 			}
+
+			socketConnection.setBoardColor('white');
 
 			powerUpActive = false;
 			spaceShip.biggerMode = false;
@@ -542,6 +555,8 @@ var Main = (function(){
 			reversedControls = true;
 			powerupProgress.beginReverseProgress(4000);
 
+			socketConnection.setBoardColor('red');
+
 			sound.playEffectWithVolume('reverse', 70);
 
 			setTimeout(function(){
@@ -551,6 +566,7 @@ var Main = (function(){
 		}else{
 			powerUpActive = false;
 			reversedControls = false;
+			socketConnection.setBoardColor('white');
 		}
 	};
 
@@ -887,6 +903,13 @@ var Main = (function(){
 		// Call EndScreen and clear object from screen
 		//spaceShip.ship.alpha = 0;
 		$('#score').hide();
+
+		if (!died) {
+			socketConnection.setBoardColor('party');
+		}else{
+			socketConnection.setBoardColor('red');
+		}
+
 		endScreen = new EndScreen(endScore, died);
 		bean.on(endScreen, 'startGame', this.startGame);
 		bean.on(endScreen, 'showStartScreen', this.showStartScreen);
@@ -947,6 +970,8 @@ var Main = (function(){
 
 		startScreen = new StartScreen();
 		stage.addChild(startScreen.startContainer);
+
+		socketConnection.setBoardColor('white');
 
 		bean.on(startScreen, 'startGame', this.startGame);
 	};
@@ -1697,6 +1722,7 @@ var Score = (function(){
 var SocketConnection = (function(){
 
 	var connectionEstablished = false;
+	var currentBoardColor = 'currentColor';
 
 	function SocketConnection() {
 		_.bindAll(this);
@@ -1743,6 +1769,18 @@ var SocketConnection = (function(){
 
 	SocketConnection.prototype.askForWeight = function(){
 		this.socket.emit('askForWeight');
+	};
+
+	SocketConnection.prototype.setBoardColor = function(color){
+		if (color !== currentBoardColor) {
+			console.log('set board color: ' + color);
+			this.socket.emit('setBoardColor', color);	
+		}else{
+			console.log('board is already ' + color);
+		}
+
+		currentBoardColor = color;
+		
 	};
 
 	return SocketConnection;
