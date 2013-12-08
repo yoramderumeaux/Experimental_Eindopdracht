@@ -86,6 +86,8 @@ var weights = [];
 var averageWeight = 50;
 
 var partyMode = false;
+var partyColors = ['blue', 'niks', 'green', 'niks', 'yellow', 'niks', 'red', 'niks'];
+var currentPartyColor = 0;
 
 var board = new firmata.Board(path, function(err){
 	if(err){ 
@@ -114,6 +116,7 @@ var board = new firmata.Board(path, function(err){
 	setInterval(checkForJump, jumpIntervalTime);
 	setInterval(emitPosition, emitIntervalTime);
 	setInterval(calculateWeight, 100);
+	setInterval(partyModeHandler,  40);
 
 	board.analogRead(leftSensorTopPin, readLeftTopButton);
 	board.analogRead(leftSensorBottomPin, readLeftBottomButton);
@@ -155,6 +158,7 @@ function checkForJump(){
 	rightJumpLog = [];
 
 	//console.log(rightJumpLog);
+	//console.log(leftSensorTopVal, leftSensorBottomVal, rightSensorTopVal, rightSensorBottomVal);
 }
 
 function readLeftTopButton(data){
@@ -235,8 +239,6 @@ function emitSocket(type, value){
 			break;
 		}
 		
-	}else{
-		//console.log("No sockets emmited, no client connected");
 	}
 }
 
@@ -308,10 +310,32 @@ function calculateWeight(){
 
 function setBoardColor(color){
 	console.log('hello ' + color);
+	
+	if (color === 'party') {
+		partyMode = true;
+	}else{
+		partyMode = false;
+		changeBoardColor(color);
+	}
+}
+
+function partyModeHandler(){
+	if (partyMode) {
+		changeBoardColor(partyColors[currentPartyColor]);
+		currentPartyColor ++;
+
+		if (currentPartyColor >= partyColors.length) {
+			currentPartyColor = 0;
+		}
+	}
+}
+
+function changeBoardColor(color){
+
 	var redBool = false;
 	var greenBool = false;
 	var blueBool = false;
-
+	
 	switch(color){
 		case 'red':
 			redBool = true;
@@ -349,35 +373,30 @@ function setBoardColor(color){
 			blueBool = true;
 		break;
 
-		case 'party':
+		default:
 			redBool = false;
 			greenBool = false;
 			blueBool = false;
-
-			partyMode = true;
 		break;
+
 	}
 
-	if (!redBool && !greenBool && !blueBool) {
-		console.log('partyMode');
+	if(redBool){
+		board.digitalWrite(redLedPin, board.HIGH);
 	}else{
-		if(redBool){
-			board.digitalWrite(redLedPin, board.HIGH);
-		}else{
-			board.digitalWrite(redLedPin, board.LOW);
-		}
+		board.digitalWrite(redLedPin, board.LOW);
+	}
 
-		if(greenBool){
-			board.digitalWrite(greenLedPin, board.HIGH);
-		}else{
-			board.digitalWrite(greenLedPin, board.LOW);
-		}
+	if(greenBool){
+		board.digitalWrite(greenLedPin, board.HIGH);
+	}else{
+		board.digitalWrite(greenLedPin, board.LOW);
+	}
 
-		if(blueBool){
-			board.digitalWrite(blueLedPin, board.HIGH);
-		}else{
-			board.digitalWrite(blueLedPin, board.LOW);
-		}
+	if(blueBool){
+		board.digitalWrite(blueLedPin, board.HIGH);
+	}else{
+		board.digitalWrite(blueLedPin, board.LOW);
 	}
 }
 

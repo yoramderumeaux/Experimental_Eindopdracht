@@ -284,7 +284,7 @@ var Main = (function(){
 	var meteoriteTimerValue = defaultMeteoriteTimerValue;
 	var defaultPowerupTimerValue = 2000;
 	var powerupTimerValue = defaultPowerupTimerValue;
-	var debugKeyboardControl = true;
+	var debugKeyboardControl = false;
 	var bulletCounter = 0;
 	var reversedControls = false;
 	var preventGameFromStopping = false;
@@ -404,6 +404,7 @@ var Main = (function(){
 		}, 500); 
 
 		socketConnection.setBoardColor('white');
+		
 		//endScreen = new EndScreen(300);
 		//stage.addChild(endScreen.endContainer);
 
@@ -454,7 +455,9 @@ var Main = (function(){
 			spaceShip.warpSpeed = false;
 
 			setTimeout(function(){
-				socketConnection.setBoardColor('white');
+				if (timer.isRunning) {
+					socketConnection.setBoardColor('white');
+				}
 				spaceShip.shipImmune = false;
 			}, 1300);
 
@@ -486,7 +489,9 @@ var Main = (function(){
 		}else{
 			powerUpActive = false;
 			spaceShip.shootMode = false;
-			socketConnection.setBoardColor('white');
+			if (timer.isRunning) {
+				socketConnection.setBoardColor('white');
+			}
 		}
 	};
 
@@ -536,10 +541,9 @@ var Main = (function(){
 		}else{
 
 			if (timer.isRunning) {
+				socketConnection.setBoardColor('white');
 				sound.playEffectWithVolume('SmallerFast', 70);
 			}
-
-			socketConnection.setBoardColor('white');
 
 			powerUpActive = false;
 			spaceShip.biggerMode = false;
@@ -557,7 +561,7 @@ var Main = (function(){
 
 			socketConnection.setBoardColor('red');
 
-			sound.playEffectWithVolume('reverse', 70);
+			sound.playEffectWithVolume('reverse', 35);
 
 			setTimeout(function(){
 				self.togglePowerUpReverse(false);
@@ -566,7 +570,10 @@ var Main = (function(){
 		}else{
 			powerUpActive = false;
 			reversedControls = false;
-			socketConnection.setBoardColor('white');
+
+			if (timer.isRunning) {
+				socketConnection.setBoardColor('white');
+			}
 		}
 	};
 
@@ -948,6 +955,9 @@ var Main = (function(){
 		timer.start();
 		spaceShip.ship.alpha = 1;
 		this.toggleMeteoriteTimer(true);
+
+		socketConnection.setBoardColor('white');
+
 		var self = this;
 		setTimeout(function() {
 			self.togglePowerupTimer(true);
