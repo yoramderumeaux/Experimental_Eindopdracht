@@ -87,7 +87,18 @@ var averageWeight = 50;
 
 var partyMode = false;
 var partyColors = ['blue', 'niks', 'green', 'niks', 'yellow', 'niks', 'red', 'niks'];
-var currentPartyColor = 0;
+var deadMode = false;
+var deadColors = ['red', 'niks'];
+
+var currentColorInArray = 0;
+
+
+var perfectColors = false;
+var redColorValue = 0;
+var greenColorValue = 0;
+var blueColorValue = 0;
+
+var boardConnected = false;
 
 var board = new firmata.Board(path, function(err){
 	if(err){ 
@@ -95,6 +106,7 @@ var board = new firmata.Board(path, function(err){
 		return;
 	}
 	console.log('arduino connected'); 
+	boardConnected = true;
 
 	// Sensors
 	board.pinMode(leftSensorTopPin, board.MODES.INPUT);
@@ -116,7 +128,8 @@ var board = new firmata.Board(path, function(err){
 	setInterval(checkForJump, jumpIntervalTime);
 	setInterval(emitPosition, emitIntervalTime);
 	setInterval(calculateWeight, 100);
-	setInterval(partyModeHandler,  40);
+	setInterval(partyModeHandler,  90);
+	setInterval(deadModeHandler, 400);
 
 	board.analogRead(leftSensorTopPin, readLeftTopButton);
 	board.analogRead(leftSensorBottomPin, readLeftBottomButton);
@@ -309,23 +322,42 @@ function calculateWeight(){
 }
 
 function setBoardColor(color){
-	console.log('hello ' + color);
-	
-	if (color === 'party') {
-		partyMode = true;
+	if (boardConnected) {
+		if (color === 'party') {
+			partyMode = true;
+			deadMode = false;
+		}else if(color === 'dead'){
+			partyMode = false;
+			deadMode = true;
+		}else{
+			partyMode = false;
+			deadMode = false;
+			changeBoardColor(color);
+		}
 	}else{
-		partyMode = false;
-		changeBoardColor(color);
+		console.log("can't set board color, board not connected");
+	}
+}
+
+function deadModeHandler(){
+	if (deadMode) {
+		
+		changeBoardColor(deadColors[currentColorInArray]);
+		currentColorInArray ++;
+
+		if (currentColorInArray >= deadColors.length) {
+			currentColorInArray = 0;
+		}
 	}
 }
 
 function partyModeHandler(){
 	if (partyMode) {
-		changeBoardColor(partyColors[currentPartyColor]);
-		currentPartyColor ++;
+		changeBoardColor(partyColors[currentColorInArray]);
+		currentColorInArray ++;
 
-		if (currentPartyColor >= partyColors.length) {
-			currentPartyColor = 0;
+		if (currentColorInArray >= partyColors.length) {
+			currentColorInArray = 0;
 		}
 	}
 }
@@ -341,62 +373,99 @@ function changeBoardColor(color){
 			redBool = true;
 			greenBool = false;
 			blueBool = false;
+
+			redColorValue = 255;
+			greenColorValue = 50;
+			blueColorValue = 0;
 		break;
 
 		case 'yellow':
 			redBool = true;
 			greenBool = true;
 			blueBool = false;
+
+			redColorValue = 255;
+			greenColorValue = 255;
+			blueColorValue = 0;
 		break;
 
 		case 'green':
 			redBool = false;
 			greenBool = true;
 			blueBool = false;
+
+			redColorValue = 0;
+			greenColorValue = 255;
+			blueColorValue = 0;
 		break;
 
 		case 'blue':
 			redBool = false;
 			greenBool = false;
 			blueBool = true;
+
+			redColorValue = 0;
+			greenColorValue = 0;
+			blueColorValue = 255;
 		break;
 
 		case 'purple':
 			redBool = true;
 			greenBool = false;
 			blueBool = true;
+
+			redColorValue = 255;
+			greenColorValue = 0;
+			blueColorValue = 255;
 		break;
 
 		case 'white':
 			redBool = true;
 			greenBool = true;
 			blueBool = true;
+
+			redColorValue = 255;
+			greenColorValue = 255;
+			blueColorValue = 255;
 		break;
 
 		default:
 			redBool = false;
 			greenBool = false;
 			blueBool = false;
+
+			redColorValue = 0;
+			greenColorValue = 0;
+			blueColorValue = 0;
 		break;
 
 	}
 
-	if(redBool){
-		board.digitalWrite(redLedPin, board.HIGH);
-	}else{
-		board.digitalWrite(redLedPin, board.LOW);
-	}
+	if (!perfectColors) {
 
-	if(greenBool){
-		board.digitalWrite(greenLedPin, board.HIGH);
-	}else{
-		board.digitalWrite(greenLedPin, board.LOW);
-	}
+		if(redBool){
+			board.digitalWrite(redLedPin, board.HIGH);
+		}else{
+			board.digitalWrite(redLedPin, board.LOW);
+		}
 
-	if(blueBool){
-		board.digitalWrite(blueLedPin, board.HIGH);
+		if(greenBool){
+			board.digitalWrite(greenLedPin, board.HIGH);
+		}else{
+			board.digitalWrite(greenLedPin, board.LOW);
+		}
+
+		if(blueBool){
+			board.digitalWrite(blueLedPin, board.HIGH);
+		}else{
+			board.digitalWrite(blueLedPin, board.LOW);
+		}
 	}else{
-		board.digitalWrite(blueLedPin, board.LOW);
+
+		console.log(redColorValue, greenColorValue, blueColorValue);
+		board.analogWrite(redLedPin, redColorValue);
+		board.analogWrite(greenLedPin, greenColorValue);
+		board.analogWrite(blueLedPin, blueColorValue);
 	}
 }
 

@@ -264,7 +264,7 @@ var EndScreen = (function(){
 
 var Main = (function(){
 
-	var stage, ticker, keys;
+	var stage, ticker, keys; 
 	var spaceShip, timer, meteorite, powerupProgress, powerup, meteorites, bullet, sound, endScreen, startScreen;
 	var meteorTimer;
 	var powerupTimer;
@@ -275,20 +275,18 @@ var Main = (function(){
 	var enableNewMeteorites = true;
 	var backgroundPos = 0;
 	var bulletFired = false;
-	var bulletBurstNumber = 3;
-	var currentBurst = 0;
 	var backgroundSpeed = 0.5;
-	var gameSpeedFactor = 1;
+	var gameSpeedFactor = 2;
 	var powerUpActive = false;
-	var defaultMeteoriteTimerValue = 1500;
+	var defaultMeteoriteTimerValue = 1500; //new meteorite after x miliseconds
 	var meteoriteTimerValue = defaultMeteoriteTimerValue;
-	var defaultPowerupTimerValue = 2000;
-	var powerupTimerValue = defaultPowerupTimerValue;
-	var debugKeyboardControl = false;
-	var bulletCounter = 0;
+	var defaultPowerupTimerValue = 2000; //new powerup after x miliseconds
+	var powerupTimerValue = defaultPowerupTimerValue; 
+	var debugKeyboardControl = true; //spel spelen met pijltjes
+	var bulletCounter = 0; //aantal bullets fired
 	var reversedControls = false;
-	var preventGameFromStopping = false;
-	var weightFactor = 0.1; // 0 voor "zware mensen" hoger voor kleine kindjes
+	var preventGameFromStopping = false; //zorgt ervoor dat game niet stopt als je in warp mode zit
+	var weightFactor = 0.1; // wordt automatisch geregeld
 	var died = true;
 	var powerupHistory = [];
 	var nobodyIsPlaying = true;
@@ -612,7 +610,9 @@ var Main = (function(){
 	};
 
 	Main.prototype.speedUpMeteoriteTimer = function(){
-		meteoriteTimerValue -= 200;
+
+		// lower value = slower meteorite spawn
+		meteoriteTimerValue -= 150;
 		if (meteoriteTimerValue < 300) {
 			meteoriteTimerValue = 300;
 		}
@@ -764,6 +764,8 @@ var Main = (function(){
 							// Ship crashed into a meteorite
 							
 							if (meteorites[i].canDoDamage && spaceShip.capableToFly) {
+								socketConnection.setBoardColor('dead');
+
 								console.log('[MAIN] stop score');
 								sound.playEffectWithVolume('crashImpact', 100);
 								score.enableScoreEdit = false;
@@ -914,7 +916,7 @@ var Main = (function(){
 		if (!died) {
 			socketConnection.setBoardColor('party');
 		}else{
-			socketConnection.setBoardColor('red');
+			socketConnection.setBoardColor('dead');
 		}
 
 		endScreen = new EndScreen(endScore, died);
@@ -1103,7 +1105,7 @@ var Main = (function(){
 	};
 
 	Main.prototype.speedUpGame = function(){
-		gameSpeedFactor += 0.02;
+		gameSpeedFactor += 0.05;
 	};
 
 	Main.prototype.setupStage = function() {
