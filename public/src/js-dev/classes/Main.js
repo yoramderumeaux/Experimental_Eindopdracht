@@ -18,9 +18,9 @@ var Main = (function(){
 	var powerUpActive = false;
 	var defaultMeteoriteTimerValue = 1500; //new meteorite after x miliseconds
 	var meteoriteTimerValue = defaultMeteoriteTimerValue;
-	var defaultPowerupTimerValue = 2000; //new powerup after x miliseconds
+	var defaultPowerupTimerValue = 3000; //new powerup after x miliseconds
 	var powerupTimerValue = defaultPowerupTimerValue; 
-	var debugKeyboardControl = true; //spel spelen met pijltjes
+	var debugKeyboardControl = false; //spel spelen met pijltjes
 	var bulletCounter = 0; //aantal bullets fired
 	var reversedControls = false;
 	var preventGameFromStopping = false; //zorgt ervoor dat game niet stopt als je in warp mode zit
@@ -185,7 +185,7 @@ var Main = (function(){
 
 		}else{
 			// clear timer and restart at normal speed
-			powerUpActive = false;
+			
 			clearInterval(meteorTimer);
 			meteorTimer = setInterval(this.newMeteorite, meteoriteTimerValue);
 			spaceShip.warpSpeed = false;
@@ -194,6 +194,7 @@ var Main = (function(){
 				if (timer.isRunning) {
 					socketConnection.setBoardColor('white');
 				}
+				powerUpActive = false;
 				spaceShip.shipImmune = false;
 			}, 1300);
 
@@ -503,7 +504,6 @@ var Main = (function(){
 							
 							if (meteorites[i].canDoDamage && spaceShip.capableToFly) {
 								socketConnection.setBoardColor('dead');
-
 								console.log('[MAIN] stop score');
 								sound.playEffectWithVolume('crashImpact', 100);
 								score.enableScoreEdit = false;
@@ -584,7 +584,7 @@ var Main = (function(){
 			}
 
 			if (spaceShip.capableToFly) {
-				sound.changeRocketVolume(spaceShip.ship.rotation);	
+				sound.changeRocketVolume(spaceShip.ship.rotation *2);	
 			}else{
 				sound.changeRocketVolume(0);	
 			}

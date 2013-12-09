@@ -86,14 +86,13 @@ var weights = [];
 var averageWeight = 50;
 
 var partyMode = false;
-var partyColors = ['blue', 'niks', 'green', 'niks', 'yellow', 'niks', 'red', 'niks'];
+var partyColors = ['blue', 'black', 'green', 'black', 'yellow', 'black', 'red', 'black'];
 var deadMode = false;
-var deadColors = ['red', 'niks'];
+var deadColors = ['red', 'black'];
 
 var currentColorInArray = 0;
 
-
-var perfectColors = false;
+var perfectColors = true;
 var redColorValue = 0;
 var greenColorValue = 0;
 var blueColorValue = 0;
@@ -114,10 +113,16 @@ var board = new firmata.Board(path, function(err){
 	board.pinMode(rightSensorTopPin, board.MODES.INPUT);
 	board.pinMode(rightSensorBottomPin, board.MODES.INPUT);
 
-	board.pinMode(redLedPin, board.MODES.OUTPUT);
-	board.pinMode(greenLedPin, board.MODES.OUTPUT);
-	board.pinMode(blueLedPin, board.MODES.OUTPUT);
-
+	if(!perfectColors){
+		board.pinMode(redLedPin, board.MODES.OUTPUT);
+		board.pinMode(greenLedPin, board.MODES.OUTPUT);
+		board.pinMode(blueLedPin, board.MODES.OUTPUT);
+	}else{
+		board.pinMode(redLedPin, board.MODES.PWM);
+		board.pinMode(greenLedPin, board.MODES.PWM);
+		board.pinMode(blueLedPin, board.MODES.PWM);
+	}
+	
 	setInterval(function(){
 		board.digitalWrite(activeLed, board.HIGH);
 		setTimeout(function(){
@@ -135,6 +140,8 @@ var board = new firmata.Board(path, function(err){
 	board.analogRead(leftSensorBottomPin, readLeftBottomButton);
 	board.analogRead(rightSensorTopPin, readRightTopButton);
 	board.analogRead(rightSensorBottomPin, readRightBottomButton);
+
+	setBoardColor('normal');
 });
 
 function checkForJump(){
@@ -251,7 +258,6 @@ function emitSocket(type, value){
 				gameClient.emit('weight', value);
 			break;
 		}
-		
 	}
 }
 
@@ -322,6 +328,7 @@ function calculateWeight(){
 }
 
 function setBoardColor(color){
+
 	if (boardConnected) {
 		if (color === 'party') {
 			partyMode = true;
@@ -362,110 +369,45 @@ function partyModeHandler(){
 	}
 }
 
-function changeBoardColor(color){
+function changeBoardColorByRGB(red, green, blue){
+	board.analogWrite(redLedPin, red);
+	board.analogWrite(greenLedPin, green);
+	board.analogWrite(blueLedPin, blue);
+}
 
-	var redBool = false;
-	var greenBool = false;
-	var blueBool = false;
-	
+function changeBoardColor(color){
 	switch(color){
 		case 'red':
-			redBool = true;
-			greenBool = false;
-			blueBool = false;
-
-			redColorValue = 255;
-			greenColorValue = 50;
-			blueColorValue = 0;
+			changeBoardColorByRGB(255, 20, 0);
 		break;
 
 		case 'yellow':
-			redBool = true;
-			greenBool = true;
-			blueBool = false;
-
-			redColorValue = 255;
-			greenColorValue = 255;
-			blueColorValue = 0;
+			changeBoardColorByRGB(255, 255, 0);
 		break;
 
 		case 'green':
-			redBool = false;
-			greenBool = true;
-			blueBool = false;
-
-			redColorValue = 0;
-			greenColorValue = 255;
-			blueColorValue = 0;
+			changeBoardColorByRGB(0, 255, 0);
 		break;
 
 		case 'blue':
-			redBool = false;
-			greenBool = false;
-			blueBool = true;
-
-			redColorValue = 0;
-			greenColorValue = 0;
-			blueColorValue = 255;
+			changeBoardColorByRGB(0, 0, 255);
 		break;
 
 		case 'purple':
-			redBool = true;
-			greenBool = false;
-			blueBool = true;
-
-			redColorValue = 255;
-			greenColorValue = 0;
-			blueColorValue = 255;
+			changeBoardColorByRGB(130, 40, 255);
 		break;
 
 		case 'white':
-			redBool = true;
-			greenBool = true;
-			blueBool = true;
+			changeBoardColorByRGB(255, 255, 255);
+		break;
 
-			redColorValue = 255;
-			greenColorValue = 255;
-			blueColorValue = 255;
+		case 'black':
+			changeBoardColorByRGB(0,0,0);
 		break;
 
 		default:
-			redBool = false;
-			greenBool = false;
-			blueBool = false;
-
-			redColorValue = 0;
-			greenColorValue = 0;
-			blueColorValue = 0;
+			changeBoardColorByRGB(100, 100, 100);
 		break;
-
-	}
-
-	if (!perfectColors) {
-
-		if(redBool){
-			board.digitalWrite(redLedPin, board.HIGH);
-		}else{
-			board.digitalWrite(redLedPin, board.LOW);
-		}
-
-		if(greenBool){
-			board.digitalWrite(greenLedPin, board.HIGH);
-		}else{
-			board.digitalWrite(greenLedPin, board.LOW);
-		}
-
-		if(blueBool){
-			board.digitalWrite(blueLedPin, board.HIGH);
-		}else{
-			board.digitalWrite(blueLedPin, board.LOW);
-		}
-	}else{
-
-		console.log(redColorValue, greenColorValue, blueColorValue);
-		board.analogWrite(redLedPin, redColorValue);
-		board.analogWrite(greenLedPin, greenColorValue);
-		board.analogWrite(blueLedPin, blueColorValue);
 	}
 }
 

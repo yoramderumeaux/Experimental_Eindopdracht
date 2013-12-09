@@ -64,5 +64,9 @@ var SocketConnection = (function(){
 		
 	};
 
+	SocketConnection.prototype.setBoardColorByRGB = function(red, green, blue){
+		this.socket.emit('setBoardColor', red, green, blue);
+	};
+
 	return SocketConnection;
 })();

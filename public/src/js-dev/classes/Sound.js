@@ -67,7 +67,7 @@ var Sound = (function(){
 		var soundVolume = Math.round(Math.abs(value));
 
 		if (!muted) {
-			this.rocketSound.setVolume(20 + (soundVolume*8));
+			this.rocketSound.setVolume(soundVolume*8);
 		}else{
 			this.rocketSound.setVolume(0);
 		}
