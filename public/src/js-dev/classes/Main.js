@@ -87,8 +87,8 @@ var Main = (function(){
 
 		// Bean events
 		bean.on(spaceShip, 'stopGame', this.stopGame);
-
 		bean.on(socketConnection, 'jump', this.jumpHandler);
+		bean.on(timer, 'beep', this.beepHandler);
 
 		$(document).on('click', '#mute', function(event) {
 			event.preventDefault();
@@ -145,7 +145,7 @@ var Main = (function(){
 		//endScreen = new EndScreen(300);
 		//stage.addChild(endScreen.endContainer);
 
-		sound.toggleMute();
+		//sound.toggleMute();
 	};
 
 	Main.prototype.togglePowerUpWarp = function(enablePowerUp){
@@ -848,6 +848,14 @@ var Main = (function(){
 
 	Main.prototype.speedUpGame = function(){
 		gameSpeedFactor += 0.05;
+	};
+
+	Main.prototype.beepHandler = function(doublebeep){
+		if (doublebeep) {
+			sound.playEffectWithVolume('doubleBeep', 15);
+		}else{
+			sound.playEffectWithVolume('singleBeep', 15);
+		}
 	};
 
 	Main.prototype.setupStage = function() {

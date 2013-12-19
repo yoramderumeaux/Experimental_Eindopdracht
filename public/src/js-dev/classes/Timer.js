@@ -6,7 +6,7 @@ var Timer = (function(){
 
 	function Timer() {
 		_.bindAll(this);
-		this.timerValue = 60;
+		this.timerValue = 12;
 		this.isRunning = false;
 		this.timer = this.timerValue;
 		numberOfEvents = Math.floor(this.timerValue/10);
@@ -41,6 +41,15 @@ var Timer = (function(){
 		}else if(this.timer < (this.timerValue / numberOfEvents) * (numberOfEvents-eventTimer)){			
 			eventTimer ++;
 			bean.fire(this, 'speedUpMeteorites');
+		}
+
+		if (this.timer <= 10) {
+
+			if (this.timer <= 3) {
+				bean.fire(this, 'beep', true);
+			}else{
+				bean.fire(this, 'beep', false);
+			}
 		}
 
 		this.timer --;

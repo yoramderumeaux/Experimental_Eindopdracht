@@ -349,8 +349,8 @@ var Main = (function(){
 
 		// Bean events
 		bean.on(spaceShip, 'stopGame', this.stopGame);
-
 		bean.on(socketConnection, 'jump', this.jumpHandler);
+		bean.on(timer, 'beep', this.beepHandler);
 
 		$(document).on('click', '#mute', function(event) {
 			event.preventDefault();
@@ -407,7 +407,7 @@ var Main = (function(){
 		//endScreen = new EndScreen(300);
 		//stage.addChild(endScreen.endContainer);
 
-		sound.toggleMute();
+		//sound.toggleMute();
 	};
 
 	Main.prototype.togglePowerUpWarp = function(enablePowerUp){
@@ -1110,6 +1110,14 @@ var Main = (function(){
 
 	Main.prototype.speedUpGame = function(){
 		gameSpeedFactor += 0.05;
+	};
+
+	Main.prototype.beepHandler = function(doublebeep){
+		if (doublebeep) {
+			sound.playEffectWithVolume('doubleBeep', 15);
+		}else{
+			sound.playEffectWithVolume('singleBeep', 15);
+		}
 	};
 
 	Main.prototype.setupStage = function() {
@@ -1856,7 +1864,7 @@ var Sound = (function(){
 	Sound.prototype.playBackgroundMusic = function(soundName) {		
 		var backgroundMusic = new buzz.sound('../sound/' + soundName);
 		backgroundMusic.setVolume(40);
-		backgroundMusic.loop();
+		//backgroundMusic.loop();
 		backgroundMusic.play();
 
 		backgroundMusic.bind('timeupdate', function(event) {
@@ -2696,7 +2704,7 @@ var Timer = (function(){
 
 	function Timer() {
 		_.bindAll(this);
-		this.timerValue = 60;
+		this.timerValue = 12;
 		this.isRunning = false;
 		this.timer = this.timerValue;
 		numberOfEvents = Math.floor(this.timerValue/10);
@@ -2731,6 +2739,15 @@ var Timer = (function(){
 		}else if(this.timer < (this.timerValue / numberOfEvents) * (numberOfEvents-eventTimer)){			
 			eventTimer ++;
 			bean.fire(this, 'speedUpMeteorites');
+		}
+
+		if (this.timer <= 10) {
+
+			if (this.timer <= 3) {
+				bean.fire(this, 'beep', true);
+			}else{
+				bean.fire(this, 'beep', false);
+			}
 		}
 
 		this.timer --;
