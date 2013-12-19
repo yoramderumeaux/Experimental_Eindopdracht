@@ -34,6 +34,7 @@ var Main = (function(){
 
 	var bullets = [];
 	var powerups = [];
+	var prevScreenHeight = 0;
 
 	function Main($sourceElement) {
 
@@ -42,6 +43,19 @@ var Main = (function(){
 
 		keys = [];
 		meteorites = [];
+
+		prevScreenHeight = $(window).height();
+
+		$( window ).resize(function() {
+			if (screen.height <= $(window).height() && prevScreenHeight !== screen.height) {
+				location.reload();
+			}else if(prevScreenHeight > $(window).height()){
+				location.reload();
+			}
+
+			console.log(prevScreenHeight);
+			prevScreenHeight = $(window).height();
+		});
 	}
 
 	Main.prototype.init = function() {
@@ -54,6 +68,8 @@ var Main = (function(){
 		//wait for response of server
 		bean.on(socketConnection, 'connectionOk', this.connectionOk);
 		bean.on(socketConnection, 'cancelConnection', this.cancelConnection);
+
+		var self = this;		
 	};
 
 	Main.prototype.connectionOk = function(){
@@ -153,9 +169,7 @@ var Main = (function(){
 
 		if (enablePowerUp) {
 			// Play soundeffect
-			score.updateScore(250);
-
-			
+			score.updateScore(250);			
 
 			console.log(timer.timer);
 
