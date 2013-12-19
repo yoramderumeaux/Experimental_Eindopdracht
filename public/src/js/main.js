@@ -292,6 +292,7 @@ var Main = (function(){
 	var nobodyIsPlaying = true;
 	var getWeightTimer;
 	var measuredWeights = [];
+	var powerupEndTimeout;
 
 	var bullets = [];
 	var powerups = [];
@@ -348,8 +349,8 @@ var Main = (function(){
 
 		// Bean events
 		bean.on(spaceShip, 'stopGame', this.stopGame);
-
 		bean.on(socketConnection, 'jump', this.jumpHandler);
+		bean.on(timer, 'beep', this.beepHandler);
 
 		$(document).on('click', '#mute', function(event) {
 			event.preventDefault();
@@ -441,7 +442,7 @@ var Main = (function(){
 
 			powerupProgress.beginWarpProgress(4000);
 
-			setTimeout(function(){
+			powerupEndTimeout = setTimeout(function(){
 				self.togglePowerUpWarp(false);
 			}, 3000);
 
@@ -481,7 +482,7 @@ var Main = (function(){
 			powerupProgress.beginShootProgress(4700);
 			socketConnection.setBoardColor('green');
 
-			setTimeout(function(){
+			powerupEndTimeout = setTimeout(function(){
 				self.togglePowerupShoot(false);
 			}, 5000);
 
@@ -506,7 +507,7 @@ var Main = (function(){
 
 			sound.playEffectWithVolume('SmallerFast', 70);
 
-			setTimeout(function(){
+			powerupEndTimeout = setTimeout(function(){
 				self.togglePowerupSmaller(false);
 			}, 5000);
 
@@ -533,7 +534,7 @@ var Main = (function(){
 
 			sound.playEffectWithVolume('BiggerFast', 70);
 
-			setTimeout(function(){
+			powerupEndTimeout = setTimeout(function(){
 				self.togglePowerupBigger(false);
 			}, 5000);
 
@@ -562,7 +563,7 @@ var Main = (function(){
 
 			sound.playEffectWithVolume('reverse', 35);
 
-			setTimeout(function(){
+			powerupEndTimeout = setTimeout(function(){
 				self.togglePowerUpReverse(false);
 			}, 4000);
 
@@ -590,7 +591,7 @@ var Main = (function(){
 		//we get this function y = -0.0644x	+4.93333
 
 		if (measuredWeights[1]) {
-			console.log(measuredWeights);
+			console.log('measured weight= ' + measuredWeights);
 			var averageMeasuredWeight = 0;
 
 			for (var i = 0; i < measuredWeights.length; i++) {
@@ -769,6 +770,7 @@ var Main = (function(){
 								socketConnection.setBoardColor('dead');
 								console.log('[MAIN] stop score');
 								sound.playEffectWithVolume('crashImpact', 100);
+								sound.playEffectWithVolume('dead', 90);
 								score.enableScoreEdit = false;
 								spaceShip.gotShot();
 								meteorites[i].gotShot();
@@ -872,6 +874,8 @@ var Main = (function(){
 		date = date.getHours() + ':' + date.getMinutes() + ':' + date.getSeconds();
 		console.log('[MAIN] stop game ' + date);
 
+		clearTimeout(powerupEndTimeout);
+
 		var self = this;
 		timer.stop();
 
@@ -916,6 +920,7 @@ var Main = (function(){
 
 		if (!died) {
 			socketConnection.setBoardColor('party');
+			sound.playEffectWithVolume('win', 40);
 		}else{
 			socketConnection.setBoardColor('dead');
 		}
@@ -965,6 +970,8 @@ var Main = (function(){
 		setTimeout(function() {
 			self.togglePowerupTimer(true);
 		}, 5000);
+
+		sound.playEffectWithVolume('start', 40);
 
 		console.log(meteorites);
 	};
@@ -1107,6 +1114,15 @@ var Main = (function(){
 
 	Main.prototype.speedUpGame = function(){
 		gameSpeedFactor += 0.05;
+	};
+
+	Main.prototype.beepHandler = function(beep){
+
+		if (beep ==='double') {
+			sound.playEffectWithVolume('doubleBeep2', 70);
+		}else if(beep ==='single'){
+			sound.playEffectWithVolume('beep2', 60);
+		}
 	};
 
 	Main.prototype.setupStage = function() {
@@ -1852,7 +1868,7 @@ var Sound = (function(){
 	Sound.prototype.playBackgroundMusic = function(soundName) {		
 		var backgroundMusic = new buzz.sound('../sound/' + soundName);
 		backgroundMusic.setVolume(40);
-		backgroundMusic.loop();
+		//backgroundMusic.loop();
 		backgroundMusic.play();
 
 		backgroundMusic.bind('timeupdate', function(event) {
@@ -1911,6 +1927,7 @@ var SpaceShip = (function(){
 	var bullets = [];
 	var bullet;
 	var flameFlickerTimer = 0;
+	var setStartPos = false;
 	// var lowestX = 10000;
 	// var highestX = 0;
 	// var lowestY = 10000;
@@ -2062,8 +2079,6 @@ var SpaceShip = (function(){
 			}
 		}
 
-		
-		
 		this.drawWindow();		
 		this.drawCannon();
 		this.drawWings();
@@ -2309,7 +2324,10 @@ var SpaceShip = (function(){
 		this.capableToFly = true;
 		this.warpSpeed = false;
 		this.shootMode = false;
+		this.smallerMode = false;
+		this.biggerMode = false;
 		this.ship.alpha = 0;
+		setStartPos = false;
 		this.warpShield.scaleX = this.warpShield.scaleY = 0;
 		this.cannon.scaleX = this.cannon.scaleY = 0;
 	};
@@ -2328,6 +2346,15 @@ var SpaceShip = (function(){
 			var destinationXpos = ($('#cnvs').width() - this.shipWidth) * this.destinationPosition / 100;
 			this.x = (this.shipWidth/2) + destinationXpos;
 			this.ship.x += (this.x-this.ship.x)* this.velX;
+
+			if (!setStartPos) {
+				this.ship.y += 200;
+				setStartPos = true;
+			}else{
+				this.ship.y += (this.y-this.ship.y)*0.05;	
+			}
+
+			
 
 			this.ship.rotation = (this.x-this.ship.x)*0.1;
 
@@ -2725,6 +2752,17 @@ var Timer = (function(){
 		}else if(this.timer < (this.timerValue / numberOfEvents) * (numberOfEvents-eventTimer)){			
 			eventTimer ++;
 			bean.fire(this, 'speedUpMeteorites');
+		}
+
+		if (this.timer <= 10) {
+
+			if (this.timer <= 3) {
+				if (this.timer !== 0) {
+					bean.fire(this, 'beep', 'double');	
+				}
+			}else{
+				bean.fire(this, 'beep', 'single');
+			}
 		}
 
 		this.timer --;

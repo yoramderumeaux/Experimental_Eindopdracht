@@ -47,7 +47,7 @@ var Sound = (function(){
 	Sound.prototype.playBackgroundMusic = function(soundName) {		
 		var backgroundMusic = new buzz.sound('../sound/' + soundName);
 		backgroundMusic.setVolume(40);
-		backgroundMusic.loop();
+		//backgroundMusic.loop();
 		backgroundMusic.play();
 
 		backgroundMusic.bind('timeupdate', function(event) {

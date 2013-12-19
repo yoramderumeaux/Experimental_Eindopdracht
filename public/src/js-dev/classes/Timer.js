@@ -43,6 +43,17 @@ var Timer = (function(){
 			bean.fire(this, 'speedUpMeteorites');
 		}
 
+		if (this.timer <= 10) {
+
+			if (this.timer <= 3) {
+				if (this.timer !== 0) {
+					bean.fire(this, 'beep', 'double');	
+				}
+			}else{
+				bean.fire(this, 'beep', 'single');
+			}
+		}
+
 		this.timer --;
 	};
 
