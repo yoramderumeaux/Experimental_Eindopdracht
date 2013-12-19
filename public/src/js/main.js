@@ -282,7 +282,7 @@ var Main = (function(){
 	var meteoriteTimerValue = defaultMeteoriteTimerValue;
 	var defaultPowerupTimerValue = 3000; //new powerup after x miliseconds
 	var powerupTimerValue = defaultPowerupTimerValue; 
-	var debugKeyboardControl = true; //spel spelen met pijltjes
+	var debugKeyboardControl = false; //spel spelen met pijltjes
 	var bulletCounter = 0; //aantal bullets fired
 	var reversedControls = false;
 	var preventGameFromStopping = false; //zorgt ervoor dat game niet stopt als je in warp mode zit
@@ -970,6 +970,8 @@ var Main = (function(){
 			self.togglePowerupTimer(true);
 		}, 5000);
 
+		sound.playEffectWithVolume('start', 40);
+
 		console.log(meteorites);
 	};
 
@@ -1120,7 +1122,7 @@ var Main = (function(){
 		}else if(beep ==='single'){
 			sound.playEffectWithVolume('beep2', 60);
 		}else if(beep ==='win'){
-			sound.playEffectWithVolume('win', 60);
+			sound.playEffectWithVolume('win', 40);
 		}
 	};
 
@@ -1927,6 +1929,7 @@ var SpaceShip = (function(){
 	var bullets = [];
 	var bullet;
 	var flameFlickerTimer = 0;
+	var setStartPos = false;
 	// var lowestX = 10000;
 	// var highestX = 0;
 	// var lowestY = 10000;
@@ -2078,8 +2081,6 @@ var SpaceShip = (function(){
 			}
 		}
 
-		
-		
 		this.drawWindow();		
 		this.drawCannon();
 		this.drawWings();
@@ -2328,6 +2329,7 @@ var SpaceShip = (function(){
 		this.smallerMode = false;
 		this.biggerMode = false;
 		this.ship.alpha = 0;
+		setStartPos = false;
 		this.warpShield.scaleX = this.warpShield.scaleY = 0;
 		this.cannon.scaleX = this.cannon.scaleY = 0;
 	};
@@ -2346,6 +2348,15 @@ var SpaceShip = (function(){
 			var destinationXpos = ($('#cnvs').width() - this.shipWidth) * this.destinationPosition / 100;
 			this.x = (this.shipWidth/2) + destinationXpos;
 			this.ship.x += (this.x-this.ship.x)* this.velX;
+
+			if (!setStartPos) {
+				this.ship.y += 200;
+				setStartPos = true;
+			}else{
+				this.ship.y += (this.y-this.ship.y)*0.05;	
+			}
+
+			
 
 			this.ship.rotation = (this.x-this.ship.x)*0.1;
 
@@ -2708,7 +2719,7 @@ var Timer = (function(){
 
 	function Timer() {
 		_.bindAll(this);
-		this.timerValue = 12;
+		this.timerValue = 60;
 		this.isRunning = false;
 		this.timer = this.timerValue;
 		numberOfEvents = Math.floor(this.timerValue/10);

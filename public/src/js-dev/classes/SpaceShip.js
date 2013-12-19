@@ -5,6 +5,7 @@ var SpaceShip = (function(){
 	var bullets = [];
 	var bullet;
 	var flameFlickerTimer = 0;
+	var setStartPos = false;
 	// var lowestX = 10000;
 	// var highestX = 0;
 	// var lowestY = 10000;
@@ -156,8 +157,6 @@ var SpaceShip = (function(){
 			}
 		}
 
-		
-		
 		this.drawWindow();		
 		this.drawCannon();
 		this.drawWings();
@@ -406,6 +405,7 @@ var SpaceShip = (function(){
 		this.smallerMode = false;
 		this.biggerMode = false;
 		this.ship.alpha = 0;
+		setStartPos = false;
 		this.warpShield.scaleX = this.warpShield.scaleY = 0;
 		this.cannon.scaleX = this.cannon.scaleY = 0;
 	};
@@ -424,6 +424,15 @@ var SpaceShip = (function(){
 			var destinationXpos = ($('#cnvs').width() - this.shipWidth) * this.destinationPosition / 100;
 			this.x = (this.shipWidth/2) + destinationXpos;
 			this.ship.x += (this.x-this.ship.x)* this.velX;
+
+			if (!setStartPos) {
+				this.ship.y += 200;
+				setStartPos = true;
+			}else{
+				this.ship.y += (this.y-this.ship.y)*0.05;	
+			}
+
+			
 
 			this.ship.rotation = (this.x-this.ship.x)*0.1;
 

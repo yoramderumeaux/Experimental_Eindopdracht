@@ -20,7 +20,7 @@ var Main = (function(){
 	var meteoriteTimerValue = defaultMeteoriteTimerValue;
 	var defaultPowerupTimerValue = 3000; //new powerup after x miliseconds
 	var powerupTimerValue = defaultPowerupTimerValue; 
-	var debugKeyboardControl = true; //spel spelen met pijltjes
+	var debugKeyboardControl = false; //spel spelen met pijltjes
 	var bulletCounter = 0; //aantal bullets fired
 	var reversedControls = false;
 	var preventGameFromStopping = false; //zorgt ervoor dat game niet stopt als je in warp mode zit
@@ -708,6 +708,8 @@ var Main = (function(){
 			self.togglePowerupTimer(true);
 		}, 5000);
 
+		sound.playEffectWithVolume('start', 40);
+
 		console.log(meteorites);
 	};
 
@@ -858,7 +860,7 @@ var Main = (function(){
 		}else if(beep ==='single'){
 			sound.playEffectWithVolume('beep2', 60);
 		}else if(beep ==='win'){
-			sound.playEffectWithVolume('win', 60);
+			sound.playEffectWithVolume('win', 40);
 		}
 	};
 
