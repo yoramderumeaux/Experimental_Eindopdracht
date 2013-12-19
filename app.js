@@ -378,7 +378,7 @@ function changeBoardColorByRGB(red, green, blue){
 function changeBoardColor(color){
 	switch(color){
 		case 'red':
-			changeBoardColorByRGB(255, 20, 0);
+			changeBoardColorByRGB(255, 0, 0);
 		break;
 
 		case 'yellow':
@@ -394,7 +394,7 @@ function changeBoardColor(color){
 		break;
 
 		case 'purple':
-			changeBoardColorByRGB(130, 40, 255);
+			changeBoardColorByRGB(130, 20, 50);
 		break;
 
 		case 'white':
