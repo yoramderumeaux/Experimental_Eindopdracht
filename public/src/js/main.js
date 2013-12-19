@@ -770,6 +770,7 @@ var Main = (function(){
 								socketConnection.setBoardColor('dead');
 								console.log('[MAIN] stop score');
 								sound.playEffectWithVolume('crashImpact', 100);
+								sound.playEffectWithVolume('dead', 90);
 								score.enableScoreEdit = false;
 								spaceShip.gotShot();
 								meteorites[i].gotShot();
@@ -1112,11 +1113,14 @@ var Main = (function(){
 		gameSpeedFactor += 0.05;
 	};
 
-	Main.prototype.beepHandler = function(doublebeep){
-		if (doublebeep) {
-			sound.playEffectWithVolume('doubleBeep', 15);
-		}else{
-			sound.playEffectWithVolume('singleBeep', 15);
+	Main.prototype.beepHandler = function(beep){
+
+		if (beep ==='double') {
+			sound.playEffectWithVolume('doubleBeep2', 70);
+		}else if(beep ==='single'){
+			sound.playEffectWithVolume('beep2', 60);
+		}else if(beep ==='win'){
+			sound.playEffectWithVolume('win', 60);
 		}
 	};
 
@@ -2744,9 +2748,14 @@ var Timer = (function(){
 		if (this.timer <= 10) {
 
 			if (this.timer <= 3) {
-				bean.fire(this, 'beep', true);
+				if (this.timer !== 0) {
+					bean.fire(this, 'beep', 'double');	
+				}else{
+					bean.fire(this, 'beep', 'win');	
+				}
+				
 			}else{
-				bean.fire(this, 'beep', false);
+				bean.fire(this, 'beep', 'single');
 			}
 		}
 
