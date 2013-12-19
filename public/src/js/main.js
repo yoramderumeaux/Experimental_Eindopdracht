@@ -260,7 +260,7 @@ var EndScreen = (function(){
 
 })();
 
-/* globals CanvasSetup:true, SpaceShip:true, Timer:true, Meteorite:true, Score:true, PowerupProgress:true, StartScreen:true, Powerup:true, SocketConnection:true, Bullet:true, CollisionDetection:true, Sound:true, EndScreen:true */
+/* globals CanvasSetup:true, SpaceShip:true, Timer:true, Meteorite:true, Score:true, PowerupProgress:true, StartScreen:true, Powerup:true, Bullet:true, CollisionDetection:true, Sound:true, EndScreen:true */
 
 var Main = (function(){
 
@@ -268,7 +268,6 @@ var Main = (function(){
 	var spaceShip, timer, meteorite, powerupProgress, powerup, meteorites, bullet, sound, endScreen, startScreen;
 	var meteorTimer;
 	var powerupTimer;
-	var socketConnection;
 	var score;
 	var collisionDetection;
 	var lastMeteorXPos = -200;
@@ -282,7 +281,7 @@ var Main = (function(){
 	var meteoriteTimerValue = defaultMeteoriteTimerValue;
 	var defaultPowerupTimerValue = 3000; //new powerup after x miliseconds
 	var powerupTimerValue = defaultPowerupTimerValue; 
-	var debugKeyboardControl = false; //spel spelen met pijltjes
+	var debugKeyboardControl = true; //spel spelen met pijltjes
 	var bulletCounter = 0; //aantal bullets fired
 	var reversedControls = false;
 	var preventGameFromStopping = false; //zorgt ervoor dat game niet stopt als je in warp mode zit
@@ -309,13 +308,8 @@ var Main = (function(){
 	Main.prototype.init = function() {
 		// Setup canvas and Stageobject
 		this.setupStage();
-
-		socketConnection = new SocketConnection();
-		socketConnection.init();
-
 		//wait for response of server
-		bean.on(socketConnection, 'connectionOk', this.connectionOk);
-		bean.on(socketConnection, 'cancelConnection', this.cancelConnection);
+		this.connectionOk();
 	};
 
 	Main.prototype.connectionOk = function(){
@@ -349,26 +343,11 @@ var Main = (function(){
 
 		// Bean events
 		bean.on(spaceShip, 'stopGame', this.stopGame);
-		bean.on(socketConnection, 'jump', this.jumpHandler);
 		bean.on(timer, 'beep', this.beepHandler);
 
 		$(document).on('click', '#mute', function(event) {
 			event.preventDefault();
 			sound.toggleMute();			
-		});
-
-		bean.on(socketConnection, 'horizontalPosition', function(data){		
-			data = data + ((data - 50) * weightFactor );
-			data = Math.min(100, data);
-			data = Math.max(0, data);
-
-			if (spaceShip && !debugKeyboardControl) {
-				if( !reversedControls ) {
-					spaceShip.destinationPosition = data;
-				}else {
-					spaceShip.destinationPosition = 100 - data;
-				}
-			}
 		});
 
 		bean.on(timer, 'endTimer', function(){
@@ -380,13 +359,6 @@ var Main = (function(){
 
 		bean.on(timer, 'secondPast', this.speedUpGame);
 
-		bean.on(socketConnection, 'weightReceived', function(data){
-			measuredWeights.push(data);
-			if (measuredWeights.length > 3) {
-				measuredWeights.shift();
-			}
-		});
-
 		bean.on(timer, 'speedUpMeteorites', this.speedUpMeteoriteTimer);
 
 		// StageTicker
@@ -395,14 +367,6 @@ var Main = (function(){
 		ticker.addEventListener('tick', this.update);
 		
 		this.showStartScreen();
-
-		getWeightTimer = setInterval(function(){
-			if(nobodyIsPlaying){
-				socketConnection.askForWeight();	
-			}			
-		}, 500); 
-
-		socketConnection.setBoardColor('white');
 		
 		//endScreen = new EndScreen(300);
 		//stage.addChild(endScreen.endContainer);
@@ -427,7 +391,6 @@ var Main = (function(){
 			}
 			
 			sound.playEffectWithVolume('WarpSpeed', 100);
-			socketConnection.setBoardColor('blue');
 
 			// clear timer and restart faster
 			clearInterval(meteorTimer);
@@ -454,9 +417,6 @@ var Main = (function(){
 			spaceShip.warpSpeed = false;
 
 			setTimeout(function(){
-				if (timer.isRunning) {
-					socketConnection.setBoardColor('white');
-				}
 				powerUpActive = false;
 				spaceShip.shipImmune = false;
 			}, 1300);
@@ -480,7 +440,6 @@ var Main = (function(){
 			score.updateScore(250);
 
 			powerupProgress.beginShootProgress(4700);
-			socketConnection.setBoardColor('green');
 
 			powerupEndTimeout = setTimeout(function(){
 				self.togglePowerupShoot(false);
@@ -489,9 +448,6 @@ var Main = (function(){
 		}else{
 			powerUpActive = false;
 			spaceShip.shootMode = false;
-			if (timer.isRunning) {
-				socketConnection.setBoardColor('white');
-			}
 		}
 	};
 
@@ -503,7 +459,6 @@ var Main = (function(){
 			score.updateScore(250);
 
 			powerupProgress.beginSmallerProgress(4700);
-			socketConnection.setBoardColor('yellow');
 
 			sound.playEffectWithVolume('SmallerFast', 70);
 
@@ -514,7 +469,6 @@ var Main = (function(){
 		}else{
 			powerUpActive = false;
 			spaceShip.smallerMode = false;
-			socketConnection.setBoardColor('white');
 
 			if (timer.isRunning) {
 				sound.playEffectWithVolume('BiggerFast', 70);
@@ -530,7 +484,6 @@ var Main = (function(){
 			score.updateScore(250);
 
 			powerupProgress.beginBiggerProgress(4700);
-			socketConnection.setBoardColor('purple');
 
 			sound.playEffectWithVolume('BiggerFast', 70);
 
@@ -541,7 +494,6 @@ var Main = (function(){
 		}else{
 
 			if (timer.isRunning) {
-				socketConnection.setBoardColor('white');
 				sound.playEffectWithVolume('SmallerFast', 70);
 			}
 
@@ -559,8 +511,6 @@ var Main = (function(){
 			reversedControls = true;
 			powerupProgress.beginReverseProgress(4000);
 
-			socketConnection.setBoardColor('red');
-
 			sound.playEffectWithVolume('reverse', 35);
 
 			powerupEndTimeout = setTimeout(function(){
@@ -570,10 +520,6 @@ var Main = (function(){
 		}else{
 			powerUpActive = false;
 			reversedControls = false;
-
-			if (timer.isRunning) {
-				socketConnection.setBoardColor('white');
-			}
 		}
 	};
 
@@ -767,7 +713,6 @@ var Main = (function(){
 							// Ship crashed into a meteorite
 							
 							if (meteorites[i].canDoDamage && spaceShip.capableToFly) {
-								socketConnection.setBoardColor('dead');
 								console.log('[MAIN] stop score');
 								sound.playEffectWithVolume('crashImpact', 100);
 								sound.playEffectWithVolume('dead', 90);
@@ -919,10 +864,7 @@ var Main = (function(){
 		$('#score').hide();
 
 		if (!died) {
-			socketConnection.setBoardColor('party');
 			sound.playEffectWithVolume('win', 40);
-		}else{
-			socketConnection.setBoardColor('dead');
 		}
 
 		endScreen = new EndScreen(endScore, died);
@@ -964,8 +906,6 @@ var Main = (function(){
 		spaceShip.ship.alpha = 1;
 		this.toggleMeteoriteTimer(true);
 
-		socketConnection.setBoardColor('white');
-
 		var self = this;
 		setTimeout(function() {
 			self.togglePowerupTimer(true);
@@ -990,8 +930,6 @@ var Main = (function(){
 
 		startScreen = new StartScreen();
 		stage.addChild(startScreen.startContainer);
-
-		socketConnection.setBoardColor('white');
 
 		bean.on(startScreen, 'startGame', this.startGame);
 	};
