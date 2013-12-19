@@ -920,6 +920,7 @@ var Main = (function(){
 
 		if (!died) {
 			socketConnection.setBoardColor('party');
+			sound.playEffectWithVolume('win', 40);
 		}else{
 			socketConnection.setBoardColor('dead');
 		}
@@ -1121,8 +1122,6 @@ var Main = (function(){
 			sound.playEffectWithVolume('doubleBeep2', 70);
 		}else if(beep ==='single'){
 			sound.playEffectWithVolume('beep2', 60);
-		}else if(beep ==='win'){
-			sound.playEffectWithVolume('win', 40);
 		}
 	};
 
@@ -1364,7 +1363,6 @@ var Powerup = (function(){
 		if ($.isNumeric(type)) {
 			//this.randomNumber = Math.floor(Math.random()*types.length);
 			this.randomNumber = type;
-			this.randomNumber = 3;
 		}else{
 			switch(type){
 				case 'warp':
@@ -2761,10 +2759,7 @@ var Timer = (function(){
 			if (this.timer <= 3) {
 				if (this.timer !== 0) {
 					bean.fire(this, 'beep', 'double');	
-				}else{
-					bean.fire(this, 'beep', 'win');	
 				}
-				
 			}else{
 				bean.fire(this, 'beep', 'single');
 			}

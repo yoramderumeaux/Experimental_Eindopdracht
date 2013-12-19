@@ -48,10 +48,7 @@ var Timer = (function(){
 			if (this.timer <= 3) {
 				if (this.timer !== 0) {
 					bean.fire(this, 'beep', 'double');	
-				}else{
-					bean.fire(this, 'beep', 'win');	
 				}
-				
 			}else{
 				bean.fire(this, 'beep', 'single');
 			}

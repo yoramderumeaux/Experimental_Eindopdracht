@@ -658,6 +658,7 @@ var Main = (function(){
 
 		if (!died) {
 			socketConnection.setBoardColor('party');
+			sound.playEffectWithVolume('win', 40);
 		}else{
 			socketConnection.setBoardColor('dead');
 		}
@@ -859,8 +860,6 @@ var Main = (function(){
 			sound.playEffectWithVolume('doubleBeep2', 70);
 		}else if(beep ==='single'){
 			sound.playEffectWithVolume('beep2', 60);
-		}else if(beep ==='win'){
-			sound.playEffectWithVolume('win', 40);
 		}
 	};
 
