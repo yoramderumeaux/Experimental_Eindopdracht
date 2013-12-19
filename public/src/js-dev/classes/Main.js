@@ -24,7 +24,7 @@ var Main = (function(){
 	var bulletCounter = 0; //aantal bullets fired
 	var reversedControls = false;
 	var preventGameFromStopping = false; //zorgt ervoor dat game niet stopt als je in warp mode zit
-	var weightFactor = 0.1; // wordt automatisch geregeld
+	var weightFactor = 3; // wordt automatisch geregeld
 	var died = true;
 	var powerupHistory = [];
 	var nobodyIsPlaying = true;
@@ -368,7 +368,8 @@ var Main = (function(){
 
 		//fps
 		var currentFPS = Math.round(ticker.getMeasuredFPS()*10)/10;
-		$('#fps').html(currentFPS);
+		$('#fps').hide();
+		//$('#fps').html(currentFPS);
 
 		if (currentFPS < 30) {
 			$('#fps').addClass('veryLow');			

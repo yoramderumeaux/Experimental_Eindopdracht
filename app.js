@@ -166,7 +166,7 @@ function checkForJump(){
 			minRight = Math.min(minRight, rightJumpLog[i]);		
 		};
 
-		var minVal = 30; //als hij geen jump detecteerd --> verhogen
+		var minVal = 200; //als hij geen jump detecteerd --> verhogen
 		if (maxLeft - minLeft > jumpThreshold && maxRight - minRight > jumpThreshold && minLeft < minVal && minRight < minVal) {		
 			console.log('jump detected');
 			emitSocket('jump', true);	
