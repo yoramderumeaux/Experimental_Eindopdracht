@@ -403,6 +403,8 @@ var SpaceShip = (function(){
 		this.capableToFly = true;
 		this.warpSpeed = false;
 		this.shootMode = false;
+		this.smallerMode = false;
+		this.biggerMode = false;
 		this.ship.alpha = 0;
 		this.warpShield.scaleX = this.warpShield.scaleY = 0;
 		this.cannon.scaleX = this.cannon.scaleY = 0;

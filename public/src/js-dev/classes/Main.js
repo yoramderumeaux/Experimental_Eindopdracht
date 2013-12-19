@@ -20,7 +20,7 @@ var Main = (function(){
 	var meteoriteTimerValue = defaultMeteoriteTimerValue;
 	var defaultPowerupTimerValue = 3000; //new powerup after x miliseconds
 	var powerupTimerValue = defaultPowerupTimerValue; 
-	var debugKeyboardControl = false; //spel spelen met pijltjes
+	var debugKeyboardControl = true; //spel spelen met pijltjes
 	var bulletCounter = 0; //aantal bullets fired
 	var reversedControls = false;
 	var preventGameFromStopping = false; //zorgt ervoor dat game niet stopt als je in warp mode zit
@@ -30,6 +30,7 @@ var Main = (function(){
 	var nobodyIsPlaying = true;
 	var getWeightTimer;
 	var measuredWeights = [];
+	var powerupEndTimeout;
 
 	var bullets = [];
 	var powerups = [];
@@ -144,7 +145,7 @@ var Main = (function(){
 		//endScreen = new EndScreen(300);
 		//stage.addChild(endScreen.endContainer);
 
-		//sound.toggleMute();
+		sound.toggleMute();
 	};
 
 	Main.prototype.togglePowerUpWarp = function(enablePowerUp){
@@ -179,7 +180,7 @@ var Main = (function(){
 
 			powerupProgress.beginWarpProgress(4000);
 
-			setTimeout(function(){
+			powerupEndTimeout = setTimeout(function(){
 				self.togglePowerUpWarp(false);
 			}, 3000);
 
@@ -219,7 +220,7 @@ var Main = (function(){
 			powerupProgress.beginShootProgress(4700);
 			socketConnection.setBoardColor('green');
 
-			setTimeout(function(){
+			powerupEndTimeout = setTimeout(function(){
 				self.togglePowerupShoot(false);
 			}, 5000);
 
@@ -244,7 +245,7 @@ var Main = (function(){
 
 			sound.playEffectWithVolume('SmallerFast', 70);
 
-			setTimeout(function(){
+			powerupEndTimeout = setTimeout(function(){
 				self.togglePowerupSmaller(false);
 			}, 5000);
 
@@ -271,7 +272,7 @@ var Main = (function(){
 
 			sound.playEffectWithVolume('BiggerFast', 70);
 
-			setTimeout(function(){
+			powerupEndTimeout = setTimeout(function(){
 				self.togglePowerupBigger(false);
 			}, 5000);
 
@@ -300,7 +301,7 @@ var Main = (function(){
 
 			sound.playEffectWithVolume('reverse', 35);
 
-			setTimeout(function(){
+			powerupEndTimeout = setTimeout(function(){
 				self.togglePowerUpReverse(false);
 			}, 4000);
 
@@ -328,7 +329,7 @@ var Main = (function(){
 		//we get this function y = -0.0644x	+4.93333
 
 		if (measuredWeights[1]) {
-			console.log(measuredWeights);
+			console.log('measured weight= ' + measuredWeights);
 			var averageMeasuredWeight = 0;
 
 			for (var i = 0; i < measuredWeights.length; i++) {
@@ -609,6 +610,8 @@ var Main = (function(){
 		var date = new Date();
 		date = date.getHours() + ':' + date.getMinutes() + ':' + date.getSeconds();
 		console.log('[MAIN] stop game ' + date);
+
+		clearTimeout(powerupEndTimeout);
 
 		var self = this;
 		timer.stop();
