@@ -39,63 +39,86 @@ io.sockets.on('connection', function(socket){
 
 // Require the firmata depenency
 var firmata = require('firmata');
-var path = '/dev/tty.usbmodemfa131';
+//var path = '/dev/tty.usbmodemfa131'; //Macbook Pro
+var path = '/dev/tty.usbmodem1411'; //Macbook Air
+
+/**
+ * Pins -> Wire color
+ *
+ * left top sensor -> brown
+ * left bottom sensor -> purple
+ * right top sensor -> pink
+ * right bottom sensor -> green
+ *
+ * 5v+ -> red
+ * GND -> gray (and black)
+ * 
+ * 12v+ -> yellow
+ * GND -> black (and gray)
+ *
+ * Red leds -> orange
+ * Green leds -> turquoise
+ * Blue leds -> blue
+ *
+ * Unused -> white, gray & brown
+ *
+ */
 
 //program variables
-var leftSensorTopPin =  0;
-var leftSensorBottomPin = 1;
-var rightSensorTopPin = 2;
-var rightSensorBottomPin = 3;
+var leftSensorTopPin     = 0; //ANALOG, left top, 1, brown
+var leftSensorBottomPin  = 1; //ANALOG, left bottom, 2, purple
+var rightSensorTopPin    = 2; //ANALOG, right top, 3, pink
+var rightSensorBottomPin = 3; //ANALOG, right bottom, 4, green
 
-var redLedPin = 11;
-var greenLedPin = 10;
-var blueLedPin = 9;
+var redLedPin   = 6; //PWM
+var greenLedPin = 5; //PWM
+var blueLedPin  = 3; //PWM
 
-var dataLed = 3;
-var activeLed = 2;
+var dataLed   = 7;
+var activeLed = 4;
 
-var leftSensorTopMin = 740;
-var leftSensorTopMax = 100;
-var leftSensorTopVal = 0;
+var leftSensorTopMin    = 740;
+var leftSensorTopMax    = 100;
+var leftSensorTopVal    = 0;
 var leftSensorBottomMin = 562;
 var leftSensorBottomMax = 100; //max 1023
 var leftSensorBottomVal = 0;
 
-var rightSensorTopMin = 750;
-var rightSensorTopMax = 100; //max 1023
-var rightSensorTopVal = 0;
+var rightSensorTopMin    = 750;
+var rightSensorTopMax    = 100; //max 1023
+var rightSensorTopVal    = 0;
 var rightSensorBottomMin = 748;
 var rightSensorBottomMax = 100; //max 1023
 var rightSensorBottomVal = 0;
 
-var leftJumpLog = [];
-var rightJumpLog = [];
-var jumpThreshold = 80;
+var leftJumpLog      = [];
+var rightJumpLog     = [];
+var jumpThreshold    = 80;
 var jumpIntervalTime = 1000; //ms
 
 var horizontalPosition = 50;
 var emitIntervalTime = 1000/15;
 
-var leftTopSensorSetup = true;
-var leftBottomSensorSetup = true;
-var rightTopSensorSetup = true;
+var leftTopSensorSetup     = true;
+var leftBottomSensorSetup  = true;
+var rightTopSensorSetup    = true;
 var rightBottomSensorSetup = true;
-var completedSetup = false;
+var completedSetup         = false;
 
 var weights = [];
 var averageWeight = 50;
 
-var partyMode = false;
+var partyMode   = false;
 var partyColors = ['blue', 'black', 'green', 'black', 'yellow', 'black', 'red', 'black'];
-var deadMode = false;
-var deadColors = ['red', 'black'];
+var deadMode    = false;
+var deadColors  = ['red', 'black'];
 
 var currentColorInArray = 0;
 
-var perfectColors = true;
-var redColorValue = 0;
+var perfectColors   = true;
+var redColorValue   = 0;
 var greenColorValue = 0;
-var blueColorValue = 0;
+var blueColorValue  = 0;
 
 var boardConnected = false;
 
@@ -178,7 +201,7 @@ function checkForJump(){
 	rightJumpLog = [];
 
 	//console.log(rightJumpLog);
-	//console.log(leftSensorTopVal, leftSensorBottomVal, rightSensorTopVal, rightSensorBottomVal);
+	console.log(leftSensorTopVal, leftSensorBottomVal, rightSensorTopVal, rightSensorBottomVal);
 }
 
 function readLeftTopButton(data){
@@ -267,6 +290,8 @@ function calculatePosition(){
 		completedSetup = true;
 		console.log(rightSensorTopMin, rightSensorBottomMin, leftSensorTopMin, leftSensorBottomMin);
 	}
+
+	// console.log(rightSensorTopMin, rightSensorBottomMin, leftSensorTopMin, leftSensorBottomMin);
 
 	var leftSensorMax = leftSensorTopMax;
 	var rightSensorMax = rightSensorTopMax;
