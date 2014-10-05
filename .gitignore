@@ -4,3 +4,4 @@ public/node_modules
 public/node_modules/*
 *.scssc
 
+node_modules
