@@ -1,4 +1,6 @@
 public/.sass-cache
 public/.sass-cache/*
+public/node_modules
+public/node_modules/*
 *.scssc
 
