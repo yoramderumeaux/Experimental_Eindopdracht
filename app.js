@@ -288,7 +288,7 @@ function calculatePosition(){
 
 	if (!completedSetup && !rightTopSensorSetup && !rightBottomSensorSetup && !leftTopSensorSetup && !leftBottomSensorSetup) {
 		completedSetup = true;
-		console.log(rightSensorTopMin, rightSensorBottomMin, leftSensorTopMin, leftSensorBottomMin);
+		console.log(leftSensorTopMin, leftSensorBottomMin, rightSensorTopMin, rightSensorBottomMin);
 	}
 
 	// console.log(rightSensorTopMin, rightSensorBottomMin, leftSensorTopMin, leftSensorBottomMin);
