@@ -152,7 +152,7 @@ var Powerup = (function(){
 
 	};
 
-	Powerup.prototype.update = function() {
+	Powerup.prototype.updateWithFPSCorrection = function(fpsCorrection) {
 
 		if (!this.collected) {
 			/*if (this.currentWarpSpeed < (this.warpSpeedTarget*this.enableWarpSpeed)) {
@@ -161,12 +161,12 @@ var Powerup = (function(){
 				this.currentWarpSpeed = 0;
 			}
 			*/
-			this.y += this.velY * (this.speed * (1 + this.currentWarpSpeed *30));
+			this.y += (this.velY * (this.speed * (1 + this.currentWarpSpeed *30)))/fpsCorrection;
 			this.powerup.y = this.y;
 			var lol = 1;
 		}else{
-			this.powerup.scaleX = this.powerup.scaleY += 0.1;
-			this.powerup.alpha -= 0.1;
+			this.powerup.scaleX = this.powerup.scaleY += 0.1/fpsCorrection;
+			this.powerup.alpha -= (0.1/fpsCorrection);
 
 			if (this.powerup.alpha <= 0) {
 				this.readyToRemove = true;

@@ -1,9 +1,10 @@
-/*globals  Bullet:true */
+/*globals  Bullet:true Main:true*/
 
 var SpaceShip = (function(){
 
 	var bullets = [];
 	var bullet;
+	var main;
 	var flameFlickerTimer = 0;
 	var setStartPos = false;
 	// var lowestX = 10000;
@@ -414,7 +415,7 @@ var SpaceShip = (function(){
 		this.capableToFly = false;
 	};
 
-	SpaceShip.prototype.update = function() {
+	SpaceShip.prototype.updateWithFPSCorrection = function(fpsCorrection) {
 
 		if (this.capableToFly) {
 			//ease to position;
@@ -423,13 +424,13 @@ var SpaceShip = (function(){
 
 			var destinationXpos = ($('#cnvs').width() - this.shipWidth) * this.destinationPosition / 100;
 			this.x = (this.shipWidth/2) + destinationXpos;
-			this.ship.x += (this.x-this.ship.x)* this.velX;
+			this.ship.x += ((this.x-this.ship.x)* this.velX)/fpsCorrection;
 
 			if (!setStartPos) {
-				this.ship.y += 200;
+				this.ship.y += 200 / fpsCorrection;
 				setStartPos = true;
 			}else{
-				this.ship.y += (this.y-this.ship.y)*0.05;	
+				this.ship.y += ((this.y-this.ship.y)*0.05)/fpsCorrection;	
 			}
 
 			
@@ -452,28 +453,28 @@ var SpaceShip = (function(){
 
 			if (this.shipImmune) {
 				//this.warpShield.alpha = 1;
-				this.warpShield.scaleX = this.warpShield.scaleY += (1-this.warpShield.scaleX)*0.2;
+				this.warpShield.scaleX = this.warpShield.scaleY += ((1-this.warpShield.scaleX)*0.2)/fpsCorrection;
 			}else{
-				this.warpShield.scaleX = this.warpShield.scaleY += (0-this.warpShield.scaleX)*0.2;
+				this.warpShield.scaleX = this.warpShield.scaleY += ((0-this.warpShield.scaleX)*0.2)/fpsCorrection;
 				//this.warpShield.alpha = 0;
 			}
 
 			if (this.shootMode) {
-				this.cannon.scaleX = this.cannon.scaleY += (1-this.cannon.scaleX)*0.2;
+				this.cannon.scaleX = this.cannon.scaleY += ((1-this.cannon.scaleX)*0.2)/fpsCorrection;
 			}else{
-				this.cannon.scaleX = this.cannon.scaleY += (0-this.cannon.scaleX)*0.2;
+				this.cannon.scaleX = this.cannon.scaleY += ((0-this.cannon.scaleX)*0.2)/fpsCorrection;
 			}
 
 			if (this.smallerMode) {
-				this.ship.scaleX = this.ship.scaleY += (0.3-this.ship.scaleX)*0.015;
+				this.ship.scaleX = this.ship.scaleY += ((0.3-this.ship.scaleX)*0.015)/fpsCorrection;
 			}else{
-				this.ship.scaleX = this.ship.scaleY += (1-this.ship.scaleX)*0.015;
+				this.ship.scaleX = this.ship.scaleY += ((1-this.ship.scaleX)*0.015)/fpsCorrection;
 			}
 
 			if (this.biggerMode) {
-				this.ship.scaleX = this.ship.scaleY += (1.8 - this.ship.scaleX)*0.015;
+				this.ship.scaleX = this.ship.scaleY += ((1.8 - this.ship.scaleX)*0.015)/fpsCorrection;
 			}else{
-				this.ship.scaleX = this.ship.scaleY += (1-this.ship.scaleX)*0.015;
+				this.ship.scaleX = this.ship.scaleY += ((1-this.ship.scaleX)*0.015)/fpsCorrection;
 			}
 
 			this.ship.width = 60 * this.ship.scaleX;
@@ -489,12 +490,12 @@ var SpaceShip = (function(){
 
 			if (this.ship.y < $('#cnvs').height() + 100 ){
 				this.ship.y += 4;
-				this.ship.scaleY = this.ship.scaleX += (0 - this.ship.scaleX) * 0.1;
+				this.ship.scaleY = this.ship.scaleX += ((0 - this.ship.scaleX) * 0.1)/fpsCorrection;
 				this.ship.x += 1;
 				if (this.destinationPosition < 50) {
-					this.ship.rotation += 10;
+					this.ship.rotation += 10/fpsCorrection;
 				}else{
-					this.ship.rotation -= 10;
+					this.ship.rotation -= 10/fpsCorrection;
 				}
 			}else{
 				bean.fire(this, 'stopGame');

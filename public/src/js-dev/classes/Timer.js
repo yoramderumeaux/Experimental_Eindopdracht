@@ -20,6 +20,7 @@ var Timer = (function(){
 		this.isRunning = true;
 		eventTimer = 1;
 		this.update();
+		clearInterval(myTimer);
 		myTimer =  setInterval(this.update, 1000);
 	};
 

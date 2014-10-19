@@ -146,7 +146,7 @@ var Meteorite = (function(){
 		this.meteorite.addChild(this.text);
 	};
 
-	Meteorite.prototype.update = function() {
+	Meteorite.prototype.updateWithFPSCorrection = function(fpsCorrection) {
 
 		if (this.currentWarpSpeed < (this.warpSpeedTarget*this.enableWarpSpeed)) {
 			this.currentWarpSpeed += 0.01;
@@ -154,9 +154,10 @@ var Meteorite = (function(){
 				this.currentWarpSpeed = 0;
 		}
 		
-		this.y += this.velY * (this.speed * (1 + this.currentWarpSpeed *30));
+		this.y += (this.velY * (this.speed * (1 + this.currentWarpSpeed *30)))/fpsCorrection;
+		this.y = Math.round(this.y);
 		this.meteorite.y = this.y;
-		this.meteorite.rotation += (this.rotationDirection * (this.speed)/40);
+		this.meteorite.rotation += ((this.rotationDirection * (this.speed)/40))/fpsCorrection;
 		this.text.rotation = -this.meteorite.rotation;
 		//this.meteorite.rotation += 30;
 		this.velY *= this.gravity;
