@@ -168,6 +168,7 @@ var PowerupProgress = (function(){
 		var self = this;
 		self.greenprogressSlider.x = self.blueprogressSlider.x = self.redprogressSlider.x = self.yellowprogressSlider.x = self.purpleprogressSlider.x = - canvasWidth;
 
+		clearInterval(this.timer);
 		this.timer = setInterval(function(){
 
 			if (self.currentTimerValue > self.timerValue) {
@@ -188,11 +189,11 @@ var PowerupProgress = (function(){
 		this.powerupProgress.y = (canvasHeight+1);
 	};
 
-	PowerupProgress.prototype.update = function(){
+	PowerupProgress.prototype.updateWithFPSCorrection = function(fpsCorrection){
 		if (this.hideProgressBar) {
-			this.powerupProgress.y += ((canvasHeight+1) - this.powerupProgress.y)*0.1;
+			this.powerupProgress.y += (((canvasHeight+1) - this.powerupProgress.y)*0.1)/fpsCorrection;
 		}else{
-			this.powerupProgress.y += ((canvasHeight-30) - this.powerupProgress.y)*0.1;
+			this.powerupProgress.y += (((canvasHeight-30) - this.powerupProgress.y)*0.1)/fpsCorrection;
 		}
 	};
 

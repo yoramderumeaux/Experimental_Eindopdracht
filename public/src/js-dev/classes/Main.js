@@ -20,7 +20,7 @@ var Main = (function(){
 	var meteoriteTimerValue = defaultMeteoriteTimerValue;
 	var defaultPowerupTimerValue = 3000; //new powerup after x miliseconds
 	var powerupTimerValue = defaultPowerupTimerValue; 
-	var debugKeyboardControl = false; //spel spelen met pijltjes
+	var debugKeyboardControl = true; //spel spelen met pijltjes
 	var bulletCounter = 0; //aantal bullets fired
 	var reversedControls = false;
 	var preventGameFromStopping = false; //zorgt ervoor dat game niet stopt als je in warp mode zit
@@ -31,6 +31,10 @@ var Main = (function(){
 	var getWeightTimer;
 	var measuredWeights = [];
 	var powerupEndTimeout;
+	var framerateFactor = 1;
+	var wantedFPS = 60.0;
+	var currentFPS = 0;
+	var fpsCorrection = 0;
 
 	var bullets = [];
 	var powerups = [];
@@ -145,11 +149,12 @@ var Main = (function(){
 
 		// StageTicker
 		ticker = createjs.Ticker;
-		ticker.setFPS(60);
+		ticker.setFPS(wantedFPS);
 		ticker.addEventListener('tick', this.update);
 		
 		this.showStartScreen();
 
+		clearInterval(getWeightTimer);
 		getWeightTimer = setInterval(function(){
 			if(nobodyIsPlaying){
 				socketConnection.askForWeight();	
@@ -194,6 +199,7 @@ var Main = (function(){
 
 			powerupProgress.beginWarpProgress(4000);
 
+			powerupEndTimeout = clearTimeout();
 			powerupEndTimeout = setTimeout(function(){
 				self.togglePowerUpWarp(false);
 			}, 3000);
@@ -234,6 +240,7 @@ var Main = (function(){
 			powerupProgress.beginShootProgress(4700);
 			socketConnection.setBoardColor('green');
 
+			powerupEndTimeout = clearTimeout();
 			powerupEndTimeout = setTimeout(function(){
 				self.togglePowerupShoot(false);
 			}, 5000);
@@ -259,6 +266,7 @@ var Main = (function(){
 
 			sound.playEffectWithVolume('SmallerFast', 70);
 
+			powerupEndTimeout = clearTimeout();
 			powerupEndTimeout = setTimeout(function(){
 				self.togglePowerupSmaller(false);
 			}, 5000);
@@ -286,6 +294,7 @@ var Main = (function(){
 
 			sound.playEffectWithVolume('BiggerFast', 70);
 
+			powerupEndTimeout = clearTimeout();
 			powerupEndTimeout = setTimeout(function(){
 				self.togglePowerupBigger(false);
 			}, 5000);
@@ -315,6 +324,7 @@ var Main = (function(){
 
 			sound.playEffectWithVolume('reverse', 35);
 
+			powerupEndTimeout = clearTimeout();
 			powerupEndTimeout = setTimeout(function(){
 				self.togglePowerUpReverse(false);
 			}, 4000);
@@ -382,17 +392,25 @@ var Main = (function(){
 	Main.prototype.update = function() {
 
 		//fps
-		var currentFPS = Math.round(ticker.getMeasuredFPS()*10)/10;
+		currentFPS = Math.round(ticker.getMeasuredFPS()*10)/10;
+		fpsCorrection = currentFPS/wantedFPS;
 		// $('#fps').hide();
 		$('#fps').html(currentFPS);
 
-		if (currentFPS < 30) {
+		if (currentFPS < 30) 
+		{
 			$('#fps').addClass('veryLow');			
-		}else if(currentFPS < 40){
+		}
+		else if(currentFPS < 40)
+		{
 			$('#fps').addClass('midLow');
-		}else if(currentFPS < 50){	
+		}
+		else if(currentFPS < 50)
+		{	
 			$('#fps').addClass('low');
-		}else{
+		}
+		else
+		{
 			$('#fps').removeClass('veryLow').removeClass('low').removeClass('midLow');
 		}
 		
@@ -446,12 +464,12 @@ var Main = (function(){
 
 			//	left
 			if(keys[37] && debugKeyboardControl) {
-				spaceShip.destinationPosition -= (2 * reverseFactor);	
+				spaceShip.destinationPosition -= ((2 * reverseFactor)/fpsCorrection);	
 			}
 
 			//	Right
 			if(keys[39]  && debugKeyboardControl) {
-				spaceShip.destinationPosition += (2 * reverseFactor);
+				spaceShip.destinationPosition += ((2 * reverseFactor)/fpsCorrection);
 			}
 			
 			if (spaceShip.shootMode) {
@@ -472,8 +490,8 @@ var Main = (function(){
 
 						sound.playEffectWithVolume('Shoot', 100);
 					}else{
-						bulletCounter++;
-						if (bulletCounter > 20) {
+						bulletCounter += 1/fpsCorrection;
+						if (bulletCounter > 10) {
 							bulletFired = false;
 							bulletCounter = 0;
 						}
@@ -494,9 +512,9 @@ var Main = (function(){
 
 						bullets.splice(j, 1);			
 					}else{
-						bullets[j].bullet.y -= 10;
+						bullets[j].bullet.y -= 10/fpsCorrection;
 						var radians = ((-90 +bullets[j].directionAngle) * Math.PI)/180;	
-						bullets[j].bullet.x += (30 * Math.cos(radians));
+						bullets[j].bullet.x += (30 * Math.cos(radians))/fpsCorrection;
 					}
 				}
 			}
@@ -511,7 +529,7 @@ var Main = (function(){
 						meteorites.splice(i, 1);						
 						score.updateScore(50);	
 					}else{
-						meteorites[i].update();
+						meteorites[i].updateWithFPSCorrection(fpsCorrection);
 					}
 
 					if (!spaceShip.shipImmune && meteorites[i].meteorite) {
@@ -595,7 +613,7 @@ var Main = (function(){
 						powerups.splice(m, 1);
 
 					}else{
-						powerups[m].update();
+						powerups[m].updateWithFPSCorrection(fpsCorrection);
 					}
 				}
 			}
@@ -606,15 +624,16 @@ var Main = (function(){
 				sound.changeRocketVolume(0);	
 			}
 
-			spaceShip.update();
-			powerupProgress.update();
+			spaceShip.updateWithFPSCorrection(fpsCorrection);
+			powerupProgress.updateWithFPSCorrection(fpsCorrection);
 			
 		}else{
 			nobodyIsPlaying = true;
 		}
 
-		backgroundPos += (backgroundSpeed*gameSpeedFactor);
+		backgroundPos += (backgroundSpeed*gameSpeedFactor)/fpsCorrection;
 		backgroundPos = Math.round(backgroundPos*10)/10;
+		
 		$('body').css('background-position-y', (backgroundPos/2)+'px');
 		$('#container').css('background-position-y', (backgroundPos)+'px');
 
@@ -754,9 +773,10 @@ var Main = (function(){
 	};
 
 	Main.prototype.toggleMeteoriteTimer = function(bool){
+		clearInterval(meteorTimer);
+
 		if (!bool) {
 			console.log('[MAIN] stop meteor timer');
-			clearInterval(meteorTimer);
 			meteoriteTimerValue = defaultMeteoriteTimerValue;
 			meteorTimer = null;
 		}else{
@@ -767,9 +787,9 @@ var Main = (function(){
 	};
 
 	Main.prototype.togglePowerupTimer = function(bool){
+		clearInterval(powerupTimer);
 		if (!bool) {
 			console.log('[MAIN] stop powerup timer');
-			clearInterval(powerupTimer);
 			powerupTimerValue = defaultPowerupTimerValue;
 			powerupTimer = null;
 		}else{

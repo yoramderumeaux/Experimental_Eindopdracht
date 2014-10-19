@@ -282,7 +282,7 @@ var Main = (function(){
 	var meteoriteTimerValue = defaultMeteoriteTimerValue;
 	var defaultPowerupTimerValue = 3000; //new powerup after x miliseconds
 	var powerupTimerValue = defaultPowerupTimerValue; 
-	var debugKeyboardControl = false; //spel spelen met pijltjes
+	var debugKeyboardControl = true; //spel spelen met pijltjes
 	var bulletCounter = 0; //aantal bullets fired
 	var reversedControls = false;
 	var preventGameFromStopping = false; //zorgt ervoor dat game niet stopt als je in warp mode zit
@@ -293,6 +293,10 @@ var Main = (function(){
 	var getWeightTimer;
 	var measuredWeights = [];
 	var powerupEndTimeout;
+	var framerateFactor = 1;
+	var wantedFPS = 60.0;
+	var currentFPS = 0;
+	var fpsCorrection = 0;
 
 	var bullets = [];
 	var powerups = [];
@@ -407,11 +411,12 @@ var Main = (function(){
 
 		// StageTicker
 		ticker = createjs.Ticker;
-		ticker.setFPS(60);
+		ticker.setFPS(wantedFPS);
 		ticker.addEventListener('tick', this.update);
 		
 		this.showStartScreen();
 
+		clearInterval(getWeightTimer);
 		getWeightTimer = setInterval(function(){
 			if(nobodyIsPlaying){
 				socketConnection.askForWeight();	
@@ -456,6 +461,7 @@ var Main = (function(){
 
 			powerupProgress.beginWarpProgress(4000);
 
+			powerupEndTimeout = clearTimeout();
 			powerupEndTimeout = setTimeout(function(){
 				self.togglePowerUpWarp(false);
 			}, 3000);
@@ -496,6 +502,7 @@ var Main = (function(){
 			powerupProgress.beginShootProgress(4700);
 			socketConnection.setBoardColor('green');
 
+			powerupEndTimeout = clearTimeout();
 			powerupEndTimeout = setTimeout(function(){
 				self.togglePowerupShoot(false);
 			}, 5000);
@@ -521,6 +528,7 @@ var Main = (function(){
 
 			sound.playEffectWithVolume('SmallerFast', 70);
 
+			powerupEndTimeout = clearTimeout();
 			powerupEndTimeout = setTimeout(function(){
 				self.togglePowerupSmaller(false);
 			}, 5000);
@@ -548,6 +556,7 @@ var Main = (function(){
 
 			sound.playEffectWithVolume('BiggerFast', 70);
 
+			powerupEndTimeout = clearTimeout();
 			powerupEndTimeout = setTimeout(function(){
 				self.togglePowerupBigger(false);
 			}, 5000);
@@ -577,6 +586,7 @@ var Main = (function(){
 
 			sound.playEffectWithVolume('reverse', 35);
 
+			powerupEndTimeout = clearTimeout();
 			powerupEndTimeout = setTimeout(function(){
 				self.togglePowerUpReverse(false);
 			}, 4000);
@@ -644,17 +654,25 @@ var Main = (function(){
 	Main.prototype.update = function() {
 
 		//fps
-		var currentFPS = Math.round(ticker.getMeasuredFPS()*10)/10;
+		currentFPS = Math.round(ticker.getMeasuredFPS()*10)/10;
+		fpsCorrection = currentFPS/wantedFPS;
 		// $('#fps').hide();
 		$('#fps').html(currentFPS);
 
-		if (currentFPS < 30) {
+		if (currentFPS < 30) 
+		{
 			$('#fps').addClass('veryLow');			
-		}else if(currentFPS < 40){
+		}
+		else if(currentFPS < 40)
+		{
 			$('#fps').addClass('midLow');
-		}else if(currentFPS < 50){	
+		}
+		else if(currentFPS < 50)
+		{	
 			$('#fps').addClass('low');
-		}else{
+		}
+		else
+		{
 			$('#fps').removeClass('veryLow').removeClass('low').removeClass('midLow');
 		}
 		
@@ -708,12 +726,12 @@ var Main = (function(){
 
 			//	left
 			if(keys[37] && debugKeyboardControl) {
-				spaceShip.destinationPosition -= (2 * reverseFactor);	
+				spaceShip.destinationPosition -= ((2 * reverseFactor)/fpsCorrection);	
 			}
 
 			//	Right
 			if(keys[39]  && debugKeyboardControl) {
-				spaceShip.destinationPosition += (2 * reverseFactor);
+				spaceShip.destinationPosition += ((2 * reverseFactor)/fpsCorrection);
 			}
 			
 			if (spaceShip.shootMode) {
@@ -734,8 +752,8 @@ var Main = (function(){
 
 						sound.playEffectWithVolume('Shoot', 100);
 					}else{
-						bulletCounter++;
-						if (bulletCounter > 20) {
+						bulletCounter += 1/fpsCorrection;
+						if (bulletCounter > 10) {
 							bulletFired = false;
 							bulletCounter = 0;
 						}
@@ -756,9 +774,9 @@ var Main = (function(){
 
 						bullets.splice(j, 1);			
 					}else{
-						bullets[j].bullet.y -= 10;
+						bullets[j].bullet.y -= 10/fpsCorrection;
 						var radians = ((-90 +bullets[j].directionAngle) * Math.PI)/180;	
-						bullets[j].bullet.x += (30 * Math.cos(radians));
+						bullets[j].bullet.x += (30 * Math.cos(radians))/fpsCorrection;
 					}
 				}
 			}
@@ -773,7 +791,7 @@ var Main = (function(){
 						meteorites.splice(i, 1);						
 						score.updateScore(50);	
 					}else{
-						meteorites[i].update();
+						meteorites[i].updateWithFPSCorrection(fpsCorrection);
 					}
 
 					if (!spaceShip.shipImmune && meteorites[i].meteorite) {
@@ -857,7 +875,7 @@ var Main = (function(){
 						powerups.splice(m, 1);
 
 					}else{
-						powerups[m].update();
+						powerups[m].updateWithFPSCorrection(fpsCorrection);
 					}
 				}
 			}
@@ -868,15 +886,16 @@ var Main = (function(){
 				sound.changeRocketVolume(0);	
 			}
 
-			spaceShip.update();
-			powerupProgress.update();
+			spaceShip.updateWithFPSCorrection(fpsCorrection);
+			powerupProgress.updateWithFPSCorrection(fpsCorrection);
 			
 		}else{
 			nobodyIsPlaying = true;
 		}
 
-		backgroundPos += (backgroundSpeed*gameSpeedFactor);
+		backgroundPos += (backgroundSpeed*gameSpeedFactor)/fpsCorrection;
 		backgroundPos = Math.round(backgroundPos*10)/10;
+		
 		$('body').css('background-position-y', (backgroundPos/2)+'px');
 		$('#container').css('background-position-y', (backgroundPos)+'px');
 
@@ -1016,9 +1035,10 @@ var Main = (function(){
 	};
 
 	Main.prototype.toggleMeteoriteTimer = function(bool){
+		clearInterval(meteorTimer);
+
 		if (!bool) {
 			console.log('[MAIN] stop meteor timer');
-			clearInterval(meteorTimer);
 			meteoriteTimerValue = defaultMeteoriteTimerValue;
 			meteorTimer = null;
 		}else{
@@ -1029,9 +1049,9 @@ var Main = (function(){
 	};
 
 	Main.prototype.togglePowerupTimer = function(bool){
+		clearInterval(powerupTimer);
 		if (!bool) {
 			console.log('[MAIN] stop powerup timer');
-			clearInterval(powerupTimer);
 			powerupTimerValue = defaultPowerupTimerValue;
 			powerupTimer = null;
 		}else{
@@ -1314,7 +1334,7 @@ var Meteorite = (function(){
 		this.meteorite.addChild(this.text);
 	};
 
-	Meteorite.prototype.update = function() {
+	Meteorite.prototype.updateWithFPSCorrection = function(fpsCorrection) {
 
 		if (this.currentWarpSpeed < (this.warpSpeedTarget*this.enableWarpSpeed)) {
 			this.currentWarpSpeed += 0.01;
@@ -1322,9 +1342,10 @@ var Meteorite = (function(){
 				this.currentWarpSpeed = 0;
 		}
 		
-		this.y += this.velY * (this.speed * (1 + this.currentWarpSpeed *30));
+		this.y += (this.velY * (this.speed * (1 + this.currentWarpSpeed *30)))/fpsCorrection;
+		this.y = Math.round(this.y);
 		this.meteorite.y = this.y;
-		this.meteorite.rotation += (this.rotationDirection * (this.speed)/40);
+		this.meteorite.rotation += ((this.rotationDirection * (this.speed)/40))/fpsCorrection;
 		this.text.rotation = -this.meteorite.rotation;
 		//this.meteorite.rotation += 30;
 		this.velY *= this.gravity;
@@ -1506,7 +1527,7 @@ var Powerup = (function(){
 
 	};
 
-	Powerup.prototype.update = function() {
+	Powerup.prototype.updateWithFPSCorrection = function(fpsCorrection) {
 
 		if (!this.collected) {
 			/*if (this.currentWarpSpeed < (this.warpSpeedTarget*this.enableWarpSpeed)) {
@@ -1515,12 +1536,12 @@ var Powerup = (function(){
 				this.currentWarpSpeed = 0;
 			}
 			*/
-			this.y += this.velY * (this.speed * (1 + this.currentWarpSpeed *30));
+			this.y += (this.velY * (this.speed * (1 + this.currentWarpSpeed *30)))/fpsCorrection;
 			this.powerup.y = this.y;
 			var lol = 1;
 		}else{
-			this.powerup.scaleX = this.powerup.scaleY += 0.1;
-			this.powerup.alpha -= 0.1;
+			this.powerup.scaleX = this.powerup.scaleY += 0.1/fpsCorrection;
+			this.powerup.alpha -= (0.1/fpsCorrection);
 
 			if (this.powerup.alpha <= 0) {
 				this.readyToRemove = true;
@@ -1703,6 +1724,7 @@ var PowerupProgress = (function(){
 		var self = this;
 		self.greenprogressSlider.x = self.blueprogressSlider.x = self.redprogressSlider.x = self.yellowprogressSlider.x = self.purpleprogressSlider.x = - canvasWidth;
 
+		clearInterval(this.timer);
 		this.timer = setInterval(function(){
 
 			if (self.currentTimerValue > self.timerValue) {
@@ -1723,11 +1745,11 @@ var PowerupProgress = (function(){
 		this.powerupProgress.y = (canvasHeight+1);
 	};
 
-	PowerupProgress.prototype.update = function(){
+	PowerupProgress.prototype.updateWithFPSCorrection = function(fpsCorrection){
 		if (this.hideProgressBar) {
-			this.powerupProgress.y += ((canvasHeight+1) - this.powerupProgress.y)*0.1;
+			this.powerupProgress.y += (((canvasHeight+1) - this.powerupProgress.y)*0.1)/fpsCorrection;
 		}else{
-			this.powerupProgress.y += ((canvasHeight-30) - this.powerupProgress.y)*0.1;
+			this.powerupProgress.y += (((canvasHeight-30) - this.powerupProgress.y)*0.1)/fpsCorrection;
 		}
 	};
 
@@ -1939,12 +1961,13 @@ var Sound = (function(){
 
 })();
 
-/*globals  Bullet:true */
+/*globals  Bullet:true Main:true*/
 
 var SpaceShip = (function(){
 
 	var bullets = [];
 	var bullet;
+	var main;
 	var flameFlickerTimer = 0;
 	var setStartPos = false;
 	// var lowestX = 10000;
@@ -2355,7 +2378,7 @@ var SpaceShip = (function(){
 		this.capableToFly = false;
 	};
 
-	SpaceShip.prototype.update = function() {
+	SpaceShip.prototype.updateWithFPSCorrection = function(fpsCorrection) {
 
 		if (this.capableToFly) {
 			//ease to position;
@@ -2364,13 +2387,13 @@ var SpaceShip = (function(){
 
 			var destinationXpos = ($('#cnvs').width() - this.shipWidth) * this.destinationPosition / 100;
 			this.x = (this.shipWidth/2) + destinationXpos;
-			this.ship.x += (this.x-this.ship.x)* this.velX;
+			this.ship.x += ((this.x-this.ship.x)* this.velX)/fpsCorrection;
 
 			if (!setStartPos) {
-				this.ship.y += 200;
+				this.ship.y += 200 / fpsCorrection;
 				setStartPos = true;
 			}else{
-				this.ship.y += (this.y-this.ship.y)*0.05;	
+				this.ship.y += ((this.y-this.ship.y)*0.05)/fpsCorrection;	
 			}
 
 			
@@ -2393,28 +2416,28 @@ var SpaceShip = (function(){
 
 			if (this.shipImmune) {
 				//this.warpShield.alpha = 1;
-				this.warpShield.scaleX = this.warpShield.scaleY += (1-this.warpShield.scaleX)*0.2;
+				this.warpShield.scaleX = this.warpShield.scaleY += ((1-this.warpShield.scaleX)*0.2)/fpsCorrection;
 			}else{
-				this.warpShield.scaleX = this.warpShield.scaleY += (0-this.warpShield.scaleX)*0.2;
+				this.warpShield.scaleX = this.warpShield.scaleY += ((0-this.warpShield.scaleX)*0.2)/fpsCorrection;
 				//this.warpShield.alpha = 0;
 			}
 
 			if (this.shootMode) {
-				this.cannon.scaleX = this.cannon.scaleY += (1-this.cannon.scaleX)*0.2;
+				this.cannon.scaleX = this.cannon.scaleY += ((1-this.cannon.scaleX)*0.2)/fpsCorrection;
 			}else{
-				this.cannon.scaleX = this.cannon.scaleY += (0-this.cannon.scaleX)*0.2;
+				this.cannon.scaleX = this.cannon.scaleY += ((0-this.cannon.scaleX)*0.2)/fpsCorrection;
 			}
 
 			if (this.smallerMode) {
-				this.ship.scaleX = this.ship.scaleY += (0.3-this.ship.scaleX)*0.015;
+				this.ship.scaleX = this.ship.scaleY += ((0.3-this.ship.scaleX)*0.015)/fpsCorrection;
 			}else{
-				this.ship.scaleX = this.ship.scaleY += (1-this.ship.scaleX)*0.015;
+				this.ship.scaleX = this.ship.scaleY += ((1-this.ship.scaleX)*0.015)/fpsCorrection;
 			}
 
 			if (this.biggerMode) {
-				this.ship.scaleX = this.ship.scaleY += (1.8 - this.ship.scaleX)*0.015;
+				this.ship.scaleX = this.ship.scaleY += ((1.8 - this.ship.scaleX)*0.015)/fpsCorrection;
 			}else{
-				this.ship.scaleX = this.ship.scaleY += (1-this.ship.scaleX)*0.015;
+				this.ship.scaleX = this.ship.scaleY += ((1-this.ship.scaleX)*0.015)/fpsCorrection;
 			}
 
 			this.ship.width = 60 * this.ship.scaleX;
@@ -2430,12 +2453,12 @@ var SpaceShip = (function(){
 
 			if (this.ship.y < $('#cnvs').height() + 100 ){
 				this.ship.y += 4;
-				this.ship.scaleY = this.ship.scaleX += (0 - this.ship.scaleX) * 0.1;
+				this.ship.scaleY = this.ship.scaleX += ((0 - this.ship.scaleX) * 0.1)/fpsCorrection;
 				this.ship.x += 1;
 				if (this.destinationPosition < 50) {
-					this.ship.rotation += 10;
+					this.ship.rotation += 10/fpsCorrection;
 				}else{
-					this.ship.rotation -= 10;
+					this.ship.rotation -= 10/fpsCorrection;
 				}
 			}else{
 				bean.fire(this, 'stopGame');
@@ -2750,6 +2773,7 @@ var Timer = (function(){
 		this.isRunning = true;
 		eventTimer = 1;
 		this.update();
+		clearInterval(myTimer);
 		myTimer =  setInterval(this.update, 1000);
 	};
 
