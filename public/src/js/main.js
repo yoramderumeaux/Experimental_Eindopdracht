@@ -645,8 +645,8 @@ var Main = (function(){
 
 		//fps
 		var currentFPS = Math.round(ticker.getMeasuredFPS()*10)/10;
-		$('#fps').hide();
-		//$('#fps').html(currentFPS);
+		// $('#fps').hide();
+		$('#fps').html(currentFPS);
 
 		if (currentFPS < 30) {
 			$('#fps').addClass('veryLow');			
@@ -1149,7 +1149,7 @@ var Main = (function(){
 		stage = new createjs.Stage('cnvs');
 
 		// Setup canvas size and scale stage appropriatly
-		var ratio = 1.41;
+		var ratio = 1;
 		var canvasSetup = new CanvasSetup($('#cnvs'), ratio);
 		canvasSetup.init();
 
