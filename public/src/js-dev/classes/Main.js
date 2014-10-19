@@ -383,8 +383,8 @@ var Main = (function(){
 
 		//fps
 		var currentFPS = Math.round(ticker.getMeasuredFPS()*10)/10;
-		$('#fps').hide();
-		//$('#fps').html(currentFPS);
+		// $('#fps').hide();
+		$('#fps').html(currentFPS);
 
 		if (currentFPS < 30) {
 			$('#fps').addClass('veryLow');			
