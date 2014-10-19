@@ -614,9 +614,14 @@ var Main = (function(){
 		}
 
 		backgroundPos += (backgroundSpeed*gameSpeedFactor);
-			backgroundPos = Math.round(backgroundPos*10)/10;
+		backgroundPos = Math.round(backgroundPos*10)/10;
 		$('body').css('background-position-y', (backgroundPos/2)+'px');
 		$('#container').css('background-position-y', (backgroundPos)+'px');
+
+		if (backgroundPos > 2000)
+		{
+			backgroundPos = 0;
+		}
 
 		stage.update();
 	};
