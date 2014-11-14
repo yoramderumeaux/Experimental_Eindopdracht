@@ -5,3 +5,5 @@ public/node_modules/*
 *.scssc
 
 node_modules
+SpaceEvaderSetup.app
+public/out
