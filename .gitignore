@@ -1,7 +1,7 @@
-public/.sass-cache
-public/.sass-cache/*
-public/node_modules
-public/node_modules/*
 *.scssc
 
 node_modules
+SpaceEvaderSetup.app
+public/out
+public/.sass-cache
+public/node_modules
