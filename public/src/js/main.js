@@ -658,6 +658,7 @@ var Main = (function(){
 		fpsCorrection = currentFPS/wantedFPS;
 		// $('#fps').hide();
 		$('#fps').html(currentFPS);
+		$("#nodes").html(stage.children.length);
 
 		if (currentFPS < 30) 
 		{
