@@ -414,8 +414,7 @@ var Main = (function(){
 		{
 			$('#fps').removeClass('veryLow').removeClass('low').removeClass('midLow');
 		}
-		
-		//	Space to shoot
+
 		if(keys[32]){
 			if (debugKeyboardControl && (startScreen || endScreen)) {
 				this.startGame();
@@ -463,7 +462,7 @@ var Main = (function(){
 				reverseFactor = 1;
 			}
 
-			//	left
+			// left
 			if(keys[37] && debugKeyboardControl) {
 				spaceShip.destinationPosition -= ((2 * reverseFactor)/fpsCorrection);	
 			}
@@ -471,6 +470,79 @@ var Main = (function(){
 			//	Right
 			if(keys[39]  && debugKeyboardControl) {
 				spaceShip.destinationPosition += ((2 * reverseFactor)/fpsCorrection);
+			}
+
+			if (debugKeyboardControl) {
+
+				var validMeteorites = [];
+
+				var posibleIndex = 0;
+				var logText = "";
+				for (var x = 0; x < meteorites.length; x++) 
+				{
+					var meteorite = meteorites[x];
+
+					if (meteorite.y < $(window).height() && meteorite.y > $(window).height() - 300) 
+					{
+						validMeteorites.push(meteorite);
+					}
+				}
+
+				var sortedMeteorites = validMeteorites.sort(function(meteoriteOne, meteoriteTwo){
+					return meteoriteOne.x - meteoriteTwo.x;
+				});
+
+				var distances = [];
+
+				logText += "|";
+				var distance = 0;
+
+				for (var z = 0; z < sortedMeteorites.length; z++) 
+				{	
+					var sortedMeteorite = sortedMeteorites[z];
+
+					if (z === 0) 
+					{
+						distance = sortedMeteorite.x;
+					}
+					else
+					{
+						var prevMeteorite = sortedMeteorites[z-1];
+						distance = sortedMeteorite.x - prevMeteorite.x;
+					}
+
+					distances.push(distance);
+				}
+
+				if (sortedMeteorites.length > 0) 
+				{
+					var lastMeteorite = sortedMeteorites[sortedMeteorites.length - 1];
+					distance = $('#cnvs').width() - lastMeteorite.x;
+					distances.push(distance);
+
+					var bestIndex = 0;
+
+					for (var aa = 0; aa < distances.length; aa++) 
+					{
+						if (distances[aa] >= distances[bestIndex])				 
+						{
+							bestIndex = aa;
+						}
+					}
+
+					var minDistance = 0;
+
+					for (var ac = 0; ac < distances.length; ac++) 
+					{	
+						if (ac < bestIndex) 
+						{	
+							minDistance += distances[ac];
+						}
+					}
+
+					var spaceshipPosition = minDistance + (distances[bestIndex+1]/2);
+					spaceShip.destinationPosition = spaceshipPosition;
+				}							
 			}
 			
 			if (spaceShip.shootMode) {
@@ -708,6 +780,12 @@ var Main = (function(){
 		stage.addChild(endScreen.endContainer);
 
 		died = true;
+
+		console.log("wait!");
+		setTimeout(function() {
+			console.log("done");
+			self.startGame();
+		}, 2000);
 	};
 
 	Main.prototype.startGame = function(){

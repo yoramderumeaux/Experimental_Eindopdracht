@@ -151,6 +151,12 @@ var EndScreen = (function(){
 		if (spaceShip) {
 			this.endContainer.addChild(endIcon);
 		}
+		
+		console.log("wait!");
+		setTimeout(function() {
+			console.log("done");
+			bean.fire(this, 'startGame');
+		}, 2000);
 	};
 
 	EndScreen.prototype.showStartscreen = function(){

@@ -267,6 +267,7 @@ var StartScreen = (function(){
 		this.startContainer.addChild(this.jump);
 		this.startContainer.addChild(this.ventjeContainer);
 
+		this.restartGame();
 	};
 
 	StartScreen.prototype.restartGame = function(e) {
