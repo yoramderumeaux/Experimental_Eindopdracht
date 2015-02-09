@@ -524,8 +524,9 @@ var Main = (function(){
 				for (var i = 0; i < meteorites.length; i++) {
 					meteorites[i].velY = 0.1;
 
-					if ($('#cnvs').height() + 150 < meteorites[i].y) {
-						meteorites[i] = null;					
+					if ($('#cnvs').height() + 150 < meteorites[i].y) {			
+						stage.removeChild(meteorites[i].meteorite);
+						meteorites[i] = null;
 						meteorites.splice(i, 1);						
 						score.updateScore(50);	
 					}else{
@@ -631,6 +632,8 @@ var Main = (function(){
 			nobodyIsPlaying = true;
 		}
 
+		//console.log("bullets = " + bullets.length + " ---- meteorites = " + meteorites.length + " ---- powerups " + powerups.length);
+
 		backgroundPos += (backgroundSpeed*gameSpeedFactor)/fpsCorrection;
 			backgroundPos = Math.round(backgroundPos*10)/10;
 		$('body').css('background-position-y', (backgroundPos/2)+'px');
@@ -652,7 +655,9 @@ var Main = (function(){
 		self.toggleMeteoriteTimer(false);
 		self.togglePowerupTimer(false);
 
-		for (var j = 0; j < bullets.length; j++) {
+
+		for (var j = 0; j < bullets.length; j++) 
+		{
 			stage.removeChild(bullets[j].bullet);
 			console.log('clear bullets');
 			bullets[j] = null;
