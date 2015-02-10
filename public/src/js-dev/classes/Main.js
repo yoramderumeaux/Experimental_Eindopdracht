@@ -478,11 +478,14 @@ var Main = (function(){
 
 				var posibleIndex = 0;
 				var logText = "";
+				var stageHeight = $('#cnvs').height();
+				var stageWidth = $('#cnvs').width();
+
 				for (var x = 0; x < meteorites.length; x++) 
 				{
 					var meteorite = meteorites[x];
 
-					if (meteorite.y < $(window).height() && meteorite.y > $(window).height() - 300) 
+					if (meteorite.y < stageHeight && meteorite.y > stageHeight - 500) 
 					{
 						validMeteorites.push(meteorite);
 					}
@@ -493,9 +496,8 @@ var Main = (function(){
 				});
 
 				var distances = [];
-
-				logText += "|";
 				var distance = 0;
+				var meteoriteOnSameHeightAsSpaceship = false;
 
 				for (var z = 0; z < sortedMeteorites.length; z++) 
 				{	
@@ -511,10 +513,16 @@ var Main = (function(){
 						distance = sortedMeteorite.x - prevMeteorite.x;
 					}
 
+					// console.log(Math.abs(sortedMeteorite.y - spaceShip.y));
+					if (Math.abs(sortedMeteorite.y - spaceShip.y) < 150)
+					{
+						meteoriteOnSameHeightAsSpaceship = true;
+					}
+
 					distances.push(distance);
 				}
 
-				if (sortedMeteorites.length > 0) 
+				if (distances.length > 0) 
 				{
 					var lastMeteorite = sortedMeteorites[sortedMeteorites.length - 1];
 					distance = $('#cnvs').width() - lastMeteorite.x;
@@ -540,8 +548,25 @@ var Main = (function(){
 						}
 					}
 
-					var spaceshipPosition = minDistance + (distances[bestIndex+1]/2);
-					spaceShip.destinationPosition = spaceshipPosition;
+					var spaceshipPosition = minDistance + (distances[bestIndex]/2);
+
+					console.log(meteoriteOnSameHeightAsSpaceship);
+
+					if (!meteoriteOnSameHeightAsSpaceship)
+					{
+						var destination = (spaceshipPosition / stageWidth)*100;
+						var spaceshipCurrentPosition = (spaceShip.x / stageWidth) * 100;
+
+						if (destination < spaceshipCurrentPosition) 
+						{			
+							spaceShip.destinationPosition -= ((2 * reverseFactor)/fpsCorrection);
+						}
+						else
+						{
+							spaceShip.destinationPosition += ((2 * reverseFactor)/fpsCorrection);
+						}
+						// spaceShip.destinationPosition = destination;
+					}					
 				}							
 			}
 			
